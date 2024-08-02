@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Behaviour%20Technique/Behaviour%20Tree/Layout/NodeViewStyle.uss?fileID=7433441132597879392&amp;guid=2c3e5f919fbc7c0468933b90f2ec4fd6&amp;type=3#NodeViewStyle" />
+    <ui:VisualElement name="node-border" tabindex="0" focusable="false" style="border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;">
+        <ui:VisualElement name="contents" focusable="false">
+            <ui:VisualElement name="top" style="flex-wrap: nowrap; justify-content: flex-start; align-self: stretch;">
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="vertical" />
+                <ui:VisualElement name="input" language-direction="Inherit" />
+                <ui:VisualElement name="title" picking-mode="Ignore">
+                    <ui:Label name="title-label" text="Node" class="unity-text-element unity-label" />
+                    <ui:VisualElement name="title-button-container">
+                        <ui:VisualElement name="collapse-button">
+                            <ui:VisualElement name="icon" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="output" />
+                <ui:VisualElement name="divider" picking-mode="Ignore" class="horizontal" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="selection-border" focusable="false" picking-mode="Ignore" />
+</ui:UXML>

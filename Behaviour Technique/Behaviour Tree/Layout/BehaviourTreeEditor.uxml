@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Behaviour%20Technique/Behaviour%20Tree/Layout/BehaviourTreeEditorStyle.uss?fileID=7433441132597879392&amp;guid=9f7ef0b4ed1e21f4580d6f651abac776&amp;type=3#BehaviourTreeEditorStyle" />
+    <BehaviourTechnique.UIElements.SplitView fixed-pane-initial-dimension="300">
+        <ui:VisualElement name="left-panel" style="flex-grow: 1; flex-direction: column; width: auto; flex-shrink: 1; min-width: 300px; display: flex; min-height: auto; max-width: 90%; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-left-color: rgb(25, 25, 25); border-right-color: rgb(25, 25, 25); border-top-color: rgb(25, 25, 25); border-bottom-color: rgb(25, 25, 25);">
+            <uie:Toolbar name="left-toolbar" style="align-content: flex-start; justify-content: space-between;">
+                <uie:ToolbarMenu text="Tree Assets" name="tree-assets-menu" />
+                <uie:ToolbarButton icon-image="project://database/Packages/com.unity.2d.animation/Editor/Assets/EditorIcons/Selected/Visibility_Tool.png?fileID=2800000&amp;guid=7342ee656932e31489ea62e64e012645&amp;type=3#Visibility_Tool" name="visiable-button" />
+            </uie:Toolbar>
+            <ui:Label tabindex="-1" text=" Inspector" parse-escape-sequences="true" display-tooltip-when-elided="true" name="left-view-label" class="window-label" style="flex-shrink: 1; flex-grow: 0;" />
+            <BehaviourTechnique.UIElements.InspectorView style="margin-top: 5px; margin-bottom: 0; margin-right: 10px; margin-left: 10px; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);" />
+        </ui:VisualElement>
+        <ui:VisualElement name="right-panel" style="flex-grow: 1; flex-shrink: 1; min-width: 10%; max-width: none;">
+            <uie:Toolbar name="right-toolbar" style="justify-content: space-between;">
+                <uie:ToolbarSearchField name="lefthalf-search-field" style="width: 200px; min-width: auto; flex-shrink: 1; flex-grow: 0;" />
+                <ui:VisualElement name="lefthalf-toolbar" style="flex-grow: 1; flex-direction: row-reverse;">
+                    <uie:ToolbarMenu text="100%" name="augmentation-menu" style="flex-direction: row;" />
+                    <uie:ToolbarButton text="Sort " name="sort-button" style="align-self: auto; align-content: auto; justify-content: flex-start; align-items: auto; min-width: 35px;" />
+                </ui:VisualElement>
+            </uie:Toolbar>
+            <ui:Label tabindex="-1" text=" Tree View" parse-escape-sequences="true" display-tooltip-when-elided="true" name="right-view-label" class="window-label" />
+            <BehaviourTechnique.BehaviourTreeEditor.BehaviourTreeView focusable="true" style="flex-grow: 1;" />
+        </ui:VisualElement>
+    </BehaviourTechnique.UIElements.SplitView>
+</ui:UXML>
