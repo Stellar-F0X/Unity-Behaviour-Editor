@@ -1,0 +1,95 @@
+GridBackground {
+    --grid-background-color: rgb(40, 40, 40);
+    --line-color: rgba(193, 196, 192, 0.1);
+    --thick-line-color: rgba(193, 196, 192, 0.1);
+    --spacing: 15;
+}
+
+.window-label {
+    -unity-text-align: upper-left;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    color: rgb(196, 196, 196);
+    background-color: rgb(42, 42, 42);
+}
+
+#tab-view > #unity-tab-view__header-container {
+    flex-direction: row;
+    width: auto;
+    flex-wrap: nowrap;
+}
+
+#tab-view > #unity-tab-view__content-container {
+    height: auto;
+    flex-grow: 1;
+}
+
+#tab > #unity-tab__content-container {
+    flex-grow: 1;
+}
+
+#unity-tab__header {
+    background-color: rgb(50, 50, 50);
+    border-left-color: rgb(42, 42, 42);
+    border-right-color: rgb(42, 42, 42);
+    border-top-color: rgb(42, 42, 42);
+    border-bottom-color: rgb(42, 42, 42);
+    border-top-width: 0;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 0;
+    border-bottom-left-radius: 1px;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border-bottom-right-radius: 1px;
+    flex-direction: row;
+    flex-grow: 1;
+    -unity-text-align: upper-center;
+}
+
+#unity-tab__header > #unity-tab__header-label {
+    background-color: rgb(50, 50, 50);
+    border-left-color: rgb(42, 42, 42);
+    border-right-color: rgb(42, 42, 42);
+    border-top-color: rgb(42, 42, 42);
+    border-bottom-color: rgb(42, 42, 42);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    min-height: auto;
+    -unity-text-align: middle-center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    flex-grow: 1;
+}
+
+#add-element-button > VisualElement {
+    background-image: url("project://database/Packages/com.unity.render-pipelines.core/Editor/LookDev/Icons/d_Add.png?fileID=2800000&guid=160b197aba549514286b94426ceae589&type=3#d_Add");
+    -unity-text-align: upper-left;
+    border-left-width: 0;
+    margin-right: 0;
+    flex-grow: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    flex-direction: row-reverse;
+}
+
+#active-minimap > .unity-toggle__label {
+    min-width: 50px;
+}
+
+.graphView > .graphElement > .unity-label {
+    color: rgb(255, 241, 97);
+}

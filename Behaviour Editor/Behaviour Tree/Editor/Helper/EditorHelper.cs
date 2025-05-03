@@ -1,0 +1,149 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
+using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
+
+namespace BehaviourSystemEditor.BT
+{
+    public static class EditorHelper
+    {
+        public static T FindAssetByName<T>(string searchFilter) where T : Object
+        {
+            string[] guids = AssetDatabase.FindAssets(searchFilter);
+
+            if (guids is null || guids.Length == 0)
+            {
+                return null;
+            }
+
+            foreach (var guid in guids)
+            {
+                string parentPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                if (File.Exists(parentPath))
+                {
+                    return AssetDatabase.LoadAssetAtPath<T>(parentPath);
+                }
+            }
+
+            throw new FileNotFoundException($"Asset not found at filter: {searchFilter}");
+        }
+
+
+        public static string FindAssetPath(string searchFilter)
+        {
+            string[] guids = AssetDatabase.FindAssets(searchFilter);
+
+            if (guids != null && guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            throw new FileNotFoundException($"Asset not found at filter: {searchFilter}");
+        }
+
+
+        public static void ForEach<T>([NotNull] this IEnumerable<T> array, [NotNull] Action<T> action)
+        {
+            foreach (var element in array)
+            {
+                action.Invoke(element);
+            }
+        }
+
+
+        public static List<TOutput> ConvertAll<TInput, TOutput>([NotNull] this IEnumerable<TInput> array, [NotNull] Func<TInput, TOutput> converter)
+        {
+            List<TOutput> outputList = new List<TOutput>(array.Count());
+
+            foreach (var element in array)
+            {
+                outputList.Add(converter.Invoke(element));
+            }
+
+            return outputList;
+        }
+
+
+        public static Type[] OrderByNameAndFilterAbstracts(this TypeCache.TypeCollection collection)
+        {
+            Type[] array = collection.Where(t => t.IsAbstract == false).ToArray();
+
+            if (array.Length <= 1)
+            {
+                return array;
+            }
+
+            Array.Sort(array, (a, b) => a.Name[0].CompareTo(b.Name[0]));
+            return array;
+        }
+
+
+        public static void SetBorderColor(this IStyle style, Color color)
+        {
+            style.borderTopColor = color;
+            style.borderBottomColor = color;
+            style.borderLeftColor = color;
+            style.borderRightColor = color;
+        }
+
+
+        public static void SetEdgeColor(this EdgeControl control, Color color)
+        {
+            control.inputColor = color;
+            control.outputColor = color;
+        }
+
+
+        public static void RegisterValueChangedCallback<T>(this VisualElement element, EventCallback<ChangeEvent<T>> callback)
+        {
+            if (element.userData is null)
+            {
+                element.userData = new List<EventCallback<ChangeEvent<T>>>();
+            }
+
+            if (element.userData is List<EventCallback<ChangeEvent<T>>> callbackList)
+            {
+                callbackList.Add(callback);
+
+                element.RegisterCallback(callback);
+            }
+            else
+            {
+                Debug.LogWarning("User Data is already in use.");
+            }
+        }
+
+
+        public static void UnregisterAllValueChangedCallback<T>(this VisualElement element)
+        {
+            if (element.userData is List<EventCallback<ChangeEvent<T>>> list)
+            {
+                if (list.Count == 0)
+                {
+                    return;
+                }
+                
+                int count = list.Count;
+
+                for (int i = 0; i < count; ++i)
+                {
+                    element.UnregisterCallback(list[i]);
+                }
+
+                list.Clear();
+            }
+        }
+    }
+}

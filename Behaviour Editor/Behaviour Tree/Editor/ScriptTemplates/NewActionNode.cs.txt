@@ -1,0 +1,24 @@
+using System;
+using UnityEngine;
+using BehaviourSystem.BT;
+
+#ROOTNAMESPACEBEGIN#
+[System.Serializable]
+public class #SCRIPTNAME# : ActionNode
+{
+    protected override void OnEnter() 
+    {
+    #NOTRIM#
+    }
+
+    protected override NodeBase.EBehaviourResult OnUpdate()
+    {
+        return NodeBase.EBehaviourResult.Failure;
+    }
+
+    protected override void OnExit()
+    {
+    #NOTRIM#
+    }
+}
+#ROOTNAMESPACEEND#
