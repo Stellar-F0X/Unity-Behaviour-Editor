@@ -41,6 +41,8 @@ namespace BehaviourSystemEditor.BT
         private float _minimumStayTime;
         private ulong _lastRenderedNodeCount = 0;
 
+        private bool _isInHighlighting;
+
 
         public NodeBase node;
         public Edge toParentEdge;
@@ -141,6 +143,12 @@ namespace BehaviourSystemEditor.BT
             {
                 if (node.callCount > _lastRenderedNodeCount)
                 {
+                    if (_isInHighlighting == false)
+                    {
+                        _isInHighlighting = true;
+                        toParentEdge?.BringToFront();
+                    }
+                    
                     _lastRenderedNodeCount = node.callCount;
                     _minimumStayTime = BehaviourTreeEditor.Settings.minimumFocusingDuration;
                 }
@@ -152,6 +160,7 @@ namespace BehaviourSystemEditor.BT
                 }
                 else if (Mathf.Approximately(this._elapsedTime, 0f))
                 {
+                    _isInHighlighting = false;
                     return;
                 }
                 else
