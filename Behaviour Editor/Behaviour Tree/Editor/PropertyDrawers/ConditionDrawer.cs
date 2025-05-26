@@ -25,11 +25,11 @@ namespace BehaviourSystemEditor.BT
         private void Initialize()
         {
             _initialized = true;
-            
+
             _popupStyle = new GUIStyle(EditorStyles.popup);
             _popupStyle.fontSize = 17;
         }
-        
+
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -49,14 +49,14 @@ namespace BehaviourSystemEditor.BT
                 this.Initialize();
             }
 
-            Blackboard     data           = BehaviourTreeEditor.Instance.Tree.blackboard;
+            Blackboard data = BehaviourTreeEditor.Instance.Tree.blackboard;
             SerializedProperty blackboardProp = property.FindPropertyRelative("property");
 
             _rect = new Rect(position.x, position.y, position.width - 10, EditorGUIUtility.singleLineHeight);
 
             Rect dropdownRect = new Rect(_rect.x, _rect.y + 2, _rect.width / 5, _rect.height);
-            Rect compareRect  = new Rect(_rect.x + _rect.width / 5 + 5, _rect.y + 2, _rect.width / 5, _rect.height);
-            Rect valueRect    = new Rect(_rect.x + _rect.width / 5 * 2 + 10, _rect.y + 2, _rect.width / 5 * 3, _rect.height);
+            Rect compareRect = new Rect(_rect.x + _rect.width / 5 + 5, _rect.y + 2, _rect.width / 5, _rect.height);
+            Rect valueRect = new Rect(_rect.x + _rect.width / 5 * 2 + 10, _rect.y + 2, _rect.width / 5 * 3, _rect.height);
 
             this.DrawBlackboardProperty(data, blackboardProp, dropdownRect);
 
@@ -99,18 +99,21 @@ namespace BehaviourSystemEditor.BT
             if (blackboardProp.boxedValue is IBlackboardProperty prop)
             {
                 selected = Array.IndexOf(dropdownOptions, prop.key);
+                _canDraw = (prop.comparableConditions & EConditionType.Trigger) == 0;
+                
+                selected = Mathf.Clamp(selected, 0, dropdownOptions.Length - 1);
+                selected = EditorGUI.Popup(dropdownRect, selected, dropdownOptions);
+                blackboardProp.boxedValue = properties[selected];
+                return;
             }
 
-            selected                  = Mathf.Clamp(selected, 0, dropdownOptions.Length - 1);
-            selected                  = EditorGUI.Popup(dropdownRect, selected, dropdownOptions);
-            blackboardProp.boxedValue = properties[selected];
-            _canDraw                  = true;
+            _canDraw = false;
         }
 
 
         private void DrawCompareValueField(SerializedProperty property, SerializedProperty blackboardProp, Rect compareRect, Rect valueRect)
         {
-            SerializedProperty targetValue         = property.FindPropertyRelative("comparableValue");
+            SerializedProperty targetValue = property.FindPropertyRelative("comparableValue");
             SerializedProperty sourceValueTypeName = blackboardProp.FindPropertyRelative("_typeName");
 
             if (targetValue.boxedValue is null)
@@ -140,12 +143,12 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            SerializedProperty conditionType  = property.FindPropertyRelative("conditionType");
-            int                selected       = conditionType.enumValueIndex - 1;
-            
+            SerializedProperty conditionType = property.FindPropertyRelative("conditionType");
+            int selected = conditionType.enumValueIndex - 1;
+
             _conditionTypes.Clear();
 
-            for (int i = (int)EConditionType.None; i < (int)sourceType.comparableConditions; i <<= 1)
+            for (int i = (int)EConditionType.None; i <= (int)sourceType.comparableConditions; i <<= 1)
             {
                 EConditionType condition = (EConditionType)i;
 
@@ -153,6 +156,8 @@ namespace BehaviourSystemEditor.BT
                 {
                     switch (condition)
                     {
+                        case EConditionType.Trigger: _conditionTypes.Add("Trigger"); break;
+
                         case EConditionType.Equal: _conditionTypes.Add("="); break;
 
                         case EConditionType.NotEqual: _conditionTypes.Add("≠"); break;
@@ -167,8 +172,8 @@ namespace BehaviourSystemEditor.BT
                     }
                 }
             }
-            
-            selected                     = Mathf.Clamp(selected, 0, _conditionTypes.Count - 1);
+
+            selected = Mathf.Clamp(selected, 0, _conditionTypes.Count - 1);
             conditionType.enumValueIndex = EditorGUI.Popup(compareRect, selected, _conditionTypes.ToArray(), _popupStyle) + 1;
         }
 

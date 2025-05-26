@@ -4,11 +4,8 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public class BlackboardBasedUntilFor : DecoratorNode
+    public class BlackboardBasedUntilFor : ConditionNode
     {
-        public List<BlackboardBasedCondition> conditions;
-
-
         public override string tooltip
         {
             get { return "Keeps executing the child node until all blackboard conditions are satisfied."; }
@@ -26,20 +23,6 @@ namespace BehaviourSystem.BT
                 child.UpdateNode();
                 return EBehaviourResult.Running;
             }
-        }
-        
-        
-        private bool CheckCondition()
-        {
-            for (int i = 0; i < conditions.Count; ++i)
-            {
-                if (conditions[i].Execute() == false)
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

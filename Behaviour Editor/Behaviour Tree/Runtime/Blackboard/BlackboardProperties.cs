@@ -8,13 +8,13 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.All; }
+            get { return EConditionType.AllComparisonOperators; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
         {
             var property = other as BlackboardProperty<int>;
-            
+
             return this.value.CompareTo(property.value);
         }
     }
@@ -24,7 +24,7 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.All; }
+            get { return EConditionType.AllComparisonOperators; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
@@ -45,12 +45,17 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.Equal | EConditionType.NotEqual; }
+            get { return EConditionType.Equal; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
         {
-            return this.value == (other as BlackboardProperty<bool>).value ? 0 : -1;
+            if (other is BlackboardProperty<bool> property)
+            {
+                return this.value == property.value ? 0 : -1;
+            }
+
+            return -1;
         }
     }
 
@@ -59,7 +64,7 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.All; }
+            get { return EConditionType.AllComparisonOperators; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
@@ -80,7 +85,7 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.NotEqual | EConditionType.Equal; }
+            get { return EConditionType.AllComparisonOperators; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
@@ -101,7 +106,7 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.All; }
+            get { return EConditionType.AllComparisonOperators; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
@@ -114,48 +119,6 @@ namespace BehaviourSystem.BT
             }
 
             return this.value.eulerAngles.sqrMagnitude > otherValue.value.eulerAngles.sqrMagnitude ? 1 : -1;
-        }
-    }
-
-    [Serializable]
-    public class RigidbodyProperty : BlackboardProperty<Rigidbody>
-    {
-        public override EConditionType comparableConditions
-        {
-            get { return EConditionType.None; }
-        }
-
-        public override int CompareTo(IBlackboardProperty other)
-        {
-            return -1;
-        }
-    }
-
-    [Serializable]
-    public class AnimatorProperty : BlackboardProperty<Animator>
-    {
-        public override EConditionType comparableConditions
-        {
-            get { return EConditionType.None; }
-        }
-
-        public override int CompareTo(IBlackboardProperty other)
-        {
-            return -1;
-        }
-    }
-
-    [Serializable]
-    public class ColliderProperty : BlackboardProperty<Collider>
-    {
-        public override EConditionType comparableConditions
-        {
-            get { return EConditionType.None; }
-        }
-
-        public override int CompareTo(IBlackboardProperty other)
-        {
-            return -1;
         }
     }
 
@@ -178,17 +141,40 @@ namespace BehaviourSystem.BT
         }
     }
 
+
     [Serializable]
-    public class GameObjectProperty : BlackboardProperty<GameObject>
+    public class TriggerProperty : BlackboardProperty<Trigger>
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.None; }
+            get { return EConditionType.Trigger; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
         {
+            if (this.value.trigger)
+            {
+                this.value.Set(ETrigger.Reset);
+                return 0;
+            }
+
             return -1;
         }
     }
+
+
+    [Serializable]
+    public class RigidbodyProperty : BlackboardProperty<Rigidbody> { }
+
+    [Serializable]
+    public class AnimatorProperty : BlackboardProperty<Animator> { }
+
+    [Serializable]
+    public class ColliderProperty : BlackboardProperty<Collider> { }
+
+    [Serializable]
+    public class GameObjectProperty : BlackboardProperty<GameObject> { }
+
+    [Serializable]
+    public class CharacterControllerProperty : BlackboardProperty<CharacterController> { }
 }

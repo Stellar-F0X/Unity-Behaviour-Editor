@@ -62,16 +62,14 @@ namespace BehaviourSystemEditor.BT
 
         private SearchTreeEntry[] NodeCreationSearchTreeEntry<T>(string title, Action<Type> invoke, int layerLevel = 1) where T : NodeBase
         {
-            Type[] typeList = TypeCache.GetTypesDerivedFrom<T>().ToArray();
-            Array.Sort(typeList, (x, y) => x.Name[0].CompareTo(y.Name[0]));
+            Type[] typeList = TypeCache.GetTypesDerivedFrom<T>().OrderByNameAndFilterAbstracts();
             SearchTreeEntry[] entries = new SearchTreeEntry[typeList.Length + 1];
+            entries[0] = new SearchTreeGroupEntry(new GUIContent(title));
+            entries[0].level = layerLevel;
 
-            entries[0] = new SearchTreeGroupEntry(new GUIContent(title))
-            {
-                level = layerLevel,
-            };
-
-            for (int i = 1; i < entries.Length; ++i)
+            int count = entries.Length;
+            
+            for (int i = 1; i < count; ++i)
             {
                 int index = i - 1;
                 string typeName = Regex.Replace(typeList[index].Name.Replace("Node", ""), "(?<!^)([A-Z])", " $1");

@@ -16,13 +16,13 @@ namespace BehaviourSystem.BT
         private string _typeName;
         private Type _type;
 
-        public string key
+        public virtual string key
         {
             get { return _key; }
             set { _key = value; }
         }
 
-        public T value
+        public virtual T value
         {
             get { return _value; }
             set { _value = value; }

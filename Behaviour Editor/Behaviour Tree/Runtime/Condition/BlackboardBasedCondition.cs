@@ -40,6 +40,8 @@ namespace BehaviourSystem.BT
         {
             switch (conditionType)
             {
+                case EConditionType.Trigger: return a.CompareTo(null) == _EQUAL;
+                
                 case EConditionType.Equal: return a.CompareTo(b) == _EQUAL;
 
                 case EConditionType.NotEqual: return a.CompareTo(b) != _EQUAL;

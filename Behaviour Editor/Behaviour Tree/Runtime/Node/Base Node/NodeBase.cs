@@ -71,6 +71,11 @@ namespace BehaviourSystem.BT
             get;
             private set;
         }
+        
+        public Transform transform
+        {
+            get { return runner.transform; }
+        }
 
         public abstract ENodeType nodeType
         {
@@ -81,6 +86,7 @@ namespace BehaviourSystem.BT
         {
             get;
         }
+
 
 
         public EBehaviourResult UpdateNode()

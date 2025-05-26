@@ -66,7 +66,7 @@ namespace BehaviourSystemEditor.BT
                 if (BehaviourTreeEditor.CanEditTree)
                 {
                     TypeCache.GetTypesDerivedFrom<IBlackboardProperty>()
-                             .Where(t => t.IsAbstract == false)
+                             .OrderByNameAndFilterAbstracts()
                              .ForEach(t => _propertyAddMenu.menu.AppendAction(t.Name, _ => this.MakeProperty(t)));
                 }
             }
