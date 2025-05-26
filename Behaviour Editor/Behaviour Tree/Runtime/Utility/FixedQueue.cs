@@ -1,8 +1,8 @@
 namespace BehaviourSystem.BT
 {
-    public class FixedSizeQueue<T> 
+    public class FixedQueue<T> 
     {
-        public FixedSizeQueue(int capacity)
+        public FixedQueue(int capacity)
         {
             _capacity = capacity;
             _items = new T[capacity];

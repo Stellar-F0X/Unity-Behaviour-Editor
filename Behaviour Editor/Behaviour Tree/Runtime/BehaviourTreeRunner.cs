@@ -12,22 +12,18 @@ namespace BehaviourSystem.BT
     {
         private readonly Dictionary<string, IBlackboardProperty> _properties = new Dictionary<string, IBlackboardProperty>();
         
-        private readonly BehaviourNodeHandler _nodeHandler = new BehaviourNodeHandler();
-        
-        
         public bool useUpdateRate = false;
         public bool useFixedUpdate = true;
         public bool useGizmos = true;
-
         
         [SerializeField]
         private uint _updateRate = 60;
         private float _frameInterval;
         private float _timeSinceLastUpdate;
-
         
         [SerializeField]
         private BehaviourTree _runtimeTree;
+        private BehaviourNodeHandler _nodeHandler;
         private NodeBase _rootNode;
 
 
@@ -70,8 +66,9 @@ namespace BehaviourSystem.BT
             {
                 this.SetUpdateRate(_updateRate);
             }
-
+            
             this._runtimeTree = BehaviourTree.MakeRuntimeTree(this, _runtimeTree);
+            this._nodeHandler = new BehaviourNodeHandler(this._runtimeTree.nodeSet);
             this._rootNode = _runtimeTree.nodeSet.rootNode;
         }
 
@@ -188,7 +185,7 @@ namespace BehaviourSystem.BT
 
         public bool TryGetNodeByTreePath(string path, out NodeAccessor accessor)
         {
-            if (_nodeHandler.TryGetNodeByPath(path, _runtimeTree.nodeSet, out accessor))
+            if (_nodeHandler.TryGetNodeByPath(path, out accessor))
             {
                 return true;
             }
@@ -201,7 +198,7 @@ namespace BehaviourSystem.BT
 
         public bool TryGetNodeByTag(string nodeTag, out NodeAccessor[] accessors)
         {
-            accessors = _nodeHandler.GetNodeByTag(nodeTag, _runtimeTree.nodeSet);
+            accessors = _nodeHandler.GetNodeByTag(nodeTag);
             
             if (accessors is null)
             {

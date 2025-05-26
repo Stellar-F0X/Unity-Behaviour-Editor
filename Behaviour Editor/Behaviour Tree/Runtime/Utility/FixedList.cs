@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace BehaviourSystem.BT
 {
-    public class FixedSizeList<T>
+    public class FixedList<T>
     {
-        public FixedSizeList(int capacity)
+        public FixedList(int capacity)
         {
             _items = new T[capacity];
             _count = 0;

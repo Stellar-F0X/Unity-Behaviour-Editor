@@ -42,7 +42,7 @@ namespace BehaviourSystem.BT
 
             runtimeTree.blackboard = targetTree.blackboard.Clone();
             runtimeTree.groupDataSet = targetTree.groupDataSet.Clone();
-            runtimeTree.nodeSet = targetTree.nodeSet.Clone(treeRunner);
+            runtimeTree.nodeSet = targetTree.nodeSet.Clone(treeRunner, runtimeTree.blackboard);
             return runtimeTree;
         }
 

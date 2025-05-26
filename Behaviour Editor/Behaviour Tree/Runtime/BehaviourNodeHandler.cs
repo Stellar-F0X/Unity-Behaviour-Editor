@@ -7,23 +7,21 @@ namespace BehaviourSystem.BT
 {
     internal class BehaviourNodeHandler
     {
-        /// <summary> 클론 작업 정보를 담는 구조체 </summary>
-        private struct CloneInfo
+        public BehaviourNodeHandler(BehaviourNodeSet nodeSet)
         {
-            public CloneInfo(NodeBase origin, NodeBase clone, int depth, int stackID)
+            int count = nodeSet.callStackSize + 1;
+            int excludingRootCount = nodeSet.nodeList.Count - 1;
+            
+            this._nodeSet = nodeSet;
+            this._runtimeCallStack = new FixedList<Stack<NodeBase>>(count);
+            this._abortQueue = new FixedQueue<AbortInfo>(excludingRootCount); //count excluding root node
+
+            for (int i = 0; i < count; ++i)
             {
-                this.origin = origin;
-                this.clone = clone;
-                this.depth = depth;
-                this.stackID = stackID;
+                _runtimeCallStack.Add(new Stack<NodeBase>());
             }
-
-            public readonly NodeBase origin;
-            public readonly NodeBase clone;
-            public readonly int depth;
-            public readonly int stackID;
         }
-
+        
         /// <summary> 중단(Abort) 작업 정보를 담는 구조체 </summary>
         private struct AbortInfo
         {
@@ -38,25 +36,26 @@ namespace BehaviourSystem.BT
         }
         
         
-        private FixedSizeList<Stack<NodeBase>> _runtimeCallStack;
+        private FixedList<Stack<NodeBase>> _runtimeCallStack;
 
-        private FixedSizeQueue<AbortInfo> _abortQueue;
+        private FixedQueue<AbortInfo> _abortQueue;
 
+        private BehaviourNodeSet _nodeSet;
 
-#region Public Methods
+        
         /// <summary> 트리에서 지정된 태그가 수식된 노드들을 찾습니다. </summary>
         /// <param name="nodeTag">수식된 태그</param>
         /// <param name="nodeSet">트리 집합</param>
         /// <param name="accessors">찾은 노드들</param>
         /// <returns>노드 탐색 성공 여부</returns>
-        public NodeAccessor[] GetNodeByTag(string nodeTag, BehaviourNodeSet nodeSet)
+        public NodeAccessor[] GetNodeByTag(string nodeTag)
         {
-            Span<int> indexArray = stackalloc int[nodeSet.nodeList.Count];
+            Span<int> indexArray = stackalloc int[_nodeSet.nodeList.Count];
             int count = 0;
             
-            for (int i = 0; i < nodeSet.nodeList.Count; ++i)
+            for (int i = 0; i < _nodeSet.nodeList.Count; ++i)
             {
-                NodeBase currentNode = nodeSet.nodeList[i];
+                NodeBase currentNode = _nodeSet.nodeList[i];
 
                 if (currentNode.tag.CompareTo(nodeTag) == 0)
                 {
@@ -72,7 +71,7 @@ namespace BehaviourSystem.BT
                 //만약 Tag가 모든 노드를 대상으로 한다면 시간 복잡도는 O(2n)이 되므로 GC 측면에선 좋으나, 빠른 검색의 관점에선 잘 모르겠다. 
                 for (int i = 0; i < count; ++i)
                 {
-                    NodeBase targetNode = nodeSet.nodeList[indexArray[i]];
+                    NodeBase targetNode = _nodeSet.nodeList[indexArray[i]];
                     accessors[i] = new NodeAccessor(targetNode);
                 }
 
@@ -88,7 +87,7 @@ namespace BehaviourSystem.BT
         /// <param name="nodeSet">트리 집합</param>
         /// <param name="node">찾은 노드</param>
         /// <returns>노드 탐색 성공 여부</returns>
-        public bool TryGetNodeByPath(string treePath, BehaviourNodeSet nodeSet, out NodeAccessor node)
+        public bool TryGetNodeByPath(string treePath, out NodeAccessor node)
         {
             if (string.IsNullOrEmpty(treePath) || string.IsNullOrWhiteSpace(treePath))
             {
@@ -135,13 +134,13 @@ namespace BehaviourSystem.BT
             
             ReadOnlySpan<char> rootNamePath = pathBuffer.Slice(pathStartIndices[0], pathLengths[0]);
             
-            if (rootNamePath.Equals(nodeSet.rootNode.name.AsSpan(), StringComparison.Ordinal) == false)
+            if (rootNamePath.Equals(_nodeSet.rootNode.name.AsSpan(), StringComparison.Ordinal) == false)
             {
                 node = default;
                 return false;
             }
             
-            NodeBase nodeBase = nodeSet.rootNode;
+            NodeBase nodeBase = _nodeSet.rootNode;
             
             for (int i = 1; i < pathCount; i++)
             {
@@ -170,44 +169,6 @@ namespace BehaviourSystem.BT
 
             node = new NodeAccessor(nodeBase);
             return true;
-        }
-
-
-
-        /// <summary> 노드 클론 생성 및 CallStack 구축, 순회를 통해 트리의 노드들을 복제하고 동시에 콜 스택을 생성합니다. </summary>
-        /// <param name="originalRoot">원본 루트 노드</param>
-        /// <param name="clonedRoot">클론된 루트 노드</param>
-        /// <param name="treeRunner">트리 러너</param>
-        /// <param name="originalSet">원본 노드셋</param>
-        /// <param name="clonedSet">클론된 노드셋</param>
-        public void CloneNodeSet(NodeBase originalRoot, NodeBase clonedRoot, BehaviourTreeRunner treeRunner, BehaviourNodeSet originalSet, BehaviourNodeSet clonedSet)
-        {
-            FixedSizeQueue<CloneInfo> cloneQueue = new FixedSizeQueue<CloneInfo>(originalSet.nodeList.Count);
-            FixedSizeStack<NodeBase> postInitStack = new FixedSizeStack<NodeBase>(originalSet.nodeList.Count);
-            int callStackID = 0;
-
-            cloneQueue.Enqueue(new CloneInfo(originalRoot, clonedRoot, 0, callStackID));
-
-            while (cloneQueue.count > 0)
-            {
-                CloneInfo currentClone = cloneQueue.Dequeue();
-                this.ProcessCloneBranch(currentClone, cloneQueue, postInitStack, treeRunner, clonedSet, ref callStackID);
-            }
-
-            _abortQueue = new FixedSizeQueue<AbortInfo>(clonedSet.nodeList.Count - 1);
-            _runtimeCallStack = new FixedSizeList<Stack<NodeBase>>(callStackID + 1);
-
-            for (int i = 0; i < callStackID + 1; ++i)
-            {
-                _runtimeCallStack.Add(new Stack<NodeBase>());
-            }
-
-            // PostTreeCreation을 위한 후처리
-            while (postInitStack.count > 0)
-            {
-                NodeBase currentNode = postInitStack.Pop();
-                currentNode.PostTreeCreation();
-            }
         }
 
 
@@ -273,156 +234,7 @@ namespace BehaviourSystem.BT
             this.ProcessAbortQueue(false);
         }
 
-#endregion
-
-
-#region Internal cloning methods (추후 JobSystem으로 분리)
-
-        /// <summary>
-        /// 단일 클론 브랜치를 처리
-        /// JobSystem으로 병렬화할 수 있는 영역
-        /// </summary>
-        /// <param name="cloneInfo">클론 정보</param>
-        /// <param name="cloneQueue">클론 작업 큐</param>
-        /// <param name="postInitStack">후처리 스택</param>
-        /// <param name="treeRunner">트리 러너</param>
-        /// <param name="clonedSet">클론된 노드셋</param>
-        /// <param name="callStackID">CallStack ID</param>
-        private void ProcessCloneBranch(CloneInfo cloneInfo, FixedSizeQueue<CloneInfo> cloneQueue, FixedSizeStack<NodeBase> postInitStack, BehaviourTreeRunner treeRunner, BehaviourNodeSet clonedSet, ref int callStackID)
-        {
-            NodeBase clone = cloneInfo.clone;
-
-            // 이름에서 Unity의 (Clone) 접미사 제거
-            if (clone.name.EndsWith("(Clone)"))
-            {
-                clone.name = clone.name.Remove(clone.name.Length - 7);
-            }
-
-            clone.depth = cloneInfo.depth;
-            clone.runner = treeRunner;
-            clone.callStackID = cloneInfo.stackID;
-            clonedSet.nodeList.Add(clone);
-            postInitStack.Push(cloneInfo.clone);
-
-            NodeBase origin = cloneInfo.origin;
-            int nextDepth = cloneInfo.depth + 1;
-
-            switch (origin.nodeType)
-            {
-                case NodeBase.ENodeType.Root: 
-                    this.ProcessRootNodeClone((RootNode)origin, (RootNode)clone, nextDepth, cloneInfo.stackID, cloneQueue); break;
-
-                case NodeBase.ENodeType.Decorator:
-                    this.ProcessDecoratorNodeClone((DecoratorNode)origin, (DecoratorNode)clone, nextDepth, cloneInfo.stackID, cloneQueue); break;
-
-                case NodeBase.ENodeType.Composite:
-                    this.ProcessCompositeNodeClone((CompositeNode)origin, (CompositeNode)clone, nextDepth, cloneInfo.stackID, cloneQueue, ref callStackID); break;
-            }
-            
-            this.ProcessBlackboardProperties(cloneInfo.clone, treeRunner);
-        }
-
-
-        /// <summary> 루트 노드 클론 처리 </summary>
-        private void ProcessRootNodeClone(RootNode origin, RootNode clone, int nextDepth, int stackID, FixedSizeQueue<CloneInfo> cloneQueue)
-        {
-            if (origin.child == null)
-            {
-                return;
-            }
-
-            NodeBase childClone = UObject.Instantiate(origin.child);
-            childClone.parent = clone;
-            clone.child = childClone;
-
-            cloneQueue.Enqueue(new CloneInfo(origin.child, childClone, nextDepth, stackID));
-        }
-
-
-        /// <summary> 데코레이터 노드 클론 처리 </summary>
-        private void ProcessDecoratorNodeClone(DecoratorNode origin, DecoratorNode clone, int nextDepth, int stackID, FixedSizeQueue<CloneInfo> cloneQueue)
-        {
-            if (origin.child == null)
-            {
-                return;
-            }
-
-            NodeBase childClone = UObject.Instantiate(origin.child);
-            childClone.parent = clone;
-            clone.child = childClone;
-
-            cloneQueue.Enqueue(new CloneInfo(origin.child, childClone, nextDepth, stackID));
-        }
-
-
-        /// <summary> 컴포지트 노드 클론 처리 - 병렬 노드의 경우 새로운 CallStack ID 할당 </summary>
-        private void ProcessCompositeNodeClone(CompositeNode origin, CompositeNode clone, int nextDepth, int stackID, FixedSizeQueue<CloneInfo> cloneQueue, ref int callStackID)
-        {
-            if (origin.children == null || origin.children.Count == 0)
-            {
-                return;
-            }
-
-            if (origin is ParallelNode)
-            {
-                // 병렬 노드: 각 자식마다 새로운 CallStack ID 할당
-                for (int i = 0; i < origin.children.Count; ++i)
-                {
-                    NodeBase childClone = UObject.Instantiate(origin.children[i]);
-                    childClone.parent = clone;
-                    clone.children[i] = childClone;
-
-                    int newStackID = ++callStackID;
-                    cloneQueue.Enqueue(new CloneInfo(origin.children[i], childClone, nextDepth, newStackID));
-                }
-            }
-            else
-            {
-                // 일반 컴포지트 노드: 같은 CallStack ID 사용
-                for (int i = 0; i < origin.children.Count; ++i)
-                {
-                    NodeBase childClone = UObject.Instantiate(origin.children[i]);
-                    childClone.parent = clone;
-                    clone.children[i] = childClone;
-
-                    cloneQueue.Enqueue(new CloneInfo(origin.children[i], childClone, nextDepth, stackID));
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// 블랙보드 프로퍼티 처리
-        /// JobSystem에서는 메인 스레드에서 실행되어야 함
-        /// </summary>
-        private void ProcessBlackboardProperties(NodeBase clonedNode, BehaviourTreeRunner treeRunner)
-        {
-            foreach (var fieldInfo in ReflectionHelper.GetCachedFieldInfo(clonedNode?.GetType()))
-            {
-                if (typeof(IBlackboardProperty).IsAssignableFrom(fieldInfo.FieldType) == false)
-                {
-                    continue;
-                }
-
-                ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
-
-                if (accessor.getter(clonedNode) is IBlackboardProperty property)
-                {
-                    IBlackboardProperty foundProperty = treeRunner.runtimeTree.blackboard.FindProperty(property.key);
-
-                    if (foundProperty != null)
-                    {
-                        accessor.setter(clonedNode, foundProperty);
-                    }
-                }
-            }
-        }
-
-#endregion
-
-
-#region Private Helper Methods
-
+        
         /// <summary>
         /// 중단 큐를 처리하여 노드들을 정리
         /// JobSystem으로 병렬화 가능하지만 상태 변경이 있어 주의 필요
@@ -524,7 +336,5 @@ namespace BehaviourSystem.BT
         {
             return callStackID >= 0 && callStackID < _runtimeCallStack.count;
         }
-
-#endregion
     }
 }

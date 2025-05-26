@@ -1,8 +1,8 @@
 namespace BehaviourSystem.BT
 {
-    public class FixedSizeStack<T>
+    public class FixedStack<T>
     {
-        public FixedSizeStack(int capacity)
+        public FixedStack(int capacity)
         {
             _items = new T[capacity];
             _capacity = capacity;
