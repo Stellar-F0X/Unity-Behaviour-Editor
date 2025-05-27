@@ -8,14 +8,13 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.AllComparisonOperators; }
+            get { return EConditionType.ComparisonOperators; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
         {
             var property = other as BlackboardProperty<int>;
-
-            return this.value.CompareTo(property.value);
+            return this.value.CompareTo(property!.value);
         }
     }
 
@@ -24,14 +23,14 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.AllComparisonOperators; }
+            get { return EConditionType.ComparisonOperators; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
         {
             var property = other as BlackboardProperty<float>;
 
-            if (Mathf.Approximately(this.value, property.value))
+            if (Mathf.Approximately(this.value, property!.value))
             {
                 return 0;
             }
@@ -60,11 +59,31 @@ namespace BehaviourSystem.BT
     }
 
     [Serializable]
+    public class TriggerProperty : BlackboardProperty<bool>
+    {
+        public override EConditionType comparableConditions
+        {
+            get { return EConditionType.Trigger; }
+        }
+
+        public override int CompareTo(IBlackboardProperty other)
+        {
+            if (this.value)
+            {
+                this.value = false;
+                return 0;
+            }
+
+            return -1;
+        }
+    }
+
+    [Serializable]
     public class Vector3Property : BlackboardProperty<Vector3>
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.AllComparisonOperators; }
+            get { return EConditionType.Equal | EConditionType.NotEqual; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
@@ -76,7 +95,7 @@ namespace BehaviourSystem.BT
                 return 0;
             }
 
-            return this.value.sqrMagnitude > otherValue.value.sqrMagnitude ? 1 : -1;
+            return -1;
         }
     }
 
@@ -85,7 +104,7 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.AllComparisonOperators; }
+            get { return EConditionType.Equal | EConditionType.NotEqual; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
@@ -97,7 +116,7 @@ namespace BehaviourSystem.BT
                 return 0;
             }
 
-            return this.value.sqrMagnitude > otherValue.value.sqrMagnitude ? 1 : -1;
+            return -1;
         }
     }
 
@@ -106,7 +125,7 @@ namespace BehaviourSystem.BT
     {
         public override EConditionType comparableConditions
         {
-            get { return EConditionType.AllComparisonOperators; }
+            get { return EConditionType.Equal | EConditionType.NotEqual; }
         }
 
         public override int CompareTo(IBlackboardProperty other)
@@ -118,7 +137,7 @@ namespace BehaviourSystem.BT
                 return 0;
             }
 
-            return this.value.eulerAngles.sqrMagnitude > otherValue.value.eulerAngles.sqrMagnitude ? 1 : -1;
+            return -1;
         }
     }
 
@@ -135,27 +154,6 @@ namespace BehaviourSystem.BT
             if (other is BlackboardProperty<LayerMask> layerMask)
             {
                 return (this.value & layerMask.value) > 0 ? 0 : -1;
-            }
-
-            return -1;
-        }
-    }
-
-
-    [Serializable]
-    public class TriggerProperty : BlackboardProperty<Trigger>
-    {
-        public override EConditionType comparableConditions
-        {
-            get { return EConditionType.Trigger; }
-        }
-
-        public override int CompareTo(IBlackboardProperty other)
-        {
-            if (this.value.trigger)
-            {
-                this.value.Set(ETrigger.Reset);
-                return 0;
             }
 
             return -1;
