@@ -52,16 +52,20 @@ namespace BehaviourSystem.BT
 
             FixedQueue<CloneInfo> cloneQueue = new FixedQueue<CloneInfo>(this.nodeList.Count);
             FixedStack<NodeBase> postInitStack = new FixedStack<NodeBase>(this.nodeList.Count);
-            
+
+            Type tProp = typeof(IBlackboardProperty);
+            Type tCondition = typeof(BlackboardBasedCondition);
+            Type tConditionList = typeof(IList<BlackboardBasedCondition>);
+
             cloneQueue.Enqueue(new CloneInfo(this.rootNode, clonedSet.rootNode, 0, 0));
 
             while (cloneQueue.count > 0)
             {
                 CloneInfo currentClone = cloneQueue.Dequeue();
                 this.ProcessClone(currentClone, cloneQueue, postInitStack, treeRunner, clonedSet);
-                this.ProcessBlackboardProperties(currentClone.clone, blackboard);
+                this.ProcessBlackboardProperties(currentClone.clone, blackboard, tProp, tCondition, tConditionList);
             }
-            
+
             clonedSet.callStackSize = this.callStackSize;
 
             // PostTreeCreation을 위한 후처리
@@ -77,7 +81,6 @@ namespace BehaviourSystem.BT
 
 
 #region Clone Methods
-
         /// <summary>
         /// 단일 클론 브랜치를 처리
         /// JobSystem으로 병렬화할 수 있는 영역
@@ -146,7 +149,7 @@ namespace BehaviourSystem.BT
             if (origin.children is not null && origin.children.Count > 0)
             {
                 bool isParallelNode = origin is ParallelNode;
-                
+
                 for (int i = 0; i < origin.children.Count; ++i)
                 {
                     int newStackID = isParallelNode ? (++callStackSize) : stackID;
@@ -159,33 +162,75 @@ namespace BehaviourSystem.BT
         }
 
 
-        /// <summary>
-        /// 블랙보드 프로퍼티 처리
-        /// JobSystem에서는 메인 스레드에서 실행되어야 함
-        /// </summary>
-        private void ProcessBlackboardProperties(NodeBase clonedNode, Blackboard blackboard)
+        /// <summary> 블랙보드 프로퍼티 처리 </summary>
+        private void ProcessBlackboardProperties(NodeBase clonedNode, Blackboard blackboard, Type tProperty, Type tCondition, Type tConditionList)
         {
             foreach (var fieldInfo in ReflectionHelper.GetCachedFieldInfo(clonedNode?.GetType()))
             {
-                if (typeof(IBlackboardProperty).IsAssignableFrom(fieldInfo.FieldType) == false)
+                if (tProperty.IsAssignableFrom(fieldInfo.FieldType))
                 {
-                    continue;
-                }
+                    ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
 
-                ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
-
-                if (accessor.getter(clonedNode) is IBlackboardProperty property)
-                {
-                    IBlackboardProperty foundProperty = blackboard.FindProperty(property.key);
-
-                    if (foundProperty != null)
+                    if (accessor.getter(clonedNode) is IBlackboardProperty property)
                     {
-                        accessor.setter(clonedNode, foundProperty);
+                        IBlackboardProperty foundProperty = blackboard.FindProperty(property.key);
+
+                        if (foundProperty != null)
+                        {
+                            accessor.setter(clonedNode, foundProperty);
+                        }
+                    }
+                }
+                else if (tConditionList.IsAssignableFrom(fieldInfo.FieldType))
+                {
+                    ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
+
+                    if (accessor.getter(clonedNode) is List<BlackboardBasedCondition> conditionList)
+                    {
+                        foreach (var condition in conditionList)
+                        {
+                            this.UpdateConditionProperties(condition, blackboard);
+                        }
+                    }
+                }
+                else if (tCondition.IsAssignableFrom(fieldInfo.FieldType))
+                {
+                    ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
+
+                    if (accessor.getter(clonedNode) is BlackboardBasedCondition condition)
+                    {
+                        this.UpdateConditionProperties(condition, blackboard);
                     }
                 }
             }
         }
 
+
+        private void UpdateConditionProperties(BlackboardBasedCondition condition, Blackboard board)
+        {
+            if (condition is not null)
+            {
+                if (condition.property is not null)
+                {
+                    IBlackboardProperty foundProperty = board.FindProperty(condition.property.key);
+
+                    if (foundProperty is not null)
+                    {
+                        condition.property = foundProperty;
+                    }
+                }
+
+                if (condition.comparableValue is not null)
+                {
+                    IBlackboardProperty foundComparableProperty = board.FindProperty(condition.comparableValue.key);
+
+                    if (foundComparableProperty is not null)
+                    {
+                        condition.comparableValue = foundComparableProperty;
+                    }
+                }
+            }
+        }
 #endregion
 
 

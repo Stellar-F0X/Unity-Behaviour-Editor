@@ -38,6 +38,10 @@ namespace BehaviourSystem.BT
         private readonly static Type _NodeBaseType = typeof(NodeBase);
 
         private readonly static Type _PropertyBaseType = typeof(IBlackboardProperty);
+        
+        private readonly static Type _BlackboardBaseConditionType = typeof(BlackboardBasedCondition);
+        
+        private readonly static Type _BlackboardBaseConditionListType = typeof(IList<BlackboardBasedCondition>);
 
 
 #if UNITY_EDITOR
@@ -58,7 +62,9 @@ namespace BehaviourSystem.BT
             }
 
             fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                             .Where(f => _PropertyBaseType.IsAssignableFrom(f.FieldType))
+                             .Where(f => _PropertyBaseType.IsAssignableFrom(f.FieldType) || 
+                                                _BlackboardBaseConditionType.IsAssignableFrom(f.FieldType) || 
+                                                _BlackboardBaseConditionListType.IsAssignableFrom(f.FieldType))
                              .ToArray();
 
             _FieldCacher[type] = fieldInfos;

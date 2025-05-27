@@ -130,6 +130,8 @@ namespace BehaviourSystemEditor.BT
                 keyField.UnregisterValueChangedCallback(previousCallback);
             }
 
+            element.tooltip = ((IBlackboardProperty)itemsSource[index]).type.Name;
+            
             keyField.value = ((IBlackboardProperty)itemsSource[index]).key;
             keyField.enabledSelf = BehaviourTreeEditor.CanEditTree;
             var newCallback = new EventCallback<ChangeEvent<string>>(e => this.OnChangePropertyKey(e.newValue, index));
@@ -140,12 +142,7 @@ namespace BehaviourSystemEditor.BT
 
         private void DrawIMGUIForItem(SerializedProperty property)
         {
-            if (property == null)
-            {
-                return;
-            }
-            
-            if (property.boxedValue == null)
+            if (property is null || property.boxedValue is null)
             {
                 return;
             }
