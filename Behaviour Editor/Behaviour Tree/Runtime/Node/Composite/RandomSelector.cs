@@ -30,8 +30,6 @@ namespace BehaviourSystem.BT
         protected override void OnEnter()
         {
             this.ShuffleIndices(_randomIndices);
-
-            _currentRandomIndex = 0;
             _currentChildIndex = _randomIndices[_currentRandomIndex];
         }
 

@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace BehaviourSystem.BT
 {
     public abstract class ConditionNode : DecoratorNode
     {
-        public enum EConditionType
+        public enum ESuccessType
         {
             Any,
             All
         };
         
         [Tooltip("How to evaluate conditions \n(Any: OR logic, All: AND logic)")]
-        public EConditionType conditionType;
+        public ESuccessType successType;
         
         [Space(2)]
         public List<BlackboardBasedCondition> conditions;
@@ -23,9 +24,9 @@ namespace BehaviourSystem.BT
         {
             int count = conditions.Count;
 
-            switch (conditionType)
+            switch (successType)
             {
-                case EConditionType.Any:
+                case ESuccessType.Any:
                 {
                     for (int i = 0; i < count; ++i)
                     {
@@ -38,7 +39,7 @@ namespace BehaviourSystem.BT
                     return false;
                 }
 
-                case EConditionType.All:
+                case ESuccessType.All:
                 {
                     for (int i = 0; i < count; ++i)
                     {

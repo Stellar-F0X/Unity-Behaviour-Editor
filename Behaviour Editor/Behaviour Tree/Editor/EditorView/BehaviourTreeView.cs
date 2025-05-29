@@ -39,6 +39,9 @@ namespace BehaviourSystemEditor.BT
         public Action<NodeView> onNodeSelected;
         public ToolbarPopupSearchField popupSearchField;
 
+        private float _nextUpdateTime;
+        private float _lastUpdateTime;
+
         private MiniMap _miniMap;
         private BehaviourTree _tree;
         private NodeSearchHelper _nodeSearchHelper;
@@ -158,17 +161,21 @@ namespace BehaviourSystemEditor.BT
             base.AddElement(groupView);
             return groupView;
         }
-
+        
 
         public void UpdateNodeView()
         {
-            int length = nodes.Count();
-
-            for (int i = 0; i < length; i++)
+            if (Time.time > _nextUpdateTime)
             {
-                if (nodes.AtIndex(i) is NodeView nodeView)
+                float currentTime = Time.time;
+                float actualDeltaTime = currentTime - _lastUpdateTime;
+                
+                _lastUpdateTime = currentTime;
+                _nextUpdateTime = currentTime + BehaviourTreeEditor.Settings.editorUpdateInterval;
+                
+                foreach (Node view in nodes)
                 {
-                    nodeView.UpdateView();
+                    ((NodeView)view)!.UpdateView(actualDeltaTime);
                 }
             }
         }
@@ -264,7 +271,7 @@ namespace BehaviourSystemEditor.BT
             {
                 _miniMap.visible = true;
                 _miniMap.enabledSelf = true;
-                
+
                 _miniMap.SetPosition(new Rect(evt.newRect.width - 240, evt.newRect.height - 200, 220, 180));
             }
             else

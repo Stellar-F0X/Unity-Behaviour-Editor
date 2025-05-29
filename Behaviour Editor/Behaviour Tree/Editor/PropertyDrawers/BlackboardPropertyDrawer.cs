@@ -5,6 +5,7 @@ using System.Reflection;
 using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace BehaviourSystemEditor.BT
 {
@@ -32,7 +33,9 @@ namespace BehaviourSystemEditor.BT
             Rect labelRect = new Rect(position.x, position.y, width, height);
             Rect fieldRect = new Rect(position.x + width + 2, position.y, position.width - width - 2, height);
 
-            if (exception == false && this.GetProperties(blackboard, property, out List<IBlackboardProperty> properties))
+            List<IBlackboardProperty> properties = ListPool<IBlackboardProperty>.Get();
+            
+            if (exception == false && this.GetProperties(blackboard, property, properties))
             {
                 if (property.boxedValue is null)
                 {
@@ -71,14 +74,15 @@ namespace BehaviourSystemEditor.BT
                     EditorGUI.LabelField(textRect, "No blackboard properties found.");
                 }
             }
+            
+            ListPool<IBlackboardProperty>.Release(properties);
         }
 
 
-        private bool GetProperties(Blackboard blackboard, SerializedProperty property, out List<IBlackboardProperty> properties)
+        private bool GetProperties(Blackboard blackboard, SerializedProperty property, List<IBlackboardProperty> properties)
         {
             if (property.serializedObject.targetObject == null)
             {
-                properties = null;
                 return false;
             }
 
@@ -86,11 +90,8 @@ namespace BehaviourSystemEditor.BT
 
             if (targetType == null)
             {
-                properties = null;
                 return false;
             }
-            
-            properties = new List<IBlackboardProperty>();
 
             for (int i = 0; i < blackboard.properties.Count; i++)
             {

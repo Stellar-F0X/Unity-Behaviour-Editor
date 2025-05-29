@@ -55,7 +55,7 @@ namespace BehaviourSystem.BT
 
             Type tProp = typeof(IBlackboardProperty);
             Type tCondition = typeof(BlackboardBasedCondition);
-            Type tConditionList = typeof(IList<BlackboardBasedCondition>);
+            Type tConditionList = typeof(ICollection<BlackboardBasedCondition>);
 
             cloneQueue.Enqueue(new CloneInfo(this.rootNode, clonedSet.rootNode, 0, 0));
 
@@ -81,6 +81,7 @@ namespace BehaviourSystem.BT
 
 
 #region Clone Methods
+
         /// <summary>
         /// 단일 클론 브랜치를 처리
         /// JobSystem으로 병렬화할 수 있는 영역
@@ -102,17 +103,13 @@ namespace BehaviourSystem.BT
 
             switch (info.origin.nodeType)
             {
-                case NodeBase.ENodeType.Root: 
-                    this.ProcessRootNodeClone((RootNode)info.origin, (RootNode)info.clone, info.depth + 1, info.stackID, infos); 
-                    break;
+                case NodeBase.ENodeType.Root: this.ProcessRootNodeClone((RootNode)info.origin, (RootNode)info.clone, info.depth + 1, info.stackID, infos); break;
 
                 case NodeBase.ENodeType.Decorator:
-                    this.ProcessDecoratorNodeClone((DecoratorNode)info.origin, (DecoratorNode)info.clone, info.depth + 1, info.stackID, infos); 
-                    break;
+                    this.ProcessDecoratorNodeClone((DecoratorNode)info.origin, (DecoratorNode)info.clone, info.depth + 1, info.stackID, infos); break;
 
                 case NodeBase.ENodeType.Composite:
-                    this.ProcessChildrenNodeClone((CompositeNode)info.origin, (CompositeNode)info.clone, info.depth + 1, info.stackID, infos); 
-                    break;
+                    this.ProcessChildrenNodeClone((CompositeNode)info.origin, (CompositeNode)info.clone, info.depth + 1, info.stackID, infos); break;
             }
         }
 
@@ -185,7 +182,7 @@ namespace BehaviourSystem.BT
                 {
                     ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
 
-                    if (accessor.getter(clonedNode) is List<BlackboardBasedCondition> conditionList)
+                    if (accessor.getter(clonedNode) is ICollection<BlackboardBasedCondition> conditionList)
                     {
                         foreach (var condition in conditionList)
                         {
@@ -206,31 +203,30 @@ namespace BehaviourSystem.BT
         }
 
 
+        /// <summary> 블랙보드 기반 프로퍼티 컨디션 할당처리 </summary>
         private void UpdateConditionProperties(BlackboardBasedCondition condition, Blackboard board)
         {
-            if (condition is not null)
+            if (condition.property is not null)
             {
-                if (condition.property is not null)
-                {
-                    IBlackboardProperty foundProperty = board.FindProperty(condition.property.key);
+                IBlackboardProperty foundProperty = board.FindProperty(condition.property.key);
 
-                    if (foundProperty is not null)
-                    {
-                        condition.property = foundProperty;
-                    }
+                if (foundProperty is not null)
+                {
+                    condition.property = foundProperty;
                 }
+            }
 
-                if (condition.comparableValue is not null)
+            if (condition.comparableValue is not null)
+            {
+                IBlackboardProperty foundComparableProperty = board.FindProperty(condition.comparableValue.key);
+
+                if (foundComparableProperty is not null)
                 {
-                    IBlackboardProperty foundComparableProperty = board.FindProperty(condition.comparableValue.key);
-
-                    if (foundComparableProperty is not null)
-                    {
-                        condition.comparableValue = foundComparableProperty;
-                    }
+                    condition.comparableValue = foundComparableProperty;
                 }
             }
         }
+
 #endregion
 
 

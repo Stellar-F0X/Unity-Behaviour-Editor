@@ -17,6 +17,11 @@ namespace BehaviourSystem.BT
         {
             get { return 1; }
         }
+        
+        public IEnumerable<NodeBase> GetChildren()
+        {
+            yield return child;
+        }
 
         
         protected override EBehaviourResult OnUpdate()
@@ -32,9 +37,9 @@ namespace BehaviourSystem.BT
         }
 
 
-        public IEnumerable<NodeBase> GetChildren()
+        public override void GizmosUpdateNode()
         {
-            return new NodeBase[] { child };
+            child?.GizmosUpdateNode();
         }
     }
 }

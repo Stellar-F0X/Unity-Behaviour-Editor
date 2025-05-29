@@ -9,8 +9,8 @@ namespace BehaviourSystem.BT
     {
         [HideInInspector]
         public NodeBase child;
-        
-        
+
+
         public override sealed ENodeType nodeType
         {
             get { return ENodeType.Decorator; }
@@ -21,26 +21,20 @@ namespace BehaviourSystem.BT
             get { return 1; }
         }
 
+        
+        public IEnumerable<NodeBase> GetChildren()
+        {
+            yield return child;
+        }
 
         public override sealed void FixedUpdateNode()
         {
-            if (child is not null)
-            {
-                child.FixedUpdateNode();
-            }
+            child?.FixedUpdateNode();
         }
 
         public override sealed void GizmosUpdateNode()
         {
-            if (child is not null)
-            {
-                child.GizmosUpdateNode();
-            }
-        }
-
-        public IEnumerable<NodeBase> GetChildren()
-        {
-            return new NodeBase[] { child };
+            child?.GizmosUpdateNode();
         }
     }
 }

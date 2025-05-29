@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BehaviourSystem.BT;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {
@@ -26,6 +27,7 @@ namespace BehaviourSystemEditor.BT
                 }
 
                 Edge newEdge = parentView.output.ConnectTo(childView.input);
+                newEdge.pickingMode = Application.isPlaying ? PickingMode.Ignore : PickingMode.Position;
                 childView.toParentEdge = newEdge;
                 treeView.AddElement(newEdge);
             }

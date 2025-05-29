@@ -80,7 +80,7 @@ namespace BehaviourSystem.BT
                 return;
             }
 
-            if (_frameInterval + _timeSinceLastUpdate < Time.time || useUpdateRate == false)
+            if (useUpdateRate == false || _frameInterval + _timeSinceLastUpdate < Time.time)
             {
                 _rootNode.UpdateNode();
             }
@@ -125,15 +125,22 @@ namespace BehaviourSystem.BT
                 this._updateRate = _updateRate == 0 ? targetUpdateRate : _updateRate;
                 this._frameInterval = 1f / _updateRate;
             }
+#if UNITY_EDITOR
             else
             {
                 Debug.LogWarning("Cannot set the update rate because useUpdateRate is disabled.");
             }
+#endif
         }
 
 
         public void SetProperty<TValue>(in string key, TValue property)
         {
+            if (enabled == false)
+            {
+                return;
+            }
+            
             if (_properties.TryGetValue(key, out var existingProperty))
             {
                 if (existingProperty is BlackboardProperty<TValue> prop)
@@ -154,12 +161,20 @@ namespace BehaviourSystem.BT
                 }
             }
 
+#if UNITY_EDITOR
             Debug.LogWarning($"Blackboard property with key '{key}' was not found.");
+#endif
         }
 
 
         public TValue GetProperty<TValue>(in string key)
         {
+            if (enabled == false)
+            {
+                Debug.Log("Blackboard property was not found.");
+                return default;
+            }
+            
             if (_properties.TryGetValue(key, out var existingProperty))
             {
                 if (existingProperty is BlackboardProperty<TValue> castedProperty)
@@ -178,7 +193,9 @@ namespace BehaviourSystem.BT
                 }
             }
 
+#if UNITY_EDITOR
             Debug.LogWarning($"Blackboard property with key '{key}' was not found.");
+#endif
             return default;
         }
 

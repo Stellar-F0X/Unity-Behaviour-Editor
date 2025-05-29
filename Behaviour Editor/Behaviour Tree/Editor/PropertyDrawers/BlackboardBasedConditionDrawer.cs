@@ -32,7 +32,7 @@ namespace BehaviourSystemEditor.BT
 
                 Rect dropdownRect = new Rect(_rect.x, _rect.y + 2, width, _rect.height);
                 SerializedProperty blackboardProp = property.FindPropertyRelative("property");
-
+                
                 if (this.TryDrawBlackboardProperty(blackboardData, blackboardProp, dropdownRect))
                 {
                     IBlackboardProperty prop = blackboardProp.boxedValue as IBlackboardProperty;
@@ -93,9 +93,11 @@ namespace BehaviourSystemEditor.BT
                 selected = Array.IndexOf(dropdownOptions, prop.key);
             }
 
+            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditTree);
             selected = Mathf.Clamp(selected, 0, dropdownOptions.Length - 1);
             selected = EditorGUI.Popup(dropdownRect, selected, dropdownOptions);
             blackboardProp.boxedValue = properties[selected];
+            EditorGUI.EndDisabledGroup();
             return true;
         }
 
@@ -127,9 +129,11 @@ namespace BehaviourSystemEditor.BT
 
             this.GetCompatibleConditionTypes(sourceType.comparableConditions, conditionTypes, conditionIndex);
             
+            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditTree);
             int prev = Mathf.Max(conditionIndex.IndexOf(conditionType.enumValueFlag), 0);
             int index = EditorGUI.Popup(compareRect, prev, conditionTypes.ToArray(), _popupStyle);
             conditionType.enumValueFlag = conditionIndex[index];
+            EditorGUI.EndDisabledGroup();
 
             ListPool<string>.Release(conditionTypes);
             ListPool<int>.Release(conditionIndex);

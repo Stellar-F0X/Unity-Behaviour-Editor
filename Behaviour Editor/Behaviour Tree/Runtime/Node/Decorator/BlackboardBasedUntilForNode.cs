@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public class BlackboardBasedUntilFor : ConditionNode
+    public class BlackboardBasedUntilForNode : ConditionNode
     {
         public override string tooltip
         {

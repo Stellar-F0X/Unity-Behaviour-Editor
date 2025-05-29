@@ -50,7 +50,6 @@ namespace BehaviourSystem.BT
         [NonSerialized]
         public ulong callCount;
         
-        [NonSerialized]
         public EBehaviourResult behaviourResult;
         
         [NonSerialized]
@@ -124,7 +123,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        public void EnterNode()
+        internal virtual void EnterNode()
         {
             this.runner.handler.PushInCallStack(callStackID, this);
             this.OnEnter();
@@ -132,7 +131,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        public void ExitNode()
+        internal virtual void ExitNode()
         {
             this.runner.handler.PopInCallStack(callStackID);
             this.OnExit();

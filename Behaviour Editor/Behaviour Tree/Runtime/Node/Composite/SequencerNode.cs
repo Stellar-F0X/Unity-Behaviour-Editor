@@ -4,12 +4,12 @@ namespace BehaviourSystem.BT
     {
         private int _childrenCount;
         private bool _childrenIsInvalid;
-        
-        protected override void OnEnter()
+
+        public override void PostTreeCreation()
         {
-            _currentChildIndex = 0;
             _childrenIsInvalid = children is null || children.Count == 0;
         }
+
 
         protected override EBehaviourResult OnUpdate()
         {

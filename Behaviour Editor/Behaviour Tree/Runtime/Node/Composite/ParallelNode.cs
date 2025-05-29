@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace BehaviourSystem.BT
@@ -11,12 +9,19 @@ namespace BehaviourSystem.BT
     {
         public enum EParallelPolicy
         {
+            [Tooltip("Returns Success only when all child nodes succeed. Returns Failure immediately if any child fails.")]
             RequireAllSuccess,
+
+            [Tooltip("Returns Success immediately when at least one child node succeeds. Returns Failure only when all children fail.")]
             RequireOneSuccess,
+
+            [Tooltip("Returns Success only when all child nodes fail. Returns Failure immediately if any child succeeds.")]
             RequireAllFailure,
+
+            [Tooltip("Returns Success immediately when at least one child node fails. Returns Failure only when all children succeed.")]
             RequireOneFailure
         };
-        
+
         public EParallelPolicy parallelPolicy;
 
         private int _successfulChildCount = 0;
@@ -41,16 +46,7 @@ namespace BehaviourSystem.BT
             }
         }
 
-        
-        public void Stop()
-        {
-            for (int i = 0; i < children.Count; ++i)
-            {
-                _isChildStopped[i] = false;
-            }
-        }
 
-        
         protected override void OnEnter()
         {
             if (children is null || children.Count == 0)
@@ -60,17 +56,19 @@ namespace BehaviourSystem.BT
 
             _failedChildCount = 0;
             _successfulChildCount = 0;
-            
+
             for (int i = 0; i < children.Count; ++i)
             {
                 _isChildStopped[i] = false;
             }
         }
 
-        
+
         protected override EBehaviourResult OnUpdate()
         {
-            for (int i = 0; i < children.Count; ++i)
+            int count = children.Count;
+
+            for (int i = 0; i < count; ++i)
             {
                 if (_isChildStopped[i] == false)
                 {
@@ -96,6 +94,59 @@ namespace BehaviourSystem.BT
             return this.EvaluatePolicy();
         }
 
+
+        protected override void OnExit()
+        {
+            for (int i = 0; i < children.Count; ++i)
+            {
+                if (_isChildStopped[i] == false)
+                {
+                    runner.handler.AbortSubtree(children[i].callStackID);
+                    _isChildStopped[i] = true;
+                }
+            }
+        }
+        
+        
+        public void Stop()
+        {
+            for (int i = 0; i < children.Count; ++i)
+            {
+                _isChildStopped[i] = false;
+            }
+            
+            _failedChildCount = 0;
+            _successfulChildCount = 0;
+        }
+
+
+        public override void FixedUpdateNode()
+        {
+            int count = children.Count;
+
+            for (int i = 0; i < count; ++i)
+            {
+                if (_isChildStopped[i] == false)
+                {
+                    children[i].FixedUpdateNode();
+                }
+            }
+            
+            _failedChildCount = 0;
+            _successfulChildCount = 0;
+        }
+
+
+        public override void GizmosUpdateNode()
+        {
+            int count = children.Count;
+
+            for (int i = 0; i < count; ++i)
+            {
+                children[i].GizmosUpdateNode();
+            }
+        }
+        
         
         private EBehaviourResult EvaluatePolicy()
         {
@@ -163,21 +214,6 @@ namespace BehaviourSystem.BT
             }
 
             return EBehaviourResult.Running;
-        }
-
-        
-        protected override void OnExit()
-        {
-            for (int i = 0; i < children.Count; ++i)
-            {
-                if (_isChildStopped[i] == false)
-                {
-                    int stackID = children[i].callStackID;
-                    
-                    runner.handler.AbortSubtree(stackID);
-                    _isChildStopped[i] = true;
-                }
-            }
         }
     }
 }

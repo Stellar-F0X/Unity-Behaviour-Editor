@@ -29,6 +29,7 @@ namespace BehaviourSystemEditor.BT
 
         [Header("Runtime Options")]
         public uint maxUpdateRate = 240;
+        public float editorUpdateInterval = 0.1f; // 0.1초마다 업데이트 (10Hz)
 
         [Header("Layout References")]
         public VisualTreeAsset behaviourTreeEditorXml;

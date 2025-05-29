@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace BehaviourSystem.BT
 {
     public class UntilForNode : DecoratorNode
@@ -9,7 +7,7 @@ namespace BehaviourSystem.BT
             Failure = 1,
             Success = 2
         };
-        
+
         public EUntilCondition targetResult = EUntilCondition.Success;
 
 
@@ -17,18 +15,36 @@ namespace BehaviourSystem.BT
         {
             get { return "Executes the child node repeatedly until it returns the specified result."; }
         }
-        
+
 
         protected override EBehaviourResult OnUpdate()
         {
-            if ((int)child.UpdateNode() == (int)targetResult)
+            switch (child.UpdateNode())
             {
-                return EBehaviourResult.Success;
+                case EBehaviourResult.Failure:
+                {
+                    if (targetResult == EUntilCondition.Failure)
+                    {
+                        return EBehaviourResult.Failure;
+                    }
+
+                    break;
+                }
+
+                case EBehaviourResult.Success:
+                {
+                    if (targetResult == EUntilCondition.Success)
+                    {
+                        return EBehaviourResult.Success;
+                    }
+
+                    break;
+                }
+                
+                default: return EBehaviourResult.Running;
             }
-            else
-            {
-                return EBehaviourResult.Running;
-            }
+            
+            return EBehaviourResult.Running;
         }
     }
 }

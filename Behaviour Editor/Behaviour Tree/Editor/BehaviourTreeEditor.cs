@@ -98,8 +98,11 @@ namespace BehaviourSystemEditor.BT
 
             EditorSceneManager.sceneClosed -= this.OnSceneClosed;
             EditorSceneManager.sceneClosed += this.OnSceneClosed;
-            
-            EditorApplication.update -= this.RuntimeUpdate;
+
+            if (EditorApplication.isPlaying)
+            {
+                EditorApplication.update += this.RuntimeUpdate;
+            }
         }
 
 
@@ -140,11 +143,12 @@ namespace BehaviourSystemEditor.BT
         {
             if (_tree is null)
             {
-                this._blackboardListView.ClearBlackboardView();
-                this._inspectorView.Clear();
+                CanEditTree = false;
+                
+                this._blackboardListView?.ClearBlackboardView();
+                this._inspectorView?.Clear();
                 this._treeView?.ClearEditorView();
 
-                CanEditTree = false;
                 this._treeRunner = null;
                 this._tree = null;
             }
@@ -154,7 +158,12 @@ namespace BehaviourSystemEditor.BT
 
         private void RuntimeUpdate()
         {
-            if (Application.isPlaying == false || EditorApplication.isPaused || _treeRunner is null || _treeRunner.runtimeTree is null)
+            if (Application.isPlaying == false || EditorApplication.isPaused)
+            {
+                return;
+            }
+
+            if (_treeRunner is null || _treeRunner.runtimeTree is null)
             {
                 return;
             }
@@ -199,13 +208,16 @@ namespace BehaviourSystemEditor.BT
             switch (state)
             {
                 case PlayModeStateChange.EnteredEditMode: 
-                    EditorApplication.update -= this.RuntimeUpdate;
                     this.OnSelectionChange();
                     break;
 
-                case PlayModeStateChange.EnteredPlayMode: 
+                case PlayModeStateChange.EnteredPlayMode:
                     EditorApplication.update += this.RuntimeUpdate;
                     this.OnSelectionChange(); 
+                    break;
+                
+                case PlayModeStateChange.ExitingPlayMode:
+                    EditorApplication.update -= this.RuntimeUpdate;
                     break;
             }
         }

@@ -2,7 +2,6 @@ using System;
 using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {
@@ -41,16 +40,12 @@ namespace BehaviourSystemEditor.BT
                 EditorGUILayout.LabelField(this.target.name, boldLabelStyle);
                 EditorGUILayout.BeginVertical(new GUIStyle(GUI.skin.box));
 
-                do
-                {
-                    EditorGUILayout.PropertyField(iterator);
-                }
+                do EditorGUILayout.PropertyField(iterator);
                 while (iterator.NextVisible(false));
 
                 EditorGUILayout.EndVertical();
             }
-
-
+            
             serializedObject.ApplyModifiedProperties();
         }
     }

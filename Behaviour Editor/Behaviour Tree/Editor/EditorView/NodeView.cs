@@ -40,11 +40,10 @@ namespace BehaviourSystemEditor.BT
 
         private float _elapsedTime;
         private float _minimumStayTime;
+        private bool _isInHighlighting;
         private ulong _lastRenderedNodeCount = 0;
 
-        private bool _isInHighlighting;
-
-
+        
         public NodeBase node;
         public Edge toParentEdge;
 
@@ -139,7 +138,7 @@ namespace BehaviourSystemEditor.BT
 
 
 
-        public void UpdateView()
+        public void UpdateView(float deltaTime)
         {
             if (Application.isPlaying)
             {
@@ -157,8 +156,8 @@ namespace BehaviourSystemEditor.BT
 
                 if (_minimumStayTime > 0f)
                 {
-                    _elapsedTime = Mathf.Min(_elapsedTime + Time.deltaTime, BehaviourTreeEditor.Settings.minimumFocusingDuration);
-                    _minimumStayTime = Mathf.Max(_minimumStayTime - Time.deltaTime, 0f);
+                    _elapsedTime = Mathf.Min(_elapsedTime + deltaTime, BehaviourTreeEditor.Settings.minimumFocusingDuration);
+                    _minimumStayTime = Mathf.Max(_minimumStayTime - deltaTime, 0f);
                 }
                 else if (Mathf.Approximately(this._elapsedTime, 0f))
                 {
@@ -172,7 +171,7 @@ namespace BehaviourSystemEditor.BT
                 }
                 else
                 {
-                    _elapsedTime = Mathf.Max(_elapsedTime - Time.deltaTime, 0f);
+                    _elapsedTime = Mathf.Max(_elapsedTime - deltaTime, 0f);
                 }
 
                 float progress = this._elapsedTime / BehaviourTreeEditor.Settings.minimumFocusingDuration;

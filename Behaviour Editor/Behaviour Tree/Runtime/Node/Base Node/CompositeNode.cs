@@ -9,7 +9,7 @@ namespace BehaviourSystem.BT
     {
         [HideInInspector]
         public List<NodeBase> children = new List<NodeBase>();
-
+        
         protected int _currentChildIndex;
 
 
@@ -27,26 +27,36 @@ namespace BehaviourSystem.BT
         {
             get { return _currentChildIndex; }
         }
-
-        public override sealed void FixedUpdateNode()
+        
+        
+        public IEnumerable<NodeBase> GetChildren()
         {
-            if (children is not null && currentChildIndex < children.Count)
+            return children;
+        }
+        
+        
+        public override void FixedUpdateNode()
+        {
+            if (currentChildIndex < children.Count)
             {
                 children[_currentChildIndex].FixedUpdateNode();
             }
         }
 
-        public override sealed void GizmosUpdateNode()
+        
+        public override void GizmosUpdateNode()
         {
-            if (children is not null && currentChildIndex < children.Count)
+            if (currentChildIndex < children.Count)
             {
                 children[_currentChildIndex].GizmosUpdateNode();
             }
         }
 
-        public IEnumerable<NodeBase> GetChildren()
+
+        internal override sealed void ExitNode()
         {
-            return children;
+            base.ExitNode();
+            _currentChildIndex = 0;
         }
     }
 }
