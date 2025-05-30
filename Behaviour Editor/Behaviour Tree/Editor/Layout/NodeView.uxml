@@ -1,21 +1,22 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <Style src="project://database/Assets/Scripts/Behaviour%20Editor/Behaviour%20Editor/Behaviour%20Tree/Editor/Layout/NodeViewStyle.uss?fileID=7433441132597879392&amp;guid=2c3e5f919fbc7c0468933b90f2ec4fd6&amp;type=3#NodeViewStyle" />
+    <Style src="project://database/Assets/Unity-Behaviour-System/Behaviour%20Editor/Behaviour%20Tree/Editor/Layout/NodeViewStyle.uss?fileID=7433441132597879392&amp;guid=2c3e5f919fbc7c0468933b90f2ec4fd6&amp;type=3" />
     <ui:VisualElement name="node-border" tabindex="0" focusable="false" style="border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;">
         <ui:VisualElement name="contents" focusable="false">
             <ui:VisualElement name="top" style="flex-wrap: nowrap; justify-content: flex-start; align-self: stretch;">
+                <ui:VisualElement name="input" language-direction="Inherit" picking-mode="Ignore" style="height: 13px; align-self: auto;" />
                 <ui:VisualElement name="divider" picking-mode="Ignore" class="vertical" />
-                <ui:VisualElement name="input" language-direction="Inherit" />
                 <ui:VisualElement name="title" picking-mode="Ignore">
-                    <ui:Label name="title-label" text="Node" class="unity-text-element unity-label" style="font-size: 14%;" />
+                    <ui:Label name="title-label" text="Node" class="unity-text-element unity-label" style="font-size: 14%; min-width: 120px; padding-left: 0; margin-left: 5px; margin-right: 5px; padding-right: 0;" />
                     <ui:VisualElement name="title-button-container">
                         <ui:VisualElement name="collapse-button">
                             <ui:VisualElement name="icon" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="output" />
                 <ui:VisualElement name="divider" picking-mode="Ignore" class="horizontal" />
+                <ui:VisualElement name="output" picking-mode="Ignore" style="height: 13px; flex-direction: column-reverse; align-self: stretch;" />
             </ui:VisualElement>
+            <ui:VisualElement name="executed-sign" picking-mode="Ignore" style="flex-grow: 1; position: absolute; width: 20px; height: 7px; background-color: rgb(255, 255, 255); right: 5px; top: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-left-color: rgb(20, 20, 20); border-right-color: rgb(20, 20, 20); border-top-color: rgb(20, 20, 20); border-bottom-color: rgb(20, 20, 20); -unity-background-image-tint-color: rgb(255, 255, 255); background-image: none; -unity-slice-left: 0; -unity-slice-top: 0; -unity-slice-right: 0; -unity-slice-bottom: 0; overflow: visible;" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="selection-border" focusable="false" picking-mode="Ignore" />

@@ -85,3 +85,7 @@ GridBackground {
     margin-left: 0;
     flex-direction: row-reverse;
 }
+
+#active-minimap > .unity-toggle__label {
+    min-width: 50px;
+}

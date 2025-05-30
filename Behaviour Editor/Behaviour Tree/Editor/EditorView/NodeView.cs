@@ -19,9 +19,11 @@ namespace BehaviourSystemEditor.BT
             this.style.left = node.position.x;
             this.style.top = node.position.y;
 
-            _nodeBorder = this.Q<VisualElement>("node-border");
             _lastRenderedNodeCount = node.callCount;
-
+            
+            _nodeBorder = this.Q<VisualElement>("node-border");
+            _executedResultSign = this.Q<VisualElement>("executed-sign");
+            
             if (Application.isPlaying)
             {
                 _nodeBorder.style.borderTopColor = BehaviourTreeEditor.Settings.nodeDisappearingColor;
@@ -50,6 +52,7 @@ namespace BehaviourSystemEditor.BT
         public Port input;
         public Port output;
 
+        private VisualElement _executedResultSign;
         private VisualElement _nodeBorder;
         private VisualElement _inputPortView;
         private VisualElement _outputPortView;
@@ -172,6 +175,15 @@ namespace BehaviourSystemEditor.BT
                 else
                 {
                     _elapsedTime = Mathf.Max(_elapsedTime - deltaTime, 0f);
+                }
+
+                switch (node.behaviourResult)
+                {
+                    case NodeBase.EBehaviourResult.Running: _executedResultSign.style.backgroundColor = new StyleColor(Color.yellow); break;
+
+                    case NodeBase.EBehaviourResult.Failure: _executedResultSign.style.backgroundColor = new StyleColor(Color.red); break;
+
+                    case NodeBase.EBehaviourResult.Success: _executedResultSign.style.backgroundColor = new StyleColor(Color.green); break;
                 }
 
                 float progress = this._elapsedTime / BehaviourTreeEditor.Settings.minimumFocusingDuration;

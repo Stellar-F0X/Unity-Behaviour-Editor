@@ -19,6 +19,7 @@
         <ui:VisualElement name="right-panel" style="flex-grow: 1; flex-shrink: 1; min-width: 10%; max-width: none;">
             <uie:Toolbar name="right-toolbar" style="justify-content: space-between;">
                 <uie:ToolbarPopupSearchField name="search-node-field" style="min-width: auto; flex-shrink: 1; width: 300px;" />
+                <uie:ToolbarToggle label="Minimap" name="active-minimap" />
             </uie:Toolbar>
             <ui:Label tabindex="-1" text=" Tree View" parse-escape-sequences="true" display-tooltip-when-elided="true" name="right-view-label" class="window-label" />
             <BehaviourSystemEditor.BT.BehaviourTreeView focusable="true" style="flex-grow: 1;" />
