@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BehaviourSystem.BT;
 using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine;
 
 namespace BehaviourSystemEditor.BT
 {
-    public class NodeEdgeHandler
+    public static class NodeLinkHelper
     {
-        public void ConnectEdges(BehaviourTreeView treeView, NodeBase parentNodeBase, IBehaviourIterable childrenNodes)
+        public static void CreateVisualEdgesFromNodeData(BehaviourTreeView treeView, NodeBase parentNodeBase, IBehaviourIterable childrenNodes)
         {
             if (childrenNodes is null || childrenNodes.childCount == 0)
             {
@@ -37,14 +36,14 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public void ConnectEdges(BehaviourTree tree, List<Edge> edges)
+        public static void UpdateNodeDataFromVisualEdges(BehaviourNodeSet nodeSet, List<Edge> edges)
         {
             if (edges is null || edges.Count == 0)
             {
                 return;
             }
 
-            foreach (var edge in edges)
+            foreach (Edge edge in edges)
             {
                 NodeView parentView = edge.output.node as NodeView;
                 NodeView childView = edge.input.node as NodeView;
@@ -54,12 +53,12 @@ namespace BehaviourSystemEditor.BT
                     continue;
                 }
 
-                tree.nodeSet.AddChild(parentView.targetNode, childView.targetNode);
+                nodeSet.AddChild(parentView.targetNode, childView.targetNode);
             }
         }
 
 
-        public void DeleteEdges(BehaviourTree tree, Edge edge)
+        public static void RemoveEdgeAndNodeConnection(BehaviourNodeSet nodeSet, Edge edge)
         {
             NodeView parentView = edge.output.node as NodeView;
             NodeView childView = edge.input.node as NodeView;
@@ -69,7 +68,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            tree.nodeSet.RemoveChild(parentView?.targetNode, childView?.targetNode);
+            nodeSet.RemoveChild(parentView?.targetNode, childView?.targetNode);
             edge.RemoveFromHierarchy();
         }
     }

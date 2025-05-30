@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
-using BehaviourSystem.BT;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
+using BehaviourSystem.BT;
 using UnityEditor;
 
 namespace BehaviourSystemEditor.BT
@@ -18,32 +17,29 @@ namespace BehaviourSystemEditor.BT
             this.viewDataKey = targetNode.guid;
             this.style.left = targetNode.position.x;
             this.style.top = targetNode.position.y;
-
-            _lastProcessedCallCount = targetNode.callCount;
-
-            _nodeBorder = this.Q<VisualElement>("node-border");
-            _nodeResultIndicator = this.Q<VisualElement>("executed-sign");
+            this._lastProcessedCallCount = targetNode.callCount;
             
+            this._nodeBorder = this.Q<VisualElement>("node-border");
+            this._nodeResultIndicator = this.Q<VisualElement>("executed-sign");
+
             this.Initialize();
             this.CreatePorts();
         }
-        
+
         public event Action<NodeView> OnNodeSelected;
         public event Action<NodeView> OnNodeUnselected;
-        
-
-        public readonly NodeBase targetNode;
 
         private readonly VisualElement _nodeResultIndicator;
         private readonly VisualElement _nodeBorder;
 
+        public readonly NodeBase targetNode;
 
         private bool _isHighlighted;
 
         private float _highlightDuration;
         private float _highlightRemainingTime;
         private ulong _lastProcessedCallCount;
-        
+
         private NodeBase.EBehaviourResult _previousFrameResult;
 
         public Edge parentConnectionEdge;
@@ -51,45 +47,61 @@ namespace BehaviourSystemEditor.BT
         public Port outputPort;
 
 
-        public override void OnSelected() => OnNodeSelected?.Invoke(this);
-
-        public override void OnUnselected() => OnNodeUnselected?.Invoke(this);
-
-
-
-        private void Initialize()
+        public override void OnSelected()
         {
-            _nodeBorder.AddToClassList($"behaviour-node-{targetNode.nodeType}");
-            
-            if (Application.isPlaying)
-            {
-                _nodeBorder.style.BorderColor(BehaviourTreeEditor.Settings.nodeDisappearingColor);
-            }
+            OnNodeSelected?.Invoke(this); 
         }
         
         
+        
+        public override void OnUnselected()
+        {
+            OnNodeUnselected?.Invoke(this);
+        }
+
+
+        
+        private void Initialize()
+        {
+            _nodeBorder.AddToClassList($"behaviour-node-{targetNode.nodeType}");
+
+            if (Application.isPlaying)
+            {
+                _nodeBorder.style.SetBorderColor(BehaviourTreeEditor.Settings.nodeDisappearingColor);
+            }
+        }
+
+
 
         private void CreatePorts()
         {
             switch (targetNode.nodeType)
             {
-                case NodeBase.ENodeType.Root: 
-                    outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool)); 
+                case NodeBase.ENodeType.Root:
+                {
+                    outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
                     break;
+                }
 
-                case NodeBase.ENodeType.Action: 
-                    inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool)); 
+                case NodeBase.ENodeType.Action:
+                {
+                    inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     break;
+                }
 
                 case NodeBase.ENodeType.Composite:
+                {
                     inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
                     break;
+                }
 
                 case NodeBase.ENodeType.Decorator:
+                {
                     inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
                     break;
+                }
             }
 
             this.SetupPort(inputPort, string.Empty, FlexDirection.Column, base.inputContainer);
@@ -128,7 +140,7 @@ namespace BehaviourSystemEditor.BT
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt) { }
 
 
-
+#region Highlighting Logic
         public void UpdateView(float deltaTime)
         {
             if (Application.isPlaying == false)
@@ -145,6 +157,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
+        
         private bool UpdateNodeHighlightState(float deltaTime, float highlightingDuration)
         {
             if (_isHighlighted == false && targetNode.callCount == _lastProcessedCallCount)
@@ -182,6 +195,7 @@ namespace BehaviourSystemEditor.BT
 
             return _isHighlighted;
         }
+        
 
 
         private void UpdateNodeVisuals(BehaviourTreeEditorSettings settings, float progress)
@@ -191,46 +205,44 @@ namespace BehaviourSystemEditor.BT
                 switch (targetNode.behaviourResult)
                 {
                     case NodeBase.EBehaviourResult.Running:
+                    {
                         _nodeResultIndicator.style.backgroundColor = new StyleColor(Color.yellow);
                         _previousFrameResult = NodeBase.EBehaviourResult.Running;
                         break;
-
+                    }
                     case NodeBase.EBehaviourResult.Failure:
+                    {
                         _nodeResultIndicator.style.backgroundColor = new StyleColor(Color.red);
                         _previousFrameResult = NodeBase.EBehaviourResult.Failure;
                         break;
-
+                    }
                     case NodeBase.EBehaviourResult.Success:
+                    {
                         _nodeResultIndicator.style.backgroundColor = new StyleColor(Color.green);
                         _previousFrameResult = NodeBase.EBehaviourResult.Success;
                         break;
+                    }
                 }
             }
             
-            Color borderColor = Color.Lerp(settings.nodeDisappearingColor, settings.nodeAppearingColor, progress);
-            Color edgeColor = Color.Lerp(settings.edgeDisappearingColor, settings.edgeAppearingColor, progress);
-
-            if (_nodeBorder is not null)
-            {
-                _nodeBorder.style.BorderColor(borderColor);
-            }
-
-            if (parentConnectionEdge is not null)
-            {
-                parentConnectionEdge.edgeControl.inputColor = parentConnectionEdge.edgeControl.outputColor = edgeColor;
-            }
+            _nodeBorder?.style.SetBorderColor(Color.Lerp(settings.nodeDisappearingColor, settings.nodeAppearingColor, progress));
+            
+            parentConnectionEdge?.edgeControl.SetEdgeColor(Color.Lerp(settings.edgeDisappearingColor, settings.edgeAppearingColor, progress));
         }
+#endregion
         
-        
+
         private void SetupPort(Port port, string portName, FlexDirection direction, VisualElement container)
         {
-            if (port is not null)
+            if (port is null)
             {
-                port.pickingMode = BehaviourTreeEditor.CanEditTree ? PickingMode.Position : PickingMode.Ignore;
-                port.style.flexDirection = direction;
-                port.portName = portName;
-                container.Add(port);
+                return;
             }
+
+            port.pickingMode = BehaviourTreeEditor.CanEditTree ? PickingMode.Position : PickingMode.Ignore;
+            port.style.flexDirection = direction;
+            port.portName = portName;
+            container.Add(port);
         }
     }
 }

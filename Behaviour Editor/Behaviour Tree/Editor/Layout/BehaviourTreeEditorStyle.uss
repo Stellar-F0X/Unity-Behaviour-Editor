@@ -89,3 +89,7 @@ GridBackground {
 #active-minimap > .unity-toggle__label {
     min-width: 50px;
 }
+
+.graphView > .graphElement > .unity-label {
+    color: rgb(255, 241, 97);
+}

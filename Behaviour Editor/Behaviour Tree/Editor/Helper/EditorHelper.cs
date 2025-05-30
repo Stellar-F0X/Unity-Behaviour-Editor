@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
@@ -92,12 +93,19 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void BorderColor(this IStyle style, Color color)
+        public static void SetBorderColor(this IStyle style, Color color)
         {
             style.borderTopColor = color;
             style.borderBottomColor = color;
             style.borderLeftColor = color;
             style.borderRightColor = color;
+        }
+
+
+        public static void SetEdgeColor(this EdgeControl control, Color color)
+        {
+            control.inputColor = color;
+            control.outputColor = color;
         }
     }
 }

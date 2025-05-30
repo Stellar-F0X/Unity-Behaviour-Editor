@@ -5,7 +5,6 @@ using UnityEngine;
 using System;
 using System.Linq;
 using BehaviourSystem.BT;
-using UnityEditor.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {
@@ -16,37 +15,24 @@ namespace BehaviourSystemEditor.BT
         {
             base.Insert(0, new GridBackground());
 
-            ContentZoomer zoomer = new ContentZoomer()
-            {
-                maxScale = BehaviourTreeEditor.Settings.maxZoomScale,
-                minScale = BehaviourTreeEditor.Settings.minZoomScale,
-            };
-
-            this.AddManipulator(zoomer);
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
-
-            this.UnregisterCallback<GeometryChangedEvent>(this.OnGraphViewGeometryChanged);
-            this.RegisterCallback<GeometryChangedEvent>(this.OnGraphViewGeometryChanged);
+            this.AddManipulator(new ContentZoomer()
+            { 
+                maxScale = BehaviourTreeEditor.Settings.maxZoomScale,
+                minScale = BehaviourTreeEditor.Settings.minZoomScale 
+            });
 
             styleSheets.Add(BehaviourTreeEditor.Settings.behaviourTreeStyle);
-
-            _nodeEdgeHandler = new NodeEdgeHandler();
-            _nodeSearchHelper = new NodeSearchHelper();
         }
 
         public Action<NodeView> onNodeSelected;
-        public ToolbarToggle minimapActivateToggle;
-        public ToolbarPopupSearchField popupSearchField;
 
         private float _nextUpdateTime;
         private float _lastUpdateTime;
 
-        private MiniMap _miniMap;
         private BehaviourTree _tree;
-        private NodeSearchHelper _nodeSearchHelper;
-        private NodeEdgeHandler _nodeEdgeHandler;
         private CreationWindow _creationWindow;
 
 
@@ -83,7 +69,7 @@ namespace BehaviourSystemEditor.BT
                 //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
                 tree.nodeSet.nodeList.ForEach(n => this.RecreateNodeViewOnLoad(n));
                 tree.groupDataSet?.dataList.ForEach(d => this.RecreateNodeGroupViewOnLoad(d));
-                tree.nodeSet.nodeList.ForEach(n => _nodeEdgeHandler.ConnectEdges(this, n, n as IBehaviourIterable));
+                tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n, n as IBehaviourIterable));
             }
         }
 
@@ -190,7 +176,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     switch (element)
                     {
-                        case Edge edge: this._nodeEdgeHandler.DeleteEdges(_tree, edge); break;
+                        case Edge edge: NodeLinkHelper.RemoveEdgeAndNodeConnection(_tree.nodeSet, edge); break;
 
                         case NodeView nodeView: this._tree.nodeSet.DeleteNode(nodeView.targetNode); break;
 
@@ -201,7 +187,7 @@ namespace BehaviourSystemEditor.BT
 
             if (graphViewChange.edgesToCreate is not null)
             {
-                this._nodeEdgeHandler.ConnectEdges(_tree, graphViewChange.edgesToCreate);
+                NodeLinkHelper.UpdateNodeDataFromVisualEdges(_tree.nodeSet, graphViewChange.edgesToCreate);
             }
 
             if (graphViewChange.movedElements is not null)
@@ -231,6 +217,7 @@ namespace BehaviourSystemEditor.BT
             }
 
             //DeleteSelection는 내부적으로 Selection 배열을 이용해서 VisualElement들을 제거함.
+            //따라서 삭제되면 안되는 요소들만 Selection 배열에서 제거한 뒤, 현재 선택된 요소들(Selection 배열)을 제거하면 됨.
             this.DeleteSelection();
         }
 
@@ -255,89 +242,6 @@ namespace BehaviourSystemEditor.BT
                 nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));
                 nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
             });
-        }
-
-
-
-        public void CreateOrActivateMiniMap(ChangeEvent<bool> evt)
-        {
-            if (_miniMap is null)
-            {
-                _miniMap = new MiniMap();
-                _miniMap.anchored = true;
-                _miniMap.style.backgroundColor = BehaviourTreeEditor.Settings.miniMapBackgroundColor;
-                this.Add(_miniMap);
-            }
-            
-            _miniMap.SetPosition(new Rect(layout.width - 240, layout.height - 200, 220, 180));
-            _miniMap.visible = evt.newValue;
-        }
-
-
-
-        private void OnGraphViewGeometryChanged(GeometryChangedEvent evt)
-        {
-            if (_miniMap is null)
-            {
-                return;
-            }
-
-            if (evt.newRect.width >= 280 && evt.newRect.height >= 240)
-            {
-                _miniMap.visible = true;
-                _miniMap.enabledSelf = true;
-
-                _miniMap.SetPosition(new Rect(evt.newRect.width - 240, evt.newRect.height - 200, 220, 180));
-            }
-            else
-            {
-                _miniMap.visible = false;
-                _miniMap.enabledSelf = false;
-            }
-        }
-
-
-        public void SearchNodeByNameOrTag(ChangeEvent<string> changeEvent)
-        {
-            if (_nodeSearchHelper.HasSyntaxes(changeEvent.newValue, out var syntaxes))
-            {
-                popupSearchField.menu.ClearItems();
-
-                NodeView[] views = null;
-
-                if (syntaxes.Length == 1)
-                {
-                    views = _nodeSearchHelper.GetNodeView(syntaxes[0], NodeSearchHelper.ESearchOptions.Both, nodes);
-                }
-                else if (string.Compare(syntaxes[0], "t:", StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    views = _nodeSearchHelper.GetNodeView(syntaxes[1], NodeSearchHelper.ESearchOptions.Tag, nodes);
-                }
-                else if (string.Compare(syntaxes[0], "n:", StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    views = _nodeSearchHelper.GetNodeView(syntaxes[1], NodeSearchHelper.ESearchOptions.Name, nodes);
-                }
-
-                if (views is null)
-                {
-                    return;
-                }
-
-                for (int i = 0; i < views.Length; ++i)
-                {
-                    NodeView view = views[i];
-
-                    string menuName = $"[{i + 1}]   name: [{view.targetNode.name}]   tag: [{view.targetNode.tag}]";
-
-                    popupSearchField.menu.AppendAction(menuName, delegate
-                    {
-                        this.SelectNode(view);
-                        base.FrameSelection();
-                    });
-                }
-
-                popupSearchField.ShowMenu();
-            }
         }
     }
 }

@@ -12,34 +12,23 @@ namespace BehaviourSystemEditor.BT
 {
     public class BehaviourTreeEditor : EditorWindow
     {
-        [MenuItem("Tools/Behaviour Tree Editor")]
-        private static void OpenWindow()
-        {
-            BehaviourTreeEditor wnd = GetWindow<BehaviourTreeEditor>();
-            wnd.titleContent = new GUIContent("BT Editor");
-            Instance = wnd;
-        }
-
-        [OnOpenAsset]
-        public static bool OnOpenAsset(int instanceID, int line)
-        {
-            if (Selection.activeObject is BehaviourTree)
-            {
-                OpenWindow();
-                return true;
-            }
-
-            return false;
-        }
-
-
         private static BehaviourTreeEditorSettings _settings;
 
-        public static BehaviourTreeEditor Instance
-        {
-            get;
-            private set;
-        }
+        private BehaviourTree _tree;
+
+        private BehaviourTreeRunner _treeRunner;
+
+        private MiniMapView _miniMapView;
+
+        private InspectorView _inspectorView;
+
+        private BehaviourTreeView _treeView;
+
+        private NodeSearchFieldView _nodeSearchField;
+
+        private BlackboardPropertyListView _blackboardView;
+
+
 
         public static BehaviourTreeEditorSettings Settings
         {
@@ -48,12 +37,17 @@ namespace BehaviourSystemEditor.BT
                 if (_settings is null)
                 {
                     string filter = $"t:{nameof(BehaviourTreeEditorSettings)}";
-
                     _settings = EditorHelper.FindAssetByName<BehaviourTreeEditorSettings>(filter);
                 }
 
                 return _settings;
             }
+        }
+
+        public static BehaviourTreeEditor Instance
+        {
+            get;
+            private set;
         }
 
         public static bool CanEditTree
@@ -68,15 +62,6 @@ namespace BehaviourSystemEditor.BT
             private set;
         }
 
-
-        private BehaviourTree _tree;
-        private BehaviourTreeRunner _treeRunner;
-
-        private BehaviourTreeView _treeView;
-        private InspectorView _inspectorView;
-        private BlackboardPropertyListView _blackboardListView;
-
-
         public BehaviourTree Tree
         {
             get { return _tree; }
@@ -85,6 +70,29 @@ namespace BehaviourSystemEditor.BT
         public BehaviourTreeView View
         {
             get { return _treeView; }
+        }
+
+
+
+        [MenuItem("Tools/Behaviour Tree Editor")]
+        private static void OpenWindow()
+        {
+            BehaviourTreeEditor wnd = GetWindow<BehaviourTreeEditor>();
+            wnd.titleContent = new GUIContent("BT Editor");
+            Instance = wnd;
+        }
+
+
+        [OnOpenAsset]
+        public static bool OnOpenAsset(int instanceID, int line)
+        {
+            if (Selection.activeObject is BehaviourTree)
+            {
+                OpenWindow();
+                return true;
+            }
+
+            return false;
         }
 
 
@@ -101,6 +109,7 @@ namespace BehaviourSystemEditor.BT
 
             if (EditorApplication.isPlaying)
             {
+                EditorApplication.update -= this.RuntimeUpdate;
                 EditorApplication.update += this.RuntimeUpdate;
             }
         }
@@ -110,7 +119,7 @@ namespace BehaviourSystemEditor.BT
         {
             EditorApplication.playModeStateChanged -= this.OnPlayNodeStateChanged;
             EditorSceneManager.sceneClosed -= this.OnSceneClosed;
-            
+
             Undo.undoRedoPerformed -= this.BehaviourEditorUndoPerformed;
             EditorApplication.update -= this.RuntimeUpdate;
         }
@@ -122,7 +131,7 @@ namespace BehaviourSystemEditor.BT
             if (_tree is not null && AssetDatabase.Contains(_tree) == false)
             {
                 //상호 연관이 적은 것부터 삭제.
-                this._blackboardListView.ClearBlackboardView();
+                this._blackboardView.ClearBlackboardView();
                 this._inspectorView.Clear();
                 this._treeView?.ClearEditorView();
 
@@ -136,16 +145,16 @@ namespace BehaviourSystemEditor.BT
                 EditorApplication.delayCall += this.OnSelectionChange;
             }
         }
-        
-        
-        
+
+
+
         private void OnSceneClosed(Scene scene)
         {
             if (_tree is null)
             {
                 CanEditTree = false;
-                
-                this._blackboardListView?.ClearBlackboardView();
+
+                this._blackboardView?.ClearBlackboardView();
                 this._inspectorView?.Clear();
                 this._treeView?.ClearEditorView();
 
@@ -153,8 +162,8 @@ namespace BehaviourSystemEditor.BT
                 this._tree = null;
             }
         }
-        
-        
+
+
 
         private void RuntimeUpdate()
         {
@@ -167,7 +176,7 @@ namespace BehaviourSystemEditor.BT
             {
                 return;
             }
-            
+
             _treeView?.UpdateNodeView();
         }
 
@@ -177,6 +186,7 @@ namespace BehaviourSystemEditor.BT
         {
             _treeView?.OnGraphEditorView(_tree);
             _inspectorView?.ClearInspectorView();
+            _blackboardView?.RefreshItemsWhenUndoPerformed();
             AssetDatabase.SaveAssets();
         }
 
@@ -184,23 +194,25 @@ namespace BehaviourSystemEditor.BT
 
         private void CreateGUI()
         {
+            Instance = this;
+
             Settings.behaviourTreeEditorXml.CloneTree(rootVisualElement);
             rootVisualElement.styleSheets.Add(Settings.behaviourTreeStyle);
 
-            Instance = this;
-
             _treeView = rootVisualElement.Q<BehaviourTreeView>();
+            _miniMapView = rootVisualElement.Q<MiniMapView>();
             _inspectorView = rootVisualElement.Q<InspectorView>();
+            _nodeSearchField = rootVisualElement.Q<NodeSearchFieldView>();
+            _blackboardView = rootVisualElement.Q<BlackboardPropertyListView>();
 
-            _blackboardListView = rootVisualElement.Q<BlackboardPropertyListView>();
-            _blackboardListView.Setup(rootVisualElement.Q<ToolbarMenu>("add-element-button"));
+            var elementAddButton = rootVisualElement.Q<ToolbarMenu>("element-add-button");
+            var minimapActivateButton = rootVisualElement.Q<ToolbarToggle>("active-minimap");
 
-            _treeView.popupSearchField = rootVisualElement.Q<ToolbarPopupSearchField>("search-node-field");
-            _treeView.popupSearchField.RegisterValueChangedCallback(_treeView.SearchNodeByNameOrTag);
-            
-            _treeView.minimapActivateToggle = rootVisualElement.Q<ToolbarToggle>("active-minimap");
-            _treeView.minimapActivateToggle.RegisterValueChangedCallback(_treeView.CreateOrActivateMiniMap);
-            
+            _blackboardView.Setup(elementAddButton);
+            _miniMapView.Setup(minimapActivateButton, _treeView);
+            _nodeSearchField.Setup(_inspectorView, _treeView);
+
+            _treeView.onNodeSelected -= _inspectorView.UpdateSelection;
             _treeView.onNodeSelected += _inspectorView.UpdateSelection;
 
             this.OnSelectionChange();
@@ -211,37 +223,23 @@ namespace BehaviourSystemEditor.BT
         {
             switch (state)
             {
-                case PlayModeStateChange.EnteredEditMode: 
-                    this.OnSelectionChange();
-                    break;
+                case PlayModeStateChange.EnteredEditMode: this.OnSelectionChange(); break;
 
                 case PlayModeStateChange.EnteredPlayMode:
                     EditorApplication.update += this.RuntimeUpdate;
-                    this.OnSelectionChange(); 
+                    this.OnSelectionChange();
                     break;
-                
-                case PlayModeStateChange.ExitingPlayMode:
-                    EditorApplication.update -= this.RuntimeUpdate;
-                    break;
+
+                case PlayModeStateChange.ExitingPlayMode: EditorApplication.update -= this.RuntimeUpdate; break;
             }
         }
 
 
         private void OnSelectionChange()
         {
-            switch (Selection.activeObject)
+            if (this.TryGetTreeAsset(out BehaviourTree selectedTreeAsset))
             {
-                case BehaviourTree treeObj: _tree = treeObj; break;
-
-                case GameObject gameObj: _tree = gameObj.TryGetComponent(out _treeRunner) ? _treeRunner.runtimeTree : null; break;
-
-                default: return;
-            }
-
-            CanEditTree = false;
-
-            if (_tree is not null)
-            {
+                _tree = selectedTreeAsset;
                 CanEditTree = Application.isPlaying == false;
 
                 bool openedEditorWindow = AssetDatabase.CanOpenAssetInEditor(_tree.GetInstanceID());
@@ -251,14 +249,35 @@ namespace BehaviourSystemEditor.BT
                     isInLoadingBTAsset = true;
 
                     _inspectorView?.ClearInspectorView();
-                    _blackboardListView?.ClearBlackboardView();
+                    _blackboardView?.ClearBlackboardView();
 
                     _treeView?.OnGraphEditorView(_tree);
-                    _blackboardListView?.OnBehaviourTreeChanged(_tree);
+                    _blackboardView?.OnBehaviourTreeChanged(_tree);
 
                     isInLoadingBTAsset = false;
                 }
             }
+        }
+
+
+        private bool TryGetTreeAsset(out BehaviourTree tree)
+        {
+            Object selectedObject = Selection.activeObject;
+
+            if (selectedObject is BehaviourTree treeAsset)
+            {
+                tree = treeAsset;
+                return true;
+            }
+            else if (selectedObject is GameObject gobj && gobj.TryGetComponent(out BehaviourTreeRunner runner))
+            {
+                tree = runner.runtimeTree;
+                _treeRunner = runner;
+                return true;
+            }
+
+            tree = null;
+            return false;
         }
     }
 }
