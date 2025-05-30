@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {

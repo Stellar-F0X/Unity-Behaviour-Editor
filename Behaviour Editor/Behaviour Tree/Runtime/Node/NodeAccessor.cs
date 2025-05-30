@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BehaviourSystem.BT
 {
@@ -26,23 +27,24 @@ namespace BehaviourSystem.BT
         {
             get { return _targetNode.callState; }
         }
-        
+
         public bool hasChildren
         {
             get { return _targetNode is IBehaviourIterable iterable && iterable.childCount > 0; }
         }
-        
-        
+
+
         public bool TryGetChildren(out NodeAccessor[] accessors)
         {
             if (_targetNode is IBehaviourIterable iterable)
             {
-                int count = 0;
                 accessors = new NodeAccessor[iterable.childCount];
+                List<NodeBase> children = iterable.GetChildren();
+                int count = children.Count;
 
-                foreach (var child in iterable.GetChildren())
+                for (int i = 0; i < count; ++i)
                 {
-                    accessors[count] = new NodeAccessor(child);
+                    accessors[i] = new NodeAccessor(children[i]);
                 }
 
                 return true;
@@ -52,7 +54,7 @@ namespace BehaviourSystem.BT
             return false;
         }
 
-        
+
         public bool TryGetParent(out NodeAccessor accessor)
         {
             if (_targetNode.parent is null)
@@ -60,7 +62,7 @@ namespace BehaviourSystem.BT
                 accessor = default;
                 return false;
             }
-            
+
             accessor = new NodeAccessor(_targetNode.parent);
             return true;
         }
@@ -71,19 +73,19 @@ namespace BehaviourSystem.BT
             _targetNode.onNodeEnter += callback;
         }
 
-        
+
         public void UnregisterNodeEnterCallback(Action callback)
         {
             _targetNode.onNodeEnter -= callback;
         }
 
-        
+
         public void RegisterNodeExitCallback(Action callback)
         {
             _targetNode.onNodeExit += callback;
         }
-        
-        
+
+
         public void UnregisterNodeExitCallback(Action callback)
         {
             _targetNode.onNodeExit -= callback;

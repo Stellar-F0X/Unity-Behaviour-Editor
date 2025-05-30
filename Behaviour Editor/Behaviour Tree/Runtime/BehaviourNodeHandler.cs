@@ -11,7 +11,7 @@ namespace BehaviourSystem.BT
         {
             int count = nodeSet.callStackSize + 1;
             int excludingRootCount = nodeSet.nodeList.Count - 1;
-            
+
             this._nodeSet = nodeSet;
             this._runtimeCallStack = new FixedList<Stack<NodeBase>>(count);
             this._abortQueue = new FixedQueue<AbortInfo>(excludingRootCount); //count excluding root node
@@ -21,7 +21,7 @@ namespace BehaviourSystem.BT
                 _runtimeCallStack.Add(new Stack<NodeBase>());
             }
         }
-        
+
         /// <summary> 중단(Abort) 작업 정보를 담는 구조체 </summary>
         private struct AbortInfo
         {
@@ -34,15 +34,15 @@ namespace BehaviourSystem.BT
             public readonly int callStackID;
             public readonly NodeBase targetNode; //null이면 전체 스택 중단
         }
-        
-        
+
+
         private FixedList<Stack<NodeBase>> _runtimeCallStack;
 
         private FixedQueue<AbortInfo> _abortQueue;
 
         private BehaviourNodeSet _nodeSet;
 
-        
+
         /// <summary> 트리에서 지정된 태그가 수식된 노드들을 찾습니다. </summary>
         /// <param name="nodeTag">수식된 태그</param>
         /// <param name="nodeSet">트리 집합</param>
@@ -52,7 +52,7 @@ namespace BehaviourSystem.BT
         {
             Span<int> indexArray = stackalloc int[_nodeSet.nodeList.Count];
             int count = 0;
-            
+
             for (int i = 0; i < _nodeSet.nodeList.Count; ++i)
             {
                 NodeBase currentNode = _nodeSet.nodeList[i];
@@ -67,7 +67,7 @@ namespace BehaviourSystem.BT
             if (count > 0)
             {
                 NodeAccessor[] accessors = new NodeAccessor[count];
-                
+
                 //만약 Tag가 모든 노드를 대상으로 한다면 시간 복잡도는 O(2n)이 되므로 GC 측면에선 좋으나, 빠른 검색의 관점에선 잘 모르겠다. 
                 for (int i = 0; i < count; ++i)
                 {
@@ -77,10 +77,10 @@ namespace BehaviourSystem.BT
 
                 return accessors;
             }
-            
+
             return null;
         }
-        
+
 
         /// <summary> 트리 디렉토리를 토대로 경로상에 위치한 노드를 찾습니다. </summary>
         /// <param name="treePath">트리 디렉토리</param>
@@ -94,17 +94,17 @@ namespace BehaviourSystem.BT
                 node = default;
                 return false;
             }
-            
+
             Span<char> pathBuffer = stackalloc char[256];
             Span<int> pathStartIndices = stackalloc int[128];
             Span<int> pathLengths = stackalloc int[128];
-            
+
             int pathCount = 0;
             int currentStart = 0;
             int pathLength = Math.Min(treePath.Length, 256);
-            
+
             treePath.AsSpan(0, pathLength).CopyTo(pathBuffer);
-            
+
             for (int i = 0; i < pathLength; i++)
             {
                 if (pathBuffer[i] == '/')
@@ -115,50 +115,54 @@ namespace BehaviourSystem.BT
                         pathLengths[pathCount] = i - currentStart;
                         pathCount++;
                     }
+
                     currentStart = i + 1;
                 }
             }
-            
+
             if (currentStart < pathLength)
             {
                 pathStartIndices[pathCount] = currentStart;
                 pathLengths[pathCount] = pathLength - currentStart;
                 pathCount++;
             }
-            
+
             if (pathCount == 0)
             {
                 node = default;
                 return false;
             }
-            
+
             ReadOnlySpan<char> rootNamePath = pathBuffer.Slice(pathStartIndices[0], pathLengths[0]);
-            
+
             if (rootNamePath.Equals(_nodeSet.rootNode.name.AsSpan(), StringComparison.Ordinal) == false)
             {
                 node = default;
                 return false;
             }
-            
+
             NodeBase nodeBase = _nodeSet.rootNode;
-            
+
             for (int i = 1; i < pathCount; i++)
             {
                 bool find = false;
                 ReadOnlySpan<char> currentPath = pathBuffer.Slice(pathStartIndices[i], pathLengths[i]);
-                
+
                 if (nodeBase is IBehaviourIterable iterable)
                 {
-                    foreach (NodeBase child in iterable.GetChildren())
+                    List<NodeBase> children = iterable.GetChildren();
+                    int count = children.Count;
+
+                    for (int j = 0; j < count; ++j)
                     {
-                        if (currentPath.Equals(child.name.AsSpan(), StringComparison.Ordinal))
+                        if (currentPath.Equals(children[j].name.AsSpan(), StringComparison.Ordinal))
                         {
-                            nodeBase = child;
+                            nodeBase = children[j];
                             find = true;
                             break;
                         }
                     }
-                    
+
                     if (find == false)
                     {
                         node = default;
@@ -234,7 +238,7 @@ namespace BehaviourSystem.BT
             this.ProcessAbortQueue(false);
         }
 
-        
+
         /// <summary>
         /// 중단 큐를 처리하여 노드들을 정리
         /// JobSystem으로 병렬화 가능하지만 상태 변경이 있어 주의 필요
@@ -321,10 +325,13 @@ namespace BehaviourSystem.BT
             {
                 parallelNode.Stop();
 
+                List<NodeBase> children = parallelNode.GetChildren();
+                int count = children.Count;
+
                 // 병렬 노드의 모든 자식들을 중단 큐에 추가
-                foreach (var child in parallelNode.GetChildren())
+                for (int i = 0; i < count; ++i)
                 {
-                    _abortQueue.Enqueue(new AbortInfo(child.callStackID));
+                    _abortQueue.Enqueue(new AbortInfo(children[i].callStackID));
                 }
             }
 

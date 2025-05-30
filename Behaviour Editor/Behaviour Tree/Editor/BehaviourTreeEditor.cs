@@ -168,7 +168,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
             
-            _treeView.UpdateNodeView();
+            _treeView?.UpdateNodeView();
         }
 
 

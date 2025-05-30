@@ -29,7 +29,7 @@ namespace BehaviourSystem.BT
         }
         
         
-        public IEnumerable<NodeBase> GetChildren()
+        public List<NodeBase> GetChildren()
         {
             return children;
         }

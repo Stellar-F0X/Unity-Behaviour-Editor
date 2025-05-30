@@ -15,11 +15,14 @@ namespace BehaviourSystemEditor.BT
             {
                 return;
             }
-            
-            foreach (var child in childrenNodes?.GetChildren())
+
+            List<NodeBase> children = childrenNodes.GetChildren();
+            int count = children.Count;
+
+            for (int i = 0; i < count; ++i)
             {
                 NodeView parentView = treeView.FindNodeView(parentNodeBase);
-                NodeView childView = treeView.FindNodeView(child);
+                NodeView childView = treeView.FindNodeView(children[i]);
 
                 if (parentView == null || childView == null)
                 {
@@ -40,7 +43,7 @@ namespace BehaviourSystemEditor.BT
             {
                 return;
             }
-            
+
             foreach (var edge in edges)
             {
                 NodeView parentView = edge.output.node as NodeView;
@@ -50,7 +53,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     continue;
                 }
-                
+
                 tree.nodeSet.AddChild(parentView.node, childView.node);
             }
         }
@@ -60,12 +63,12 @@ namespace BehaviourSystemEditor.BT
         {
             NodeView parentView = edge.output.node as NodeView;
             NodeView childView = edge.input.node as NodeView;
-            
+
             if (parentView == null || childView == null)
             {
                 return;
             }
-            
+
             tree.nodeSet.RemoveChild(parentView?.node, childView?.node);
             edge.RemoveFromHierarchy();
         }

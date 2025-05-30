@@ -5,8 +5,35 @@ namespace BehaviourSystem.BT
 {
     public sealed class RootNode : NodeBase, IBehaviourIterable
     {
-        [HideInInspector]
-        public NodeBase child;
+        [SerializeField, HideInInspector]
+        private List<NodeBase> _child = new List<NodeBase>(1);
+
+        
+        public NodeBase child
+        {
+            get
+            {
+                if (_child.Count == 0)
+                {
+                    return null;
+                }
+
+                return _child[0];
+            }
+            
+            set
+            {
+                if (_child.Count == 1)
+                {
+                    _child[0] = value;
+                }
+                else
+                {
+                    _child.Add(value);
+                }
+            }
+        }
+        
 
         public override ENodeType nodeType
         {
@@ -15,12 +42,12 @@ namespace BehaviourSystem.BT
         
         public int childCount
         {
-            get { return 1; }
+            get { return _child.Count; }
         }
         
-        public IEnumerable<NodeBase> GetChildren()
+        public List<NodeBase> GetChildren()
         {
-            yield return child;
+            return _child;
         }
 
         
