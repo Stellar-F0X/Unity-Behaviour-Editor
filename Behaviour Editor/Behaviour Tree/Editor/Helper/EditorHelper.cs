@@ -1,9 +1,10 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace BehaviourSystemEditor.BT
@@ -88,6 +89,15 @@ namespace BehaviourSystemEditor.BT
             Type[] array = collection.Where(t => t.IsAbstract == false).ToArray();
             Array.Sort(array, (a, b) => a.Name[0].CompareTo(b.Name[0]));
             return array;
+        }
+
+
+        public static void BorderColor(this IStyle style, Color color)
+        {
+            style.borderTopColor = color;
+            style.borderBottomColor = color;
+            style.borderLeftColor = color;
+            style.borderRightColor = color;
         }
     }
 }

@@ -24,6 +24,11 @@ namespace BehaviourSystemEditor.BT
             Label title = new Label();
             title.text = "Behaviour Tree Settings";
             title.AddToClassList("title");
+            title.AddToClassList("header-label");
+            title.style.fontSize = 19;
+            title.style.paddingLeft = new StyleLength(10f);
+            title.style.paddingTop = new StyleLength(2f);
+            title.style.unityFontStyleAndWeight = FontStyle.Bold; 
             rootElement.Add(title);
 
             VisualElement properties = new VisualElement();

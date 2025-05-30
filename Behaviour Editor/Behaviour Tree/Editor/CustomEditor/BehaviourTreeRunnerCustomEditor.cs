@@ -28,7 +28,7 @@ namespace BehaviourSystemEditor.BT
 
             if (useUpdateRate.boolValue)
             {
-                int maxFPS = Application.targetFrameRate > 0 ? Application.targetFrameRate : (int)BehaviourTreeEditor.Settings.maxUpdateRate;
+                int maxFPS = Application.targetFrameRate > 0 ? Application.targetFrameRate : (int)BehaviourTreeEditor.Settings.runnerMaxUpdateRateLimit;
                 updateRate.uintValue = (uint)EditorGUILayout.IntSlider((int)updateRate.uintValue, 1, maxFPS);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.HelpBox($"This node executes with a time interval of {1f / updateRate.uintValue:F3} seconds.", MessageType.Info);

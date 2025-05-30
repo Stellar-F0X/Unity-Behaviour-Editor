@@ -89,18 +89,18 @@ namespace BehaviourSystemEditor.BT
             {
                 case ESearchOptions.Tag:
                 {
-                    return string.Compare(nodeView.node.tag, name, StringComparison.OrdinalIgnoreCase) == 0;
+                    return string.Compare(nodeView.targetNode.tag, name, StringComparison.OrdinalIgnoreCase) == 0;
                 }
 
                 case ESearchOptions.Name:
                 {
-                    return string.Compare(nodeView.node.name, name, StringComparison.OrdinalIgnoreCase) == 0;
+                    return string.Compare(nodeView.targetNode.name, name, StringComparison.OrdinalIgnoreCase) == 0;
                 }
 
                 case ESearchOptions.Both:
                 {
-                    bool flag = string.Compare(nodeView.node.name, name, StringComparison.OrdinalIgnoreCase) == 0;
-                    return flag || string.Compare(nodeView.node.tag, name, StringComparison.OrdinalIgnoreCase) == 0;
+                    bool flag = string.Compare(nodeView.targetNode.name, name, StringComparison.OrdinalIgnoreCase) == 0;
+                    return flag || string.Compare(nodeView.targetNode.tag, name, StringComparison.OrdinalIgnoreCase) == 0;
                 }
             }
 

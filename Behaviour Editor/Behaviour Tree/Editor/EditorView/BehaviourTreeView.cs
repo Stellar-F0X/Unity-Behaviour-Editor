@@ -37,6 +37,7 @@ namespace BehaviourSystemEditor.BT
         }
 
         public Action<NodeView> onNodeSelected;
+        public ToolbarToggle minimapActivateToggle;
         public ToolbarPopupSearchField popupSearchField;
 
         private float _nextUpdateTime;
@@ -161,7 +162,7 @@ namespace BehaviourSystemEditor.BT
             base.AddElement(groupView);
             return groupView;
         }
-        
+
 
         public void UpdateNodeView()
         {
@@ -169,10 +170,10 @@ namespace BehaviourSystemEditor.BT
             {
                 float currentTime = Time.time;
                 float actualDeltaTime = currentTime - _lastUpdateTime;
-                
+
                 _lastUpdateTime = currentTime;
-                _nextUpdateTime = currentTime + BehaviourTreeEditor.Settings.editorUpdateInterval;
-                
+                _nextUpdateTime = currentTime + BehaviourTreeEditor.Settings.nodeViewUpdateInterval;
+
                 foreach (Node view in nodes)
                 {
                     ((NodeView)view)!.UpdateView(actualDeltaTime);
@@ -191,7 +192,7 @@ namespace BehaviourSystemEditor.BT
                     {
                         case Edge edge: this._nodeEdgeHandler.DeleteEdges(_tree, edge); break;
 
-                        case NodeView nodeView: this._tree.nodeSet.DeleteNode(nodeView.node); break;
+                        case NodeView nodeView: this._tree.nodeSet.DeleteNode(nodeView.targetNode); break;
 
                         case NodeGroupView groupView: this._tree.groupDataSet.DeleteGroupData(groupView.data); break;
                     }
@@ -221,7 +222,7 @@ namespace BehaviourSystemEditor.BT
 
             for (int i = 0; i < selection.Count; ++i)
             {
-                if (selection[i] is NodeView view && view.node.nodeType == NodeBase.ENodeType.Root)
+                if (selection[i] is NodeView view && view.targetNode.nodeType == NodeBase.ENodeType.Root)
                 {
                     view.selected = false;
                     selection.RemoveAt(i);
@@ -252,12 +253,13 @@ namespace BehaviourSystemEditor.BT
             nodeGroupView.schedule.Execute(() =>
             {
                 nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));
-                nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.node.guid)));
+                nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
             });
         }
 
 
-        private void OnGraphViewGeometryChanged(GeometryChangedEvent evt)
+
+        public void CreateOrActivateMiniMap(ChangeEvent<bool> evt)
         {
             if (_miniMap is null)
             {
@@ -265,6 +267,19 @@ namespace BehaviourSystemEditor.BT
                 _miniMap.anchored = true;
                 _miniMap.style.backgroundColor = BehaviourTreeEditor.Settings.miniMapBackgroundColor;
                 this.Add(_miniMap);
+            }
+            
+            _miniMap.SetPosition(new Rect(layout.width - 240, layout.height - 200, 220, 180));
+            _miniMap.visible = evt.newValue;
+        }
+
+
+
+        private void OnGraphViewGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (_miniMap is null)
+            {
+                return;
             }
 
             if (evt.newRect.width >= 280 && evt.newRect.height >= 240)
@@ -312,7 +327,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     NodeView view = views[i];
 
-                    string menuName = $"[{i + 1}]   name: [{view.node.name}]   tag: [{view.node.tag}]";
+                    string menuName = $"[{i + 1}]   name: [{view.targetNode.name}]   tag: [{view.targetNode.tag}]";
 
                     popupSearchField.menu.AppendAction(menuName, delegate
                     {

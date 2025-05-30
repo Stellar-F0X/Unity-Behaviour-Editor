@@ -197,6 +197,10 @@ namespace BehaviourSystemEditor.BT
 
             _treeView.popupSearchField = rootVisualElement.Q<ToolbarPopupSearchField>("search-node-field");
             _treeView.popupSearchField.RegisterValueChangedCallback(_treeView.SearchNodeByNameOrTag);
+            
+            _treeView.minimapActivateToggle = rootVisualElement.Q<ToolbarToggle>("active-minimap");
+            _treeView.minimapActivateToggle.RegisterValueChangedCallback(_treeView.CreateOrActivateMiniMap);
+            
             _treeView.onNodeSelected += _inspectorView.UpdateSelection;
 
             this.OnSelectionChange();

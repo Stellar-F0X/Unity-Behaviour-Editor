@@ -29,9 +29,9 @@ namespace BehaviourSystemEditor.BT
                     continue;
                 }
 
-                Edge newEdge = parentView.output.ConnectTo(childView.input);
+                Edge newEdge = parentView.outputPort.ConnectTo(childView.inputPort);
                 newEdge.pickingMode = Application.isPlaying ? PickingMode.Ignore : PickingMode.Position;
-                childView.toParentEdge = newEdge;
+                childView.parentConnectionEdge = newEdge;
                 treeView.AddElement(newEdge);
             }
         }
@@ -54,7 +54,7 @@ namespace BehaviourSystemEditor.BT
                     continue;
                 }
 
-                tree.nodeSet.AddChild(parentView.node, childView.node);
+                tree.nodeSet.AddChild(parentView.targetNode, childView.targetNode);
             }
         }
 
@@ -69,7 +69,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            tree.nodeSet.RemoveChild(parentView?.node, childView?.node);
+            tree.nodeSet.RemoveChild(parentView?.targetNode, childView?.targetNode);
             edge.RemoveFromHierarchy();
         }
     }

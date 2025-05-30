@@ -53,7 +53,7 @@ namespace BehaviourSystemEditor.BT
 
             if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.isInLoadingBTAsset == false)
             {
-                _data.AddNodeGuids(elements.Where(x => x.selected && x is NodeView).ConvertAll(x => ((NodeView)x).node));
+                _data.AddNodeGuids(elements.Where(x => x.selected && x is NodeView).ConvertAll(x => ((NodeView)x).targetNode));
             }
         }
 
@@ -67,7 +67,7 @@ namespace BehaviourSystemEditor.BT
 
             if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.isInLoadingBTAsset == false)
             {
-                _data.RemoveNodeGuids(elements.Where(x => x.selected && x is NodeView).ConvertAll(x => ((NodeView)x).node));
+                _data.RemoveNodeGuids(elements.Where(x => x.selected && x is NodeView).ConvertAll(x => ((NodeView)x).targetNode));
             }
         }
     }

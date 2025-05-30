@@ -23,7 +23,7 @@ namespace BehaviourSystemEditor.BT
         {
             base.Clear();
             Object.DestroyImmediate(this._editor);
-            this._editor = Editor.CreateEditor(view.node);
+            this._editor = Editor.CreateEditor(view.targetNode);
             base.Add(new IMGUIContainer(DrawInspectorGUI));
         }
 
