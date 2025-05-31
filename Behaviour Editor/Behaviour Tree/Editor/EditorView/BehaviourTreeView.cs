@@ -231,6 +231,13 @@ namespace BehaviourSystemEditor.BT
                 return null;
             }
 
+            string typeName = node.GetType().Name;
+            
+            if (string.CompareOrdinal(node.name, typeName) != 0)
+            {
+                NodeFactory.EditNodeName(node, typeName, false);
+            }
+
             NodeView nodeView = new NodeView(node, BehaviourTreeEditor.Settings.nodeViewXml);
             nodeView.OnNodeSelected += this.onNodeSelected;
 

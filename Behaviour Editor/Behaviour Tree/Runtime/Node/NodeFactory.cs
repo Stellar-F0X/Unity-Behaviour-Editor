@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-using UObject = UnityEngine.Object;
 
 namespace BehaviourSystem.BT
 {
@@ -11,25 +9,31 @@ namespace BehaviourSystem.BT
     {
         public static void EditNodeName(NodeBase targetNode, string newName, bool automaticSpacing = true)
         {
-            if (string.IsNullOrEmpty(newName))
-            {
-                throw new ArgumentException($"{typeof(NodeFactory)}: NodeName is null or empty");
-            }
-
             if (automaticSpacing)
             {
-                targetNode.name = Regex.Replace(newName, "(?<!^)([A-Z])", " $1");
+                targetNode.name = ApplySpacing(newName);
             }
             else
             {
                 targetNode.name = newName;
             }
         }
+
+
+        public static string ApplySpacing(string nodeName)
+        {
+            if (string.IsNullOrEmpty(nodeName))
+            {
+                throw new ArgumentException($"{typeof(NodeFactory)}: NodeName is null or empty");
+            }
+
+            return Regex.Replace(nodeName, "(?<!^)([A-Z])", " $1");
+        }
         
         
         public static NodeBase CreateNode(Type nodeType)
         {
-            if (typeof(NodeBase).IsAssignableFrom(nodeType))
+            if (typeof(NodeBase).IsAssignableFrom(nodeType) == false)
             {
                 throw new ArgumentException($"{typeof(NodeFactory)}: NodeType is not NodeBase");
             }
@@ -43,7 +47,7 @@ namespace BehaviourSystem.BT
             
             newNode.guid = GUID.Generate().ToString();
             newNode.hideFlags = HideFlags.HideInHierarchy;
-            NodeFactory.EditNodeName(newNode, newNode.name.Replace("Node", string.Empty));
+            EditNodeName(newNode, nodeType.Name.Replace("Node", string.Empty), false);
             return newNode;
         }
 

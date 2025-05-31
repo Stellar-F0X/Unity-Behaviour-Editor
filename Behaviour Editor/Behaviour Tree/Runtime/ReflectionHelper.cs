@@ -37,12 +37,6 @@ namespace BehaviourSystem.BT
 
         private readonly static Type _NodeBaseType = typeof(NodeBase);
 
-        private readonly static Type _PropertyBaseType = typeof(IBlackboardProperty);
-        
-        private readonly static Type _BlackboardBaseConditionType = typeof(BlackboardBasedCondition);
-        
-        private readonly static Type _BlackboardBaseConditionListType = typeof(IList<BlackboardBasedCondition>);
-
 
 #if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
@@ -54,7 +48,7 @@ namespace BehaviourSystem.BT
 #endif
 
 
-        public static FieldInfo[] GetCachedFieldInfo(Type type)
+        public static FieldInfo[] GetCachedFieldInfo(Type type, params Type[] includeTypes)
         {
             if (_FieldCacher.TryGetValue(type, out FieldInfo[] fieldInfos))
             {
@@ -62,15 +56,13 @@ namespace BehaviourSystem.BT
             }
 
             fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                             .Where(f => _PropertyBaseType.IsAssignableFrom(f.FieldType) || 
-                                                _BlackboardBaseConditionType.IsAssignableFrom(f.FieldType) || 
-                                                _BlackboardBaseConditionListType.IsAssignableFrom(f.FieldType))
+                             .Where(f => includeTypes.Any(t => t.IsAssignableFrom(f.FieldType)))
                              .ToArray();
 
             _FieldCacher[type] = fieldInfos;
             return fieldInfos;
         }
-
+        
 
 
         public static FieldAccessor GetAccessor(FieldInfo fieldInfo)

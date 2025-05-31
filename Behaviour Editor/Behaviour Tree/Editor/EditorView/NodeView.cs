@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
@@ -9,22 +10,44 @@ namespace BehaviourSystemEditor.BT
 {
     public class NodeView : Node
     {
+        private enum EIndicatorColor : byte
+        {
+            White,
+            Red,
+            Yellow,
+            Green
+        };
+
         public NodeView(NodeBase targetNode, VisualTreeAsset nodeUxml) : base(AssetDatabase.GetAssetPath(nodeUxml))
         {
             this.targetNode = targetNode;
-            this.title = targetNode.name;
+            this.title = NodeFactory.ApplySpacing(targetNode.name);
             this.tooltip = targetNode.tooltip;
             this.viewDataKey = targetNode.guid;
             this.style.left = targetNode.position.x;
             this.style.top = targetNode.position.y;
             this._lastProcessedCallCount = targetNode.callCount;
-            
+
             this._nodeBorder = this.Q<VisualElement>("node-border");
             this._nodeResultIndicator = this.Q<VisualElement>("executed-sign");
 
             this.Initialize();
             this.CreatePorts();
         }
+
+        private readonly static EIndicatorColor[] _CurrentIndicatorColor =
+        {
+            EIndicatorColor.Yellow, 
+            EIndicatorColor.Red,
+            EIndicatorColor.Green
+        };
+
+        private readonly static StyleColor[] _CurrentColor =
+        {
+            new StyleColor(Color.yellow),
+            new StyleColor(Color.red),
+            new StyleColor(Color.green)
+        };
 
         public event Action<NodeView> OnNodeSelected;
         public event Action<NodeView> OnNodeUnselected;
@@ -34,14 +57,13 @@ namespace BehaviourSystemEditor.BT
 
         public readonly NodeBase targetNode;
 
-        private bool _isInitializedColor;
         private bool _isHighlighted;
 
         private float _highlightDuration;
         private float _highlightRemainingTime;
         private ulong _lastProcessedCallCount;
 
-        private NodeBase.EBehaviourResult _previousFrameResult;
+        private EIndicatorColor _previousColor = EIndicatorColor.White;
 
         public Edge parentConnectionEdge;
         public Port inputPort;
@@ -50,18 +72,18 @@ namespace BehaviourSystemEditor.BT
 
         public override void OnSelected()
         {
-            OnNodeSelected?.Invoke(this); 
+            OnNodeSelected?.Invoke(this);
         }
-        
-        
-        
+
+
+
         public override void OnUnselected()
         {
             OnNodeUnselected?.Invoke(this);
         }
 
 
-        
+
         private void Initialize()
         {
             _nodeBorder.AddToClassList($"behaviour-node-{targetNode.nodeType}");
@@ -142,6 +164,7 @@ namespace BehaviourSystemEditor.BT
 
 
 #region Highlighting Logic
+
         public void UpdateView(float deltaTime)
         {
             if (Application.isPlaying == false)
@@ -158,7 +181,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        
+
         private bool UpdateNodeHighlightState(float deltaTime, float highlightingDuration)
         {
             if (_isHighlighted == false && targetNode.callCount == _lastProcessedCallCount)
@@ -196,44 +219,26 @@ namespace BehaviourSystemEditor.BT
 
             return _isHighlighted;
         }
-        
+
 
 
         private void UpdateNodeVisuals(BehaviourTreeEditorSettings settings, float progress)
         {
-            if (targetNode.behaviourResult != _previousFrameResult || _isInitializedColor == false)
+            int index = (int)targetNode.behaviourResult;
+            
+            if (_previousColor != _CurrentIndicatorColor[index])
             {
-                _isInitializedColor = true;
-                
-                switch (targetNode.behaviourResult)
-                {
-                    case NodeBase.EBehaviourResult.Running:
-                    {
-                        _nodeResultIndicator.style.backgroundColor = new StyleColor(Color.yellow);
-                        _previousFrameResult = NodeBase.EBehaviourResult.Running;
-                        break;
-                    }
-                    case NodeBase.EBehaviourResult.Failure:
-                    {
-                        _nodeResultIndicator.style.backgroundColor = new StyleColor(Color.red);
-                        _previousFrameResult = NodeBase.EBehaviourResult.Failure;
-                        break;
-                    }
-                    case NodeBase.EBehaviourResult.Success:
-                    {
-                        _nodeResultIndicator.style.backgroundColor = new StyleColor(Color.green);
-                        _previousFrameResult = NodeBase.EBehaviourResult.Success;
-                        break;
-                    }
-                }
+                _previousColor = _CurrentIndicatorColor[index];
+                _nodeResultIndicator.style.backgroundColor = _CurrentColor[index];
             }
-            
+
             _nodeBorder?.style.SetBorderColor(Color.Lerp(settings.nodeDisappearingColor, settings.nodeAppearingColor, progress));
-            
+
             parentConnectionEdge?.edgeControl.SetEdgeColor(Color.Lerp(settings.edgeDisappearingColor, settings.edgeAppearingColor, progress));
         }
+
 #endregion
-        
+
 
         private void SetupPort(Port port, string portName, FlexDirection direction, VisualElement container)
         {

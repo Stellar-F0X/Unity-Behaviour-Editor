@@ -162,7 +162,7 @@ namespace BehaviourSystem.BT
         /// <summary> 블랙보드 프로퍼티 처리 </summary>
         private void ProcessBlackboardProperties(NodeBase clonedNode, Blackboard blackboard, Type tProperty, Type tCondition, Type tConditionList)
         {
-            foreach (var fieldInfo in ReflectionHelper.GetCachedFieldInfo(clonedNode?.GetType()))
+            foreach (var fieldInfo in ReflectionHelper.GetCachedFieldInfo(clonedNode?.GetType(), tProperty, tCondition, tConditionList))
             {
                 if (tProperty.IsAssignableFrom(fieldInfo.FieldType))
                 {
