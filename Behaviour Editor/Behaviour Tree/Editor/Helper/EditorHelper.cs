@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -48,23 +49,13 @@ namespace BehaviourSystemEditor.BT
                     return path;
                 }
             }
-
+            
             throw new FileNotFoundException($"Asset not found at filter: {searchFilter}");
         }
 
 
-        public static void ForEach<T>(this IEnumerable<T> array, Action<T> action)
+        public static void ForEach<T>([NotNull]this IEnumerable<T> array, [NotNull]Action<T> action)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
             foreach (var element in array)
             {
                 action.Invoke(element);
@@ -72,7 +63,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static List<TOutput> ConvertAll<TInput, TOutput>(this IEnumerable<TInput> array, Func<TInput, TOutput> converter)
+        public static List<TOutput> ConvertAll<TInput, TOutput>([NotNull]this IEnumerable<TInput> array, [NotNull]Func<TInput, TOutput> converter)
         {
             List<TOutput> outputList = new List<TOutput>(array.Count());
 
@@ -88,6 +79,12 @@ namespace BehaviourSystemEditor.BT
         public static Type[] OrderByNameAndFilterAbstracts(this TypeCache.TypeCollection collection)
         {
             Type[] array = collection.Where(t => t.IsAbstract == false).ToArray();
+
+            if (array.Length <= 1)
+            {
+                return array;
+            }
+            
             Array.Sort(array, (a, b) => a.Name[0].CompareTo(b.Name[0]));
             return array;
         }

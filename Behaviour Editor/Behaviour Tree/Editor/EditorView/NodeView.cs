@@ -34,6 +34,7 @@ namespace BehaviourSystemEditor.BT
 
         public readonly NodeBase targetNode;
 
+        private bool _isInitializedColor;
         private bool _isHighlighted;
 
         private float _highlightDuration;
@@ -200,8 +201,10 @@ namespace BehaviourSystemEditor.BT
 
         private void UpdateNodeVisuals(BehaviourTreeEditorSettings settings, float progress)
         {
-            if (targetNode.behaviourResult != _previousFrameResult)
+            if (targetNode.behaviourResult != _previousFrameResult || _isInitializedColor == false)
             {
+                _isInitializedColor = true;
+                
                 switch (targetNode.behaviourResult)
                 {
                     case NodeBase.EBehaviourResult.Running:

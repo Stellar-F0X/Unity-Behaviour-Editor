@@ -19,9 +19,9 @@ namespace BehaviourSystemEditor.BT
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
             this.AddManipulator(new ContentZoomer()
-            { 
+            {
                 maxScale = BehaviourTreeEditor.Settings.maxZoomScale,
-                minScale = BehaviourTreeEditor.Settings.minZoomScale 
+                minScale = BehaviourTreeEditor.Settings.minZoomScale
             });
 
             styleSheets.Add(BehaviourTreeEditor.Settings.behaviourTreeStyle);
@@ -59,17 +59,19 @@ namespace BehaviourSystemEditor.BT
 
                 for (int i = 0; i < tree.nodeSet.nodeList.Count; ++i)
                 {
-                    //Undo로 생성이 취소된 노드를 여기서 처리.
+                    //1. Undo로 생성이 취소된 노드를 여기서 처리.
+                    //2. Graph에 만들어졌지만 클래스를 삭제당한 노드도 삭제.
                     if (tree.nodeSet.nodeList[i] is null)
                     {
-                        tree.nodeSet.nodeList.RemoveAt(i);
+                        tree.nodeSet.nodeList.RemoveAt(i--);
                     }
                 }
 
                 //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
                 tree.nodeSet.nodeList.ForEach(n => this.RecreateNodeViewOnLoad(n));
-                tree.groupDataSet?.dataList.ForEach(d => this.RecreateNodeGroupViewOnLoad(d));
                 tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n, n as IBehaviourIterable));
+                
+                tree.groupDataSet?.dataList.ForEach(d => this.RecreateNodeGroupViewOnLoad(d));
             }
         }
 
@@ -224,6 +226,11 @@ namespace BehaviourSystemEditor.BT
 
         private NodeView RecreateNodeViewOnLoad(NodeBase node)
         {
+            if (node is null)
+            {
+                return null;
+            }
+
             NodeView nodeView = new NodeView(node, BehaviourTreeEditor.Settings.nodeViewXml);
             nodeView.OnNodeSelected += this.onNodeSelected;
 

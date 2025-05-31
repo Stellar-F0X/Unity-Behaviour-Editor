@@ -87,11 +87,11 @@ namespace BehaviourSystem.BT
         /// JobSystem으로 병렬화할 수 있는 영역
         /// </summary>
         /// <param name="info">클론 정보</param>
-        /// <param name="infos">클론 작업 큐</param>
+        /// <param name="queue">클론 작업 큐</param>
         /// <param name="nodes">후처리 스택</param>
         /// <param name="runner">트리 러너</param>
         /// <param name="newSet">클론된 노드셋</param>s
-        private void ProcessClone(CloneInfo info, FixedQueue<CloneInfo> infos, FixedStack<NodeBase> nodes, BehaviourTreeRunner runner, BehaviourNodeSet newSet)
+        private void ProcessClone(CloneInfo info, FixedQueue<CloneInfo> queue, FixedStack<NodeBase> nodes, BehaviourTreeRunner runner, BehaviourNodeSet newSet)
         {
             info.clone.runner = runner;
             info.clone.depth = info.depth;
@@ -100,26 +100,26 @@ namespace BehaviourSystem.BT
 
             newSet.nodeList.Add(info.clone);
             nodes.Push(info.clone);
+            
+            int depthInTree = info.depth + 1;
 
             switch (info.origin.nodeType)
             {
-                case NodeBase.ENodeType.Root: this.ProcessRootNodeClone((RootNode)info.origin, (RootNode)info.clone, info.depth + 1, info.stackID, infos); break;
+                case NodeBase.ENodeType.Root: this.CloneNode((RootNode)info.origin, (RootNode)info.clone, depthInTree, info.stackID, queue); break;
 
-                case NodeBase.ENodeType.Decorator:
-                    this.ProcessDecoratorNodeClone((DecoratorNode)info.origin, (DecoratorNode)info.clone, info.depth + 1, info.stackID, infos); break;
+                case NodeBase.ENodeType.Decorator: this.CloneNode((DecoratorNode)info.origin, (DecoratorNode)info.clone, depthInTree, info.stackID, queue); break;
 
-                case NodeBase.ENodeType.Composite:
-                    this.ProcessChildrenNodeClone((CompositeNode)info.origin, (CompositeNode)info.clone, info.depth + 1, info.stackID, infos); break;
+                case NodeBase.ENodeType.Composite: this.CloneNode((CompositeNode)info.origin, (CompositeNode)info.clone, depthInTree, info.stackID, queue); break;
             }
         }
 
 
-        /// <summary> 루트 노드 클론 처리 </summary>
-        private void ProcessRootNodeClone(RootNode origin, RootNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
+        /// <summary> 루트 노드의 자식 클론 처리 </summary>
+        private void CloneNode(RootNode origin, RootNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
         {
             if (origin.child is not null)
             {
-                NodeBase childClone = UObject.Instantiate(origin.child);
+                NodeBase childClone = Instantiate(origin.child);
                 childClone.parent = clone;
                 clone.child = childClone;
                 cloneQueue.Enqueue(new CloneInfo(origin.child, childClone, nextDepth, stackID));
@@ -127,12 +127,12 @@ namespace BehaviourSystem.BT
         }
 
 
-        /// <summary> 데코레이터 노드 클론 처리 </summary>
-        private void ProcessDecoratorNodeClone(DecoratorNode origin, DecoratorNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
+        /// <summary> 데코레이터 노드의 자식을 클론 처리 </summary>
+        private void CloneNode(DecoratorNode origin, DecoratorNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
         {
             if (origin.child is not null)
             {
-                NodeBase childClone = UObject.Instantiate(origin.child);
+                NodeBase childClone = Instantiate(origin.child);
                 childClone.parent = clone;
                 clone.child = childClone;
                 cloneQueue.Enqueue(new CloneInfo(origin.child, childClone, nextDepth, stackID));
@@ -140,8 +140,8 @@ namespace BehaviourSystem.BT
         }
 
 
-        /// <summary> 컴포지트 노드 클론 처리 - 병렬 노드의 경우 새로운 CallStack ID 할당 </summary>
-        private void ProcessChildrenNodeClone(CompositeNode origin, CompositeNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
+        /// <summary> 컴포지트 노드의 자식들을 클론 처리. Parallel 노드의 경우 새로운 CallStack ID 할당하여 CallStack 공간 배정 </summary>
+        private void CloneNode(CompositeNode origin, CompositeNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
         {
             if (origin.children is not null && origin.children.Count > 0)
             {
@@ -150,7 +150,7 @@ namespace BehaviourSystem.BT
                 for (int i = 0; i < origin.children.Count; ++i)
                 {
                     int newStackID = isParallelNode ? (++callStackSize) : stackID;
-                    NodeBase childClone = UObject.Instantiate(origin.children[i]);
+                    NodeBase childClone = Instantiate(origin.children[i]);
                     childClone.parent = clone;
                     clone.children[i] = childClone;
                     cloneQueue.Enqueue(new CloneInfo(origin.children[i], childClone, nextDepth, newStackID));
@@ -279,31 +279,29 @@ namespace BehaviourSystem.BT
 
         public NodeBase CreateNode(Type nodeType)
         {
-            if (CreateInstance(nodeType) is NodeBase node)
+            NodeBase node = NodeFactory.CreateNode(nodeType);
+
+            if (node is null)
             {
-                node.name = Regex.Replace(nodeType.Name.Replace("Node", ""), "(?<!^)([A-Z])", " $1");
-                node.guid = GUID.Generate().ToString();
-                node.hideFlags = HideFlags.HideInHierarchy;
-
-                if (Application.isPlaying == false && Undo.isProcessing == false)
-                {
-                    Undo.RecordObject(this, "Behaviour Tree (CreateNode)");
-                }
-
-                nodeList.Add(node);
-
-                if (Application.isPlaying == false && Undo.isProcessing == false)
-                {
-                    Undo.RegisterCreatedObjectUndo(node, "Behaviour Tree (CreateNode)");
-                    AssetDatabase.AddObjectToAsset(node, this);
-                    EditorUtility.SetDirty(this);
-                    AssetDatabase.SaveAssets();
-                }
-
-                return node;
+                throw new Exception("Node is null");
             }
 
-            throw new Exception("Node is null");
+            if (Application.isPlaying == false && Undo.isProcessing == false)
+            {
+                Undo.RecordObject(this, "Behaviour Tree (CreateNode)");
+            }
+
+            nodeList.Add(node);
+
+            if (Application.isPlaying == false && Undo.isProcessing == false)
+            {
+                Undo.RegisterCreatedObjectUndo(node, "Behaviour Tree (CreateNode)");
+                AssetDatabase.AddObjectToAsset(node, this);
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
+            }
+
+            return node;
         }
 
 
