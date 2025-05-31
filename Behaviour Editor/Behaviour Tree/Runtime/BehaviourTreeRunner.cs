@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("BehaviourSystemEditor-BT")]
-
 namespace BehaviourSystem.BT
 {
     [DefaultExecutionOrder(-1), AddComponentMenu("Behaviour System/Behaviour Tree Runner")]

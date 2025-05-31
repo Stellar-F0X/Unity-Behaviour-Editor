@@ -159,23 +159,35 @@ namespace BehaviourSystem.BT
 
             return string.CompareOrdinal(this.guid, other.guid) == 0;
         }
-        
-        /// 모든 노드가 생성된뒤 호출되는 함수.
-        public virtual void PostTreeCreation() { }
-        
 
+
+        /// Function called after all nodes in the tree asset are created.
+        public virtual void PostTreeCreation() { }
+
+        
+        /// Function called during the FixedUpdate cycle for this node.
+        /// Used for physics-related operations that require consistent timing.
         public virtual void FixedUpdateNode() { }
 
         
+        /// Function used to draw gizmos in the scene view for this node.
+        /// Helps visualize node's functionality in the editor.
+        /// Only executes during runtime, not in edit mode.
         public virtual void GizmosUpdateNode() { }
 
-
+        
+        /// Called when the node execution begins.
+        /// Used for initialization when the node is first executed.
         protected virtual void OnEnter() { }
 
         
+        /// Called when the node execution ends.
+        /// Used for cleanup and state reset when the node is no longer active.
         protected virtual void OnExit() { }
 
-
+        
+        /// Core behavior update function that must be implemented by derived classes.
+        /// Returns the execution result of the node's behavior.
         protected abstract EBehaviourResult OnUpdate();
     }
 }

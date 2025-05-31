@@ -34,6 +34,7 @@ namespace BehaviourSystemEditor.BT
         {
             if (evt.newRect.width >= 240 && evt.newRect.height >= 240)
             {
+                //Toggle로 비활성화된게 아니라, 남은 공간이 없어서 비활성화된 것이라면 다시 활성화한다.
                 if (_activated)
                 {
                     this.visible = true;
