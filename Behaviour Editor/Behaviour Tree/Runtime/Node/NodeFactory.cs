@@ -27,6 +27,11 @@ namespace BehaviourSystem.BT
                 throw new ArgumentException($"{typeof(NodeFactory)}: NodeName is null or empty");
             }
 
+            if (nodeName.EndsWith("Node"))
+            {
+                nodeName = nodeName.Replace("Node", string.Empty);
+            }
+
             return Regex.Replace(nodeName, "(?<!^)([A-Z])", " $1");
         }
         
@@ -47,7 +52,7 @@ namespace BehaviourSystem.BT
             
             newNode.guid = GUID.Generate().ToString();
             newNode.hideFlags = HideFlags.HideInHierarchy;
-            EditNodeName(newNode, nodeType.Name.Replace("Node", string.Empty), false);
+            newNode.name = ApplySpacing(nodeType.Name);
             return newNode;
         }
 

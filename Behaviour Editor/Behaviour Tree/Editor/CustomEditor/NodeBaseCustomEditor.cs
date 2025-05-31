@@ -10,34 +10,40 @@ namespace BehaviourSystemEditor.BT
     {
         public override void OnInspectorGUI()
         {
+            GUIStyle headerLabelStyle = new GUIStyle(EditorStyles.toolbar);
+            headerLabelStyle.alignment = TextAnchor.MiddleLeft;
+            headerLabelStyle.fontStyle = FontStyle.Bold;
+            headerLabelStyle.fontSize = 13;
+
+            EditorGUILayout.LabelField("Information", headerLabelStyle);
+            EditorGUILayout.Space(2);
+
             using (new EditorGUI.DisabledScope(true))
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
             }
-
-            EditorGUILayout.Space(2);
-
+            
+            SerializedProperty nameProp = serializedObject.FindProperty("m_Name");
             SerializedProperty tagProp = serializedObject.FindProperty("tag");
             SerializedProperty desProp = serializedObject.FindProperty("description");
             SerializedProperty iterator = desProp;
 
-            GUIStyle boldLabelStyle = new GUIStyle(EditorStyles.label);
-            boldLabelStyle.fontStyle = FontStyle.Bold;
-            boldLabelStyle.fontSize = 13;
-            
-            tagProp.stringValue = EditorGUILayout.TextField("Tag", tagProp.stringValue);
+            using (new EditorGUI.DisabledScope(!BehaviourTreeEditor.CanEditTree))
+            {
+                nameProp.stringValue = EditorGUILayout.TextField("Name", nameProp.stringValue);
+                tagProp.stringValue = EditorGUILayout.TextField("Tag", tagProp.stringValue);
+                
+                EditorGUILayout.LabelField("Description");
+                desProp.stringValue = EditorGUILayout.TextArea(desProp.stringValue, GUILayout.Height(EditorGUIUtility.singleLineHeight * 3));
+            }
 
-            EditorGUILayout.LabelField("Description");
-            GUILayoutOption height = GUILayout.Height(EditorGUIUtility.singleLineHeight * 3);
+            EditorGUILayout.Space(10);
 
-            desProp.stringValue = EditorGUILayout.TextArea(desProp.stringValue, height);
-
-            while (iterator.NextVisible(false) && iterator.name.Equals("position", StringComparison.Ordinal) == false) ;
+            while (iterator.NextVisible(false) && iterator.name.Equals("position", StringComparison.Ordinal) == false);
 
             if (iterator.NextVisible(false))
             {
-                EditorGUILayout.Space(10);
-                EditorGUILayout.LabelField(this.target.name, boldLabelStyle);
+                EditorGUILayout.LabelField(this.target.name, headerLabelStyle);
                 EditorGUILayout.BeginVertical(new GUIStyle(GUI.skin.box));
 
                 do EditorGUILayout.PropertyField(iterator);
@@ -45,7 +51,7 @@ namespace BehaviourSystemEditor.BT
 
                 EditorGUILayout.EndVertical();
             }
-            
+
             serializedObject.ApplyModifiedProperties();
         }
     }

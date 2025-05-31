@@ -5,6 +5,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using BehaviourSystem.BT;
 using UnityEditor;
+using UnityEditor.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {
@@ -21,7 +22,7 @@ namespace BehaviourSystemEditor.BT
         public NodeView(NodeBase targetNode, VisualTreeAsset nodeUxml) : base(AssetDatabase.GetAssetPath(nodeUxml))
         {
             this.targetNode = targetNode;
-            this.title = NodeFactory.ApplySpacing(targetNode.name);
+            this.title = targetNode.name;
             this.tooltip = targetNode.tooltip;
             this.viewDataKey = targetNode.guid;
             this.style.left = targetNode.position.x;
@@ -29,6 +30,7 @@ namespace BehaviourSystemEditor.BT
             this._lastProcessedCallCount = targetNode.callCount;
 
             this._nodeBorder = this.Q<VisualElement>("node-border");
+            this._nodeTypeLabel = this.Q<TextElement>("node-type-label");
             this._nodeResultIndicator = this.Q<VisualElement>("executed-sign");
 
             this.Initialize();
@@ -54,7 +56,8 @@ namespace BehaviourSystemEditor.BT
 
         private readonly VisualElement _nodeResultIndicator;
         private readonly VisualElement _nodeBorder;
-
+        private readonly TextElement _nodeTypeLabel;
+        
         public readonly NodeBase targetNode;
 
         private bool _isHighlighted;
@@ -87,10 +90,17 @@ namespace BehaviourSystemEditor.BT
         private void Initialize()
         {
             _nodeBorder.AddToClassList($"behaviour-node-{targetNode.nodeType}");
+            _nodeTypeLabel.text = NodeFactory.ApplySpacing(targetNode.GetType().Name);
 
             if (Application.isPlaying)
             {
                 _nodeBorder.style.SetBorderColor(BehaviourTreeEditor.Settings.nodeDisappearingColor);
+            }
+            else
+            {
+                SerializedObject targetObject = new SerializedObject(targetNode);
+                SerializedProperty nameProperty = targetObject.FindProperty("m_Name");
+                this.TrackPropertyValue(nameProperty, p => this.title = p.stringValue);
             }
         }
 
