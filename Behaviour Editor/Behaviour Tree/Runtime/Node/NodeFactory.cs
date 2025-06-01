@@ -53,6 +53,7 @@ namespace BehaviourSystem.BT
             newNode.guid = GUID.Generate().ToString();
             newNode.hideFlags = HideFlags.HideInHierarchy;
             newNode.name = ApplySpacing(nodeType.Name);
+            newNode.nodeTypeName = newNode.GetType().Name;
             return newNode;
         }
 

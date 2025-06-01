@@ -49,6 +49,7 @@ namespace BehaviourSystem.BT
         
         [NonSerialized]
         public ulong callCount;
+        public string nodeTypeName;
         
         public EBehaviourResult behaviourResult;
         
