@@ -90,7 +90,7 @@ namespace BehaviourSystemEditor.BT
         private void Initialize()
         {
             _nodeBorder.AddToClassList($"behaviour-node-{targetNode.nodeType}");
-            _nodeTypeLabel.text = NodeFactory.ApplySpacing(targetNode.GetType().Name);
+            _nodeTypeLabel.text = NodeFactory.ApplySpacing(targetNode.nodeTypeName);
 
             if (Application.isPlaying)
             {
@@ -102,6 +102,13 @@ namespace BehaviourSystemEditor.BT
                 SerializedProperty nameProperty = targetObject.FindProperty("m_Name");
                 this.TrackPropertyValue(nameProperty, p => this.title = p.stringValue);
             }
+        }
+
+
+
+        public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
+        {
+            return new PortView(direction, capacity);
         }
 
 

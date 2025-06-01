@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using BehaviourSystem.BT;
 using UnityEditor;
@@ -13,12 +12,21 @@ namespace BehaviourSystemEditor.BT
     public class CreationWindow : ScriptableObject, ISearchWindowProvider
     {
         private readonly Vector2 _nodeOffset = new Vector2(-75, -20);
+        private event Action<NodeView> _nodeCreateCallback;
+        
         private BehaviourTreeView _treeView;
 
 
         public void Initialize(BehaviourTreeView editorWindowView)
         {
             _treeView = editorWindowView;
+        }
+        
+
+        public void RegisterNodeCreationCallbackOnce(Action<NodeView> callback)
+        {
+            _nodeCreateCallback = null;
+            _nodeCreateCallback = callback;
         }
 
 
@@ -88,7 +96,9 @@ namespace BehaviourSystemEditor.BT
         {
             Vector2 nodePosition = _nodeOffset + this.CalculateMousePosition(context);
             NodeView nodeView = _treeView.CreateNewNodeAndView(type, nodePosition);
-
+            
+            _nodeCreateCallback?.Invoke(nodeView);
+            _nodeCreateCallback = null;
             _treeView.SelectNode(nodeView);
             return nodeView;
         }

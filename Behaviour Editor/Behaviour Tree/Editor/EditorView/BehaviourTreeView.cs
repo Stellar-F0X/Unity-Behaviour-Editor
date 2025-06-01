@@ -70,7 +70,7 @@ namespace BehaviourSystemEditor.BT
                 //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
                 tree.nodeSet.nodeList.ForEach(n => this.RecreateNodeViewOnLoad(n));
                 tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n, n as IBehaviourIterable));
-                
+
                 tree.groupDataSet?.dataList.ForEach(d => this.RecreateNodeGroupViewOnLoad(d));
             }
         }
@@ -84,6 +84,28 @@ namespace BehaviourSystemEditor.BT
             }
 
             return this.GetNodeByGuid(node.guid) as NodeView;
+        }
+
+
+        public void OpenContextualMenuWindow(Vector2 mousePosition, Action<NodeView> onNewNodeCreatedOnce = null)
+        {
+            if (BehaviourTreeEditor.CanEditTree == false)
+            {
+                return;
+            }
+
+            if (_creationWindow is null)
+            {
+                _creationWindow = ScriptableObject.CreateInstance<CreationWindow>();
+                _creationWindow.Initialize(this);
+            }
+            
+            _creationWindow.RegisterNodeCreationCallbackOnce(onNewNodeCreatedOnce);
+
+            Vector2 screenPoint = GUIUtility.GUIToScreenPoint(mousePosition);
+            SearchWindowContext context = new SearchWindowContext(screenPoint, 200, 240);
+
+            SearchWindow.Open(context, _creationWindow);
         }
 
 
@@ -101,21 +123,7 @@ namespace BehaviourSystemEditor.BT
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            if (BehaviourTreeEditor.CanEditTree == false)
-            {
-                return;
-            }
-
-            if (_creationWindow is null)
-            {
-                _creationWindow = ScriptableObject.CreateInstance<CreationWindow>();
-                _creationWindow.Initialize(this);
-            }
-
-            Vector2 screenPoint = GUIUtility.GUIToScreenPoint(evt.mousePosition);
-            SearchWindowContext context = new SearchWindowContext(screenPoint, 200, 240);
-
-            SearchWindow.Open(context, _creationWindow);
+            this.OpenContextualMenuWindow(evt.mousePosition);
         }
 
 
@@ -230,7 +238,7 @@ namespace BehaviourSystemEditor.BT
             {
                 return null;
             }
-            
+
             NodeView nodeView = new NodeView(node, BehaviourTreeEditor.Settings.nodeViewXml);
             nodeView.OnNodeSelected += this.onNodeSelected;
 
