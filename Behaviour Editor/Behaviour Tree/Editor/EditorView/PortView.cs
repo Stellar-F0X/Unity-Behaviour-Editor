@@ -45,13 +45,29 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            if (edge.input is not null && edge.input.node is NodeView connectionSource)
+            if (edge.input is not null && edge.input.node is NodeView connectionDestination) //Create and link new parent node
             {
-                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, view => NodeLinkHelper.ConnectNodesByEdge(connectionSource, view));
+                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, newParentNodeView =>
+                {
+                    NodeLinkHelper.TryDisconnectChildToParent(connectionDestination);
+                    
+                    if (NodeLinkHelper.TryConnectNodesByEdge(newParentNodeView, connectionDestination, out _))
+                    {
+                        BehaviourTreeEditor.Instance.Tree.nodeSet.AddChild(newParentNodeView.targetNode, connectionDestination.targetNode);
+                    }
+                });
             }
-            else if (edge.output is not null && edge.output.node is NodeView connecttionDestination)
+            else if (edge.output is not null && edge.output.node is NodeView connectionSource) //Create and link new child node
             {
-                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, view => NodeLinkHelper.ConnectNodesByEdge(view, connecttionDestination));
+                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, newChildNodeView =>
+                {
+                    NodeLinkHelper.TryDisconnectParentToChild(connectionSource);
+                    
+                    if (NodeLinkHelper.TryConnectNodesByEdge(connectionSource, newChildNodeView, out _))
+                    {
+                        BehaviourTreeEditor.Instance.Tree.nodeSet.AddChild(connectionSource.targetNode, newChildNodeView.targetNode);
+                    }
+                });
             }
         }
 
