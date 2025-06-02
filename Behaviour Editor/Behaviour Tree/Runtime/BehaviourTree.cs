@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    [CreateAssetMenu(fileName = "Behaviour Tree", menuName = "Behaviour Tree/Tree Asset")]
+    [CreateAssetMenu(fileName = "New Behaviour Tree", menuName = "Behaviour Tree/Behaviour Tree Asset")]
     public sealed class BehaviourTree : ScriptableObject, IEquatable<BehaviourTree>
     {
         [HideInInspector]
@@ -27,13 +27,13 @@ namespace BehaviourSystem.BT
 
         internal static BehaviourTree MakeRuntimeTree(BehaviourTreeRunner treeRunner, BehaviourTree targetTree)
         {
-            if (treeRunner == null)
+            if (treeRunner is null)
             {
                 Debug.LogError("BehaviourActor is null.");
                 return null;
             }
 
-            if (targetTree == null)
+            if (targetTree is null)
             {
                 Debug.LogError("BehaviourTree is null.");
                 return null;

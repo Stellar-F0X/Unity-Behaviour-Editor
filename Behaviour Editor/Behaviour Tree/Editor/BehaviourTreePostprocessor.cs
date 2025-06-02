@@ -33,14 +33,6 @@ namespace BehaviourSystemEditor.BT
                         AssetDatabase.SaveAssets();
                     }
 
-                    if (asset.blackboard is null)
-                    {
-                        asset.blackboard = ScriptableObject.CreateInstance<Blackboard>();
-                        asset.blackboard.hideFlags = HideFlags.HideInHierarchy;
-                        AssetDatabase.AddObjectToAsset(asset.blackboard, asset);
-                        AssetDatabase.SaveAssets();
-                    }
-
                     if (asset.groupDataSet is null)
                     {
                         asset.groupDataSet = ScriptableObject.CreateInstance<GroupDataSet>();

@@ -24,13 +24,22 @@ namespace BehaviourSystemEditor.BT
                 NodeView parentView = treeView.FindNodeView(parentNodeBase);
                 NodeView childView = treeView.FindNodeView(children[i]);
 
-                if (parentView is null || childView is null)
+                if (parentView is null || childView is null || parentView.outputPort is null || childView.inputPort is null)
                 {
                     continue;
                 }
 
                 Edge newEdge = parentView.outputPort.ConnectTo(childView.inputPort);
-                newEdge.pickingMode = Application.isPlaying ? PickingMode.Ignore : PickingMode.Position;
+
+                if (Application.isPlaying)
+                {
+                    newEdge.pickingMode = PickingMode.Ignore;
+                }
+                else
+                {
+                    newEdge.pickingMode = PickingMode.Position;
+                }
+                 
                 childView.parentConnectionEdge = newEdge;
                 treeView.AddElement(newEdge);
             }
@@ -69,7 +78,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            nodeSet.RemoveChild(parentView?.targetNode, childView?.targetNode);
+            nodeSet.RemoveChild(parentView.targetNode, childView.targetNode);
             edge.RemoveFromHierarchy();
         }
 

@@ -207,8 +207,9 @@ namespace BehaviourSystemEditor.BT
 
             var elementAddButton = rootVisualElement.Q<ToolbarMenu>("element-add-button");
             var minimapActivateButton = rootVisualElement.Q<ToolbarToggle>("active-minimap");
+            var blackboardBindField = rootVisualElement.Q<ObjectField>("blackboard-field");
 
-            _blackboardView.Setup(elementAddButton);
+            _blackboardView.Setup(elementAddButton, blackboardBindField);
             _miniMapView.Setup(minimapActivateButton, _treeView);
             _nodeSearchField.Setup(_inspectorView, _treeView);
 
@@ -273,7 +274,7 @@ namespace BehaviourSystemEditor.BT
             {
                 tree = runner.runtimeTree;
                 _treeRunner = runner;
-                return true;
+                return tree is not null;
             }
 
             tree = null;

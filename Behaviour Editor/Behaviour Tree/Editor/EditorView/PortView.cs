@@ -45,13 +45,13 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            if (edge.input is not null && edge.input.node is NodeView connectionStart)
+            if (edge.input is not null && edge.input.node is NodeView connectionSource)
             {
-                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, view => NodeLinkHelper.ConnectNodesByEdge(connectionStart, view));
+                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, view => NodeLinkHelper.ConnectNodesByEdge(connectionSource, view));
             }
-            else if (edge.output is not null && edge.output.node is NodeView connectionTarget)
+            else if (edge.output is not null && edge.output.node is NodeView connecttionDestination)
             {
-                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, view => NodeLinkHelper.ConnectNodesByEdge(view, connectionTarget));
+                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, view => NodeLinkHelper.ConnectNodesByEdge(view, connecttionDestination));
             }
         }
 

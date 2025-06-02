@@ -98,6 +98,9 @@ namespace BehaviourSystemEditor.BT
             }
             else
             {
+                //NodeView의 커스텀 타이틀 변경을 위해 SerializedProperty 등록.
+                //CustomeEditor에서 그려지는 NodeBase의 Name Field를 수정시, 에디터에서 값 변경을 확인 후, 알림이 전달됨.
+                //그러면 등록된 TrackPropertyValue에 등록된 람다가 호출되고 변경된 이름이 property.stringValue로 전돨됨.
                 SerializedObject targetObject = new SerializedObject(targetNode);
                 SerializedProperty nameProperty = targetObject.FindProperty("m_Name");
                 this.TrackPropertyValue(nameProperty, p => this.title = p.stringValue);

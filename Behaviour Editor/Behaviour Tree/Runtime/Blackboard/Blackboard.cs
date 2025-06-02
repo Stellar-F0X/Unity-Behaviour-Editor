@@ -1,13 +1,12 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 
 namespace BehaviourSystem.BT
 {
-    [Serializable]
+    [CreateAssetMenu(fileName = "New Blackboard", menuName = "Behaviour Tree/Blackboard Asset")]
     public class Blackboard : ScriptableObject
     {
-        [SerializeReference]
+        [SerializeReference, HideInInspector]
         private List<IBlackboardProperty> _properties = new List<IBlackboardProperty>();
         
         public List<IBlackboardProperty> properties
@@ -18,7 +17,7 @@ namespace BehaviourSystem.BT
 
         public Blackboard Clone()
         {
-            Blackboard newBlackboard = CreateInstance<Blackboard>();
+            Blackboard newBlackboard = ScriptableObject.CreateInstance<Blackboard>();
             newBlackboard._properties = new List<IBlackboardProperty>(this.properties.Count);
             
             for (int i = 0; i < this.properties.Count; ++i)

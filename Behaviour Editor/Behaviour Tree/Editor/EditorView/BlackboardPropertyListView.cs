@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace BehaviourSystemEditor.BT
 {
@@ -14,17 +15,39 @@ namespace BehaviourSystemEditor.BT
         private SerializedProperty _serializedListProperty;
         private SerializedObject _serializedObject;
 
+        private ObjectField _blackboardBindingField;
         private ToolbarMenu _propertyAddMenu;
         private Blackboard _blackboard;
 
 
-        public void Setup(ToolbarMenu toolbarMenu)
+        public void Setup(ToolbarMenu toolbarMenu, ObjectField blackboardBindingField)
         {
+            this._blackboardBindingField = blackboardBindingField;
             this._propertyAddMenu = toolbarMenu;
+
             this.makeItem = BehaviourTreeEditor.Settings.blackboardPropertyViewXml.CloneTree;
+            this.reorderable = BehaviourTreeEditor.CanEditTree;
+
             this.bindItem = this.BindItemToList;
             this.itemIndexChanged += this.OnPropertyIndicesSwapped;
-            this.reorderable = BehaviourTreeEditor.CanEditTree;
+
+            this._blackboardBindingField.UnregisterValueChangedCallback(this.OnBindBlackboardAsset);
+            this._blackboardBindingField.RegisterValueChangedCallback(this.OnBindBlackboardAsset);
+        }
+
+
+
+        private void OnBindBlackboardAsset(ChangeEvent<Object> changeEvent)
+        {
+            if (BehaviourTreeEditor.Instance is null)
+            {
+                return;
+            }
+            
+            this._blackboard = changeEvent.newValue as Blackboard;
+            BehaviourTreeEditor.Instance.Tree.blackboard = changeEvent.newValue as Blackboard;
+            
+            this.RefreshBlackboardProperties();
         }
 
 
@@ -59,23 +82,40 @@ namespace BehaviourSystemEditor.BT
 
         public void OnBehaviourTreeChanged(BehaviourTree tree)
         {
-            if (tree != null && BehaviourTreeEditor.Instance != null)
+            if (tree is null || BehaviourTreeEditor.Instance is null)
             {
-                this._blackboard = tree.blackboard;
-                this._serializedObject = new SerializedObject(this._blackboard);
-                this._serializedListProperty = _serializedObject.FindProperty("_properties");
+                return;
+            }
 
-                this.itemsSource = this._blackboard.properties;
-                this.RefreshItems();
+            this._blackboard = tree.blackboard;
+            this._blackboardBindingField.value = tree.blackboard;
 
-                if (BehaviourTreeEditor.CanEditTree)
-                {
-                    TypeCache.GetTypesDerivedFrom<IBlackboardProperty>()
-                             .OrderByNameAndFilterAbstracts()
-                             .ForEach(t => _propertyAddMenu.menu.AppendAction(t.Name, _ => this.MakeProperty(t)));
-                }
+            if (tree.blackboard is null)
+            {
+                return;
+            }
+
+            this.RefreshBlackboardProperties();
+        }
+
+
+
+        private void RefreshBlackboardProperties()
+        {
+            this._serializedObject = new SerializedObject(this._blackboard);
+            this._serializedListProperty = _serializedObject.FindProperty("_properties");
+
+            this.itemsSource = this._blackboard.properties;
+            this.RefreshItems();
+
+            if (BehaviourTreeEditor.CanEditTree)
+            {
+                TypeCache.GetTypesDerivedFrom<IBlackboardProperty>()
+                         .OrderByNameAndFilterAbstracts()
+                         .ForEach(t => _propertyAddMenu.menu.AppendAction(t.Name, _ => this.MakeProperty(t)));
             }
         }
+        
 
 
         private void MakeProperty(Type type)
@@ -110,37 +150,40 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            IMGUIContainer imguiField = element.Q<IMGUIContainer>("IMGUIContainer");
-            TextField keyField = element.Q<TextField>("name-field");
-            Button buttonField = element.Q<Button>("delete-button");
+            var imguiField = element.Q<IMGUIContainer>("IMGUIContainer");
+            var keyField = element.Q<TextField>("name-field");
+            var buttonField = element.Q<Button>("delete-button");
 
             buttonField.clickable = null; //reset all callback
-            buttonField.enabledSelf = BehaviourTreeEditor.CanEditTree;
             buttonField.clicked += () => this.DeleteProperty(index);
+            buttonField.enabledSelf = BehaviourTreeEditor.CanEditTree;
 
             SerializedProperty elementProperty = _serializedListProperty.GetArrayElementAtIndex(index);
             SerializedProperty valueProp = elementProperty.FindPropertyRelative("_value");
 
-            if (elementProperty.boxedValue != null && valueProp != null)
+            if (elementProperty.boxedValue is not null && valueProp is not null)
             {
                 imguiField.Unbind();
                 imguiField.TrackPropertyValue(valueProp, _ => imguiField.MarkDirtyRepaint());
                 imguiField.onGUIHandler = () => this.DrawIMGUIForItem(elementProperty);
             }
 
-            if (keyField.userData != null)
+            if (keyField.userData is not null)
             {
                 var previousCallback = (EventCallback<ChangeEvent<string>>)keyField.userData;
                 keyField.UnregisterValueChangedCallback(previousCallback);
             }
 
-            element.tooltip = ((IBlackboardProperty)itemsSource[index]).type.Name;
-            keyField.value = ((IBlackboardProperty)itemsSource[index]).key;
-            keyField.enabledSelf = BehaviourTreeEditor.CanEditTree;
-
             var newCallback = new EventCallback<ChangeEvent<string>>(e => this.OnChangePropertyKey(e.newValue, index));
             keyField.RegisterValueChangedCallback(newCallback);
             keyField.userData = newCallback;
+
+            if (itemsSource[index] is IBlackboardProperty property)
+            {
+                element.tooltip = property.type.Name;
+                keyField.value = property.key;
+                keyField.enabledSelf = BehaviourTreeEditor.CanEditTree;
+            }
         }
 
 

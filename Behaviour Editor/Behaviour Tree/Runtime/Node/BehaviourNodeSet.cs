@@ -88,10 +88,10 @@ namespace BehaviourSystem.BT
         /// </summary>
         /// <param name="info">클론 정보</param>
         /// <param name="queue">클론 작업 큐</param>
-        /// <param name="nodes">후처리 스택</param>
+        /// <param name="stack">후처리 스택</param>
         /// <param name="runner">트리 러너</param>
         /// <param name="newSet">클론된 노드셋</param>s
-        private void ProcessClone(CloneInfo info, FixedQueue<CloneInfo> queue, FixedStack<NodeBase> nodes, BehaviourTreeRunner runner, BehaviourNodeSet newSet)
+        private void ProcessClone(CloneInfo info, FixedQueue<CloneInfo> queue, FixedStack<NodeBase> stack, BehaviourTreeRunner runner, BehaviourNodeSet newSet)
         {
             info.clone.runner = runner;
             info.clone.depth = info.depth;
@@ -99,7 +99,7 @@ namespace BehaviourSystem.BT
             info.clone.name = info.clone.name.Remove(info.clone.name.Length - 7); //명시되어있는 (Clone) 접미사 제거. 
 
             newSet.nodeList.Add(info.clone);
-            nodes.Push(info.clone);
+            stack.Push(info.clone);
             
             int depthInTree = info.depth + 1;
 
