@@ -135,6 +135,12 @@ namespace BehaviourSystem.BT
 
         public void SetProperty<TValue>(in string key, TValue property)
         {
+            if (this._runtimeTree.blackboard is null)
+            {
+                Debug.Log("Blackboard is not assigned.");
+                return;
+            }
+            
             if (enabled == false)
             {
                 return;
@@ -168,6 +174,12 @@ namespace BehaviourSystem.BT
 
         public TValue GetProperty<TValue>(in string key)
         {
+            if (this._runtimeTree.blackboard is null)
+            {
+                Debug.Log("Blackboard is not assigned.");
+                return default;
+            }
+            
             if (enabled == false)
             {
                 Debug.Log("Blackboard property was not found.");

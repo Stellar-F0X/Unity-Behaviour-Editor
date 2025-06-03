@@ -159,7 +159,10 @@ namespace BehaviourSystem.BT
             return -1;
         }
     }
-
+    
+    
+    [Serializable]
+    public class StringProperty : BlackboardProperty<string> { }
 
     [Serializable]
     public class RigidbodyProperty : BlackboardProperty<Rigidbody> { }

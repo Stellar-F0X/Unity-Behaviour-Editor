@@ -34,47 +34,16 @@ namespace BehaviourSystemEditor.BT
             Rect fieldRect = new Rect(position.x + width + 2, position.y, position.width - width - 2, height);
 
             List<IBlackboardProperty> properties = ListPool<IBlackboardProperty>.Get();
-            
+
             if (exception == false && this.GetProperties(blackboard, property, properties))
             {
-                if (property.boxedValue is null)
-                {
-                    property.boxedValue = properties.First();
-                }
-
-                SerializedProperty keyProp = property.FindPropertyRelative("_key");
-                string[] keyNames = properties.ConvertAll(key => key.key).ToArray();
-                int selectedIndex = string.IsNullOrEmpty(keyProp.stringValue) ? 0 : Array.IndexOf(keyNames, keyProp.stringValue);
-                selectedIndex = Mathf.Clamp(selectedIndex, 0, keyNames.Length - 1);
-
-                using (new EditorGUI.PropertyScope(position, label, property))
-                {
-                    using (new EditorGUI.DisabledScope(BehaviourTreeEditor.CanEditTree == false))
-                    {
-                        EditorGUI.PrefixLabel(labelRect, label);
-                        selectedIndex = EditorGUI.Popup(fieldRect, selectedIndex, keyNames);
-                        property.boxedValue = properties[selectedIndex];
-                    }
-                }
-
-                property.serializedObject.ApplyModifiedProperties();
+                this.DrawPropertiesPopup(position, labelRect, fieldRect, property, label, properties);
             }
             else
             {
-                using (new EditorGUI.PropertyScope(position, label, property))
-                {
-                    EditorGUI.PrefixLabel(labelRect, label);
-
-                    Rect iconRect = new Rect(fieldRect.x, fieldRect.y + (fieldRect.height - _ICON_SIZE) * 0.5f, _ICON_SIZE, _ICON_SIZE);
-                    Rect textRect = new Rect(fieldRect.x + _ICON_SIZE + 2f, fieldRect.y, fieldRect.width - _ICON_SIZE - 2f, fieldRect.height);
-
-                    Texture warningImg = EditorGUIUtility.IconContent("console.warnicon").image;
-                    GUI.DrawTexture(iconRect, warningImg, ScaleMode.ScaleToFit);
-
-                    EditorGUI.LabelField(textRect, "No blackboard properties found.");
-                }
+                this.DrawNoPropertiesWarning(position, labelRect, fieldRect, property, label);
             }
-            
+
             ListPool<IBlackboardProperty>.Release(properties);
         }
 
@@ -110,8 +79,7 @@ namespace BehaviourSystemEditor.BT
 
             return properties.Count > 0;
         }
-
-
+        
 
         private Type GetPropertyType(SerializedProperty property)
         {
@@ -128,6 +96,60 @@ namespace BehaviourSystemEditor.BT
             }
 
             return null;
+        }
+
+
+        private void DrawPropertiesPopup(Rect position, Rect labelRect, Rect fieldRect, SerializedProperty property, GUIContent label, List<IBlackboardProperty> properties)
+        {
+            List<string> keyNamesList = ListPool<string>.Get();
+            keyNamesList.Add("None");
+            keyNamesList.AddRange(properties.Select(key => key.key));
+            string[] keyNames = keyNamesList.ToArray();
+            ListPool<string>.Release(keyNamesList);
+
+            int selectedIndex = 0; // 기본값은 None.
+
+            if (property.boxedValue is not null)
+            {
+                SerializedProperty keyProp = property.FindPropertyRelative("_key");
+                
+                if (string.IsNullOrEmpty(keyProp.stringValue) == false)
+                {
+                    //property.boxedValue is not null가 True였다면 무조건 0보다 큰 인덱스일 것이므로 None을 제외하기 위해, 1을 빼준다.
+                    int valueIndex = Array.IndexOf(keyNames, keyProp.stringValue) - 1;
+
+                    //property가 이미 값이 있다면 None이라는 허상의 값이 Popup 리스트에서 첫번째 위치에 자리하고 있으므로 +1로 자리를 맞춰줌.
+                    selectedIndex = valueIndex >= 0 ? valueIndex + 1 : valueIndex;
+                }
+            }
+
+            selectedIndex = Mathf.Clamp(selectedIndex, 0, keyNames.Length - 1);
+
+            using (new EditorGUI.PropertyScope(position, label, property))
+            {
+                using (new EditorGUI.DisabledScope(!BehaviourTreeEditor.CanEditTree))
+                {
+                    EditorGUI.PrefixLabel(labelRect, label);
+                    int newSelectedIndex = EditorGUI.Popup(fieldRect, selectedIndex, keyNames);
+                    property.boxedValue = newSelectedIndex == 0 ? null : properties[newSelectedIndex - 1]; //값을 더할 땐, 다시 뺌.
+                }
+            }
+        }
+
+        private void DrawNoPropertiesWarning(Rect position, Rect labelRect, Rect fieldRect, SerializedProperty property, GUIContent label)
+        {
+            using (new EditorGUI.PropertyScope(position, label, property))
+            {
+                EditorGUI.PrefixLabel(labelRect, label);
+
+                Rect iconRect = new Rect(fieldRect.x, fieldRect.y + (fieldRect.height - _ICON_SIZE) * 0.5f, _ICON_SIZE, _ICON_SIZE);
+                Rect textRect = new Rect(fieldRect.x + _ICON_SIZE + 2f, fieldRect.y, fieldRect.width - _ICON_SIZE - 2f, fieldRect.height);
+
+                Texture warningImg = EditorGUIUtility.IconContent("console.warnicon").image;
+                GUI.DrawTexture(iconRect, warningImg, ScaleMode.ScaleToFit);
+
+                EditorGUI.LabelField(textRect, "No blackboard properties found.");
+            }
         }
     }
 }

@@ -24,26 +24,26 @@ namespace BehaviourSystem.BT
         }
 
 
-
         internal static BehaviourTree MakeRuntimeTree(BehaviourTreeRunner treeRunner, BehaviourTree targetTree)
         {
-            if (treeRunner is null)
-            {
-                Debug.LogError("BehaviourActor is null.");
-                return null;
-            }
-
-            if (targetTree is null)
-            {
-                Debug.LogError("BehaviourTree is null.");
-                return null;
-            }
+            Debug.Assert(treeRunner is not null && targetTree is not null, "BehaviourActor or BehaviourTree is null.");
 
             BehaviourTree runtimeTree = Instantiate(targetTree);
 
-            runtimeTree.blackboard = targetTree.blackboard.Clone();
+            Debug.Assert(runtimeTree is not null, "Failed to create runtime tree.");
+
+#if UNITY_EDITOR
             runtimeTree.groupDataSet = targetTree.groupDataSet.Clone();
-            runtimeTree.nodeSet = targetTree.nodeSet.Clone(treeRunner, runtimeTree.blackboard);
+#endif
+            runtimeTree.blackboard = targetTree.blackboard?.Clone();
+            runtimeTree.nodeSet = targetTree.nodeSet.Clone(runtimeTree.blackboard);
+            
+            foreach (NodeBase currentNode in runtimeTree.nodeSet.nodeList)
+            {
+                currentNode.runner = treeRunner;
+                currentNode.PostTreeCreation();
+            }
+
             return runtimeTree;
         }
 

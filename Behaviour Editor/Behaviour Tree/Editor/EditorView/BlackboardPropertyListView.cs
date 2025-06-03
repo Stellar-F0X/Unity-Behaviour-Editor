@@ -22,8 +22,8 @@ namespace BehaviourSystemEditor.BT
 
         public void Setup(ToolbarMenu toolbarMenu, ObjectField blackboardBindingField)
         {
-            this._blackboardBindingField = blackboardBindingField;
             this._propertyAddMenu = toolbarMenu;
+            this._blackboardBindingField = blackboardBindingField;
 
             this.makeItem = BehaviourTreeEditor.Settings.blackboardPropertyViewXml.CloneTree;
 
@@ -80,6 +80,7 @@ namespace BehaviourSystemEditor.BT
             this.RefreshItems();
         }
 
+        
 
         public void OnBehaviourTreeChanged(BehaviourTree tree)
         {
@@ -91,14 +92,9 @@ namespace BehaviourSystemEditor.BT
             this.reorderable = !Application.isPlaying;
             
             this._blackboard = tree.blackboard;
-            this._blackboardBindingField.value = tree.blackboard;
+            this._blackboardBindingField.value = tree?.blackboard;
             this._blackboardBindingField.enabledSelf = BehaviourTreeEditor.CanEditTree;
-
-            if (tree.blackboard is null)
-            {
-                return;
-            }
-
+            
             this.RefreshBlackboardProperties();
         }
 
@@ -106,6 +102,11 @@ namespace BehaviourSystemEditor.BT
 
         private void RefreshBlackboardProperties()
         {
+            if (this._blackboard is null)
+            {
+                return;
+            }
+            
             this._serializedObject = new SerializedObject(this._blackboard);
             this._serializedListProperty = _serializedObject.FindProperty("_properties");
 
@@ -145,6 +146,7 @@ namespace BehaviourSystemEditor.BT
             this.RefreshItems();
         }
 
+        
 
         //아이템이 추가, 제거, 순서가 변경될 때마다 호출되어 콜백들을 다시 등록하므로 인덱스가 캐싱돼도 문제되지 않는다.
         private void BindItemToList(VisualElement element, int index)
@@ -181,6 +183,7 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
+        
 
         private void DrawIMGUIForItem(SerializedProperty property, SerializedProperty valueProp)
         {
@@ -196,6 +199,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
+        
         private void OnChangePropertyKey(string newKey, int index)
         {
             if (itemsSource[index] is IBlackboardProperty property)
@@ -209,6 +213,7 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
+        
 
         private void OnPropertyIndicesSwapped(int a, int b)
         {

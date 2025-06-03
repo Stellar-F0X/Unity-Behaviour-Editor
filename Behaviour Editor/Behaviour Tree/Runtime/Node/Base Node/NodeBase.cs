@@ -162,7 +162,9 @@ namespace BehaviourSystem.BT
         }
 
 
-        /// Function called after all nodes in the tree asset are created.
+        ///Function called after all nodes in the tree asset are created.
+        /// This function is invoked using a breadth-first search (BFS) traversal pattern,
+        /// processing nodes level by level starting from the root node.
         public virtual void PostTreeCreation() { }
 
         

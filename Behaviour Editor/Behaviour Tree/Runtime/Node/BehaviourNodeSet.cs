@@ -45,36 +45,22 @@ namespace BehaviourSystem.BT
         }
 
 
-        internal BehaviourNodeSet Clone(BehaviourTreeRunner treeRunner, Blackboard blackboard)
+        internal BehaviourNodeSet Clone(Blackboard clonedBlackboard)
         {
             BehaviourNodeSet clonedSet = CreateInstance<BehaviourNodeSet>();
-            clonedSet.rootNode = Instantiate(this.rootNode) as RootNode;
-
             FixedQueue<CloneInfo> cloneQueue = new FixedQueue<CloneInfo>(this.nodeList.Count);
-            FixedStack<NodeBase> postInitStack = new FixedStack<NodeBase>(this.nodeList.Count);
-
-            Type tProp = typeof(IBlackboardProperty);
-            Type tCondition = typeof(BlackboardBasedCondition);
-            Type tConditionList = typeof(ICollection<BlackboardBasedCondition>);
-
+            
+            clonedSet.rootNode = Instantiate(this.rootNode) as RootNode;
             cloneQueue.Enqueue(new CloneInfo(this.rootNode, clonedSet.rootNode, 0, 0));
 
             while (cloneQueue.count > 0)
             {
                 CloneInfo currentClone = cloneQueue.Dequeue();
-                this.ProcessClone(currentClone, cloneQueue, postInitStack, treeRunner, clonedSet);
-                this.ProcessBlackboardProperties(currentClone.clone, blackboard, tProp, tCondition, tConditionList);
+                this.ProcessClone(currentClone, cloneQueue, clonedSet);
+                NodePropertyFieldBinder.BindNodeProperties(currentClone.clone, clonedBlackboard);
             }
 
             clonedSet.callStackSize = this.callStackSize;
-
-            // PostTreeCreation을 위한 후처리
-            while (postInitStack.count > 0)
-            {
-                NodeBase currentNode = postInitStack.Pop();
-                currentNode.PostTreeCreation();
-            }
-
             return clonedSet;
         }
 
@@ -91,15 +77,13 @@ namespace BehaviourSystem.BT
         /// <param name="stack">후처리 스택</param>
         /// <param name="runner">트리 러너</param>
         /// <param name="newSet">클론된 노드셋</param>s
-        private void ProcessClone(CloneInfo info, FixedQueue<CloneInfo> queue, FixedStack<NodeBase> stack, BehaviourTreeRunner runner, BehaviourNodeSet newSet)
+        private void ProcessClone(CloneInfo info, FixedQueue<CloneInfo> queue, BehaviourNodeSet newSet)
         {
-            info.clone.runner = runner;
             info.clone.depth = info.depth;
             info.clone.callStackID = info.stackID;
             info.clone.name = info.clone.name.Remove(info.clone.name.Length - 7); //명시되어있는 (Clone) 접미사 제거. 
 
             newSet.nodeList.Add(info.clone);
-            stack.Push(info.clone);
             
             int depthInTree = info.depth + 1;
 
@@ -154,75 +138,6 @@ namespace BehaviourSystem.BT
                     childClone.parent = clone;
                     clone.children[i] = childClone;
                     cloneQueue.Enqueue(new CloneInfo(origin.children[i], childClone, nextDepth, newStackID));
-                }
-            }
-        }
-
-
-        /// <summary> 블랙보드 프로퍼티 처리 </summary>
-        private void ProcessBlackboardProperties(NodeBase clonedNode, Blackboard blackboard, Type tProperty, Type tCondition, Type tConditionList)
-        {
-            foreach (var fieldInfo in ReflectionHelper.GetCachedFieldInfo(clonedNode?.GetType(), tProperty, tCondition, tConditionList))
-            {
-                if (tProperty.IsAssignableFrom(fieldInfo.FieldType))
-                {
-                    ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
-
-                    if (accessor.getter(clonedNode) is IBlackboardProperty property)
-                    {
-                        IBlackboardProperty foundProperty = blackboard.FindProperty(property.key);
-
-                        if (foundProperty != null)
-                        {
-                            accessor.setter(clonedNode, foundProperty);
-                        }
-                    }
-                }
-                else if (tConditionList.IsAssignableFrom(fieldInfo.FieldType))
-                {
-                    ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
-
-                    if (accessor.getter(clonedNode) is ICollection<BlackboardBasedCondition> conditionList)
-                    {
-                        foreach (var condition in conditionList)
-                        {
-                            this.UpdateConditionProperties(condition, blackboard);
-                        }
-                    }
-                }
-                else if (tCondition.IsAssignableFrom(fieldInfo.FieldType))
-                {
-                    ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(fieldInfo);
-
-                    if (accessor.getter(clonedNode) is BlackboardBasedCondition condition)
-                    {
-                        this.UpdateConditionProperties(condition, blackboard);
-                    }
-                }
-            }
-        }
-
-
-        /// <summary> 블랙보드 기반 프로퍼티 컨디션 할당처리 </summary>
-        private void UpdateConditionProperties(BlackboardBasedCondition condition, Blackboard board)
-        {
-            if (condition.property is not null)
-            {
-                IBlackboardProperty foundProperty = board.FindProperty(condition.property.key);
-
-                if (foundProperty is not null)
-                {
-                    condition.property = foundProperty;
-                }
-            }
-
-            if (condition.comparableValue is not null)
-            {
-                IBlackboardProperty foundComparableProperty = board.FindProperty(condition.comparableValue.key);
-
-                if (foundComparableProperty is not null)
-                {
-                    condition.comparableValue = foundComparableProperty;
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
@@ -29,7 +30,8 @@ namespace BehaviourSystem.BT
                 return property;
             }
 
-            throw new Exception($"Failed to create property of type {propertyType}");
+            Debug.LogAssertion($"Failed to create property of type {propertyType}");
+            return null;
         }
 
         public IBlackboardProperty Clone(IBlackboardProperty origin);
