@@ -49,12 +49,12 @@ namespace BehaviourSystemEditor.BT
                     return path;
                 }
             }
-            
+
             throw new FileNotFoundException($"Asset not found at filter: {searchFilter}");
         }
 
 
-        public static void ForEach<T>([NotNull]this IEnumerable<T> array, [NotNull]Action<T> action)
+        public static void ForEach<T>([NotNull] this IEnumerable<T> array, [NotNull] Action<T> action)
         {
             foreach (var element in array)
             {
@@ -63,7 +63,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static List<TOutput> ConvertAll<TInput, TOutput>([NotNull]this IEnumerable<TInput> array, [NotNull]Func<TInput, TOutput> converter)
+        public static List<TOutput> ConvertAll<TInput, TOutput>([NotNull] this IEnumerable<TInput> array, [NotNull] Func<TInput, TOutput> converter)
         {
             List<TOutput> outputList = new List<TOutput>(array.Count());
 
@@ -84,7 +84,7 @@ namespace BehaviourSystemEditor.BT
             {
                 return array;
             }
-            
+
             Array.Sort(array, (a, b) => a.Name[0].CompareTo(b.Name[0]));
             return array;
         }
@@ -103,6 +103,47 @@ namespace BehaviourSystemEditor.BT
         {
             control.inputColor = color;
             control.outputColor = color;
+        }
+
+
+        public static void RegisterValueChangedCallback<T>(this VisualElement element, EventCallback<ChangeEvent<T>> callback)
+        {
+            if (element.userData is null)
+            {
+                element.userData = new List<EventCallback<ChangeEvent<T>>>();
+            }
+
+            if (element.userData is List<EventCallback<ChangeEvent<T>>> callbackList)
+            {
+                callbackList.Add(callback);
+
+                element.RegisterCallback(callback);
+            }
+            else
+            {
+                Debug.LogWarning("User Data is already in use.");
+            }
+        }
+
+
+        public static void UnregisterAllValueChangedCallback<T>(this VisualElement element)
+        {
+            if (element.userData is List<EventCallback<ChangeEvent<T>>> list)
+            {
+                if (list.Count == 0)
+                {
+                    return;
+                }
+                
+                int count = list.Count;
+
+                for (int i = 0; i < count; ++i)
+                {
+                    element.UnregisterCallback(list[i]);
+                }
+
+                list.Clear();
+            }
         }
     }
 }

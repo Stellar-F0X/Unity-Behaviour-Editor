@@ -26,7 +26,6 @@ namespace BehaviourSystemEditor.BT
             this._propertyAddMenu = toolbarMenu;
 
             this.makeItem = BehaviourTreeEditor.Settings.blackboardPropertyViewXml.CloneTree;
-            this.reorderable = BehaviourTreeEditor.CanEditTree;
 
             this.bindItem = this.BindItemToList;
             this.itemIndexChanged += this.OnPropertyIndicesSwapped;
@@ -43,10 +42,12 @@ namespace BehaviourSystemEditor.BT
             {
                 return;
             }
-            
-            this._blackboard = changeEvent.newValue as Blackboard;
-            BehaviourTreeEditor.Instance.Tree.blackboard = changeEvent.newValue as Blackboard;
-            
+
+            Blackboard blackboard = changeEvent.newValue as Blackboard;
+
+            this._blackboard = blackboard;
+            BehaviourTreeEditor.Instance.Tree.blackboard = blackboard;
+
             this.RefreshBlackboardProperties();
         }
 
@@ -54,7 +55,7 @@ namespace BehaviourSystemEditor.BT
 
         public void RefreshItemsWhenUndoPerformed()
         {
-            if (_serializedObject is null)
+            if (_serializedObject.targetObject is null)
             {
                 return;
             }
@@ -87,8 +88,11 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
+            this.reorderable = !Application.isPlaying;
+            
             this._blackboard = tree.blackboard;
             this._blackboardBindingField.value = tree.blackboard;
+            this._blackboardBindingField.enabledSelf = BehaviourTreeEditor.CanEditTree;
 
             if (tree.blackboard is null)
             {
@@ -115,7 +119,7 @@ namespace BehaviourSystemEditor.BT
                          .ForEach(t => _propertyAddMenu.menu.AppendAction(t.Name, _ => this.MakeProperty(t)));
             }
         }
-        
+
 
 
         private void MakeProperty(Type type)
@@ -145,49 +149,40 @@ namespace BehaviourSystemEditor.BT
         //아이템이 추가, 제거, 순서가 변경될 때마다 호출되어 콜백들을 다시 등록하므로 인덱스가 캐싱돼도 문제되지 않는다.
         private void BindItemToList(VisualElement element, int index)
         {
-            if (_serializedListProperty.arraySize <= index)
+            if (_serializedListProperty.arraySize > index)
             {
-                return;
-            }
+                Button buttonField = element.Q<Button>("delete-button");
+                buttonField.clickable = null; //reset all callback
+                buttonField.clicked += () => this.DeleteProperty(index);
+                buttonField.enabledSelf = BehaviourTreeEditor.CanEditTree;
 
-            var imguiField = element.Q<IMGUIContainer>("IMGUIContainer");
-            var keyField = element.Q<TextField>("name-field");
-            var buttonField = element.Q<Button>("delete-button");
+                SerializedProperty elementProperty = _serializedListProperty.GetArrayElementAtIndex(index);
 
-            buttonField.clickable = null; //reset all callback
-            buttonField.clicked += () => this.DeleteProperty(index);
-            buttonField.enabledSelf = BehaviourTreeEditor.CanEditTree;
+                if (elementProperty.boxedValue is not null)
+                {
+                    IMGUIContainer imguiField = element.Q<IMGUIContainer>("IMGUIContainer");
+                    SerializedProperty valueProp = elementProperty.FindPropertyRelative("_value");
 
-            SerializedProperty elementProperty = _serializedListProperty.GetArrayElementAtIndex(index);
-            SerializedProperty valueProp = elementProperty.FindPropertyRelative("_value");
+                    imguiField.Unbind();
+                    imguiField.TrackPropertyValue(valueProp, _ => imguiField.MarkDirtyRepaint());
+                    imguiField.onGUIHandler = () => this.DrawIMGUIForItem(elementProperty, valueProp);
+                }
 
-            if (elementProperty.boxedValue is not null && valueProp is not null)
-            {
-                imguiField.Unbind();
-                imguiField.TrackPropertyValue(valueProp, _ => imguiField.MarkDirtyRepaint());
-                imguiField.onGUIHandler = () => this.DrawIMGUIForItem(elementProperty);
-            }
+                if (itemsSource[index] is IBlackboardProperty property)
+                {
+                    element.tooltip = property.type.Name;
 
-            if (keyField.userData is not null)
-            {
-                var previousCallback = (EventCallback<ChangeEvent<string>>)keyField.userData;
-                keyField.UnregisterValueChangedCallback(previousCallback);
-            }
-
-            var newCallback = new EventCallback<ChangeEvent<string>>(e => this.OnChangePropertyKey(e.newValue, index));
-            keyField.RegisterValueChangedCallback(newCallback);
-            keyField.userData = newCallback;
-
-            if (itemsSource[index] is IBlackboardProperty property)
-            {
-                element.tooltip = property.type.Name;
-                keyField.value = property.key;
-                keyField.enabledSelf = BehaviourTreeEditor.CanEditTree;
+                    TextField keyField = element.Q<TextField>("name-field");
+                    keyField.UnregisterAllValueChangedCallback<string>();
+                    keyField.RegisterValueChangedCallback<string>(e => this.OnChangePropertyKey(e.newValue, index));
+                    keyField.value = property.key;
+                    keyField.enabledSelf = BehaviourTreeEditor.CanEditTree;
+                }
             }
         }
 
 
-        private void DrawIMGUIForItem(SerializedProperty property)
+        private void DrawIMGUIForItem(SerializedProperty property, SerializedProperty valueProp)
         {
             if (property is null || property.boxedValue is null)
             {
@@ -196,7 +191,7 @@ namespace BehaviourSystemEditor.BT
 
             using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.PropertyField(property.FindPropertyRelative("_value"), GUIContent.none);
+                EditorGUILayout.PropertyField(valueProp, GUIContent.none);
             }
         }
 
