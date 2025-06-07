@@ -14,7 +14,7 @@ namespace BehaviourSystemEditor.BT
         
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            GUI.enabled = Application.isPlaying && (attribute as ReadOnlyAttribute).isRuntimeOnly;
+            GUI.enabled = Application.isPlaying && ((ReadOnlyAttribute)attribute).isRuntimeOnly;
             EditorGUI.PropertyField(position, property, label, true);
             GUI.enabled = true;
         }

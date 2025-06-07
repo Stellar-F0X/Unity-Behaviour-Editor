@@ -224,14 +224,19 @@ namespace BehaviourSystemEditor.BT
         {
             switch (state)
             {
-                case PlayModeStateChange.EnteredEditMode: this.OnSelectionChange(); break;
+                case PlayModeStateChange.EnteredEditMode:
+                {
+                    EditorApplication.update -= this.RuntimeUpdate;
+                    this.OnSelectionChange();
+                    return;
+                }
 
                 case PlayModeStateChange.EnteredPlayMode:
+                {
                     EditorApplication.update += this.RuntimeUpdate;
                     this.OnSelectionChange();
-                    break;
-
-                case PlayModeStateChange.ExitingPlayMode: EditorApplication.update -= this.RuntimeUpdate; break;
+                    return;
+                }
             }
         }
 
@@ -251,9 +256,8 @@ namespace BehaviourSystemEditor.BT
 
                     _inspectorView?.ClearInspectorView();
                     _blackboardView?.ClearBlackboardView();
-
-                    _treeView?.OnGraphEditorView(_tree);
                     _blackboardView?.OnBehaviourTreeChanged(_tree);
+                    _treeView?.OnGraphEditorView(_tree);
 
                     isInLoadingBTAsset = false;
                 }
@@ -270,7 +274,8 @@ namespace BehaviourSystemEditor.BT
                 tree = treeAsset;
                 return true;
             }
-            else if (selectedObject is GameObject gobj && gobj.TryGetComponent(out BehaviourTreeRunner runner))
+            
+            if (selectedObject is GameObject gobj && gobj.TryGetComponent(out BehaviourTreeRunner runner))
             {
                 tree = runner.runtimeTree;
                 _treeRunner = runner;

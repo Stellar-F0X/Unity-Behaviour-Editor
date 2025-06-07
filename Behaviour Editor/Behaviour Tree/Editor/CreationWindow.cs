@@ -40,7 +40,7 @@ namespace BehaviourSystemEditor.BT
             searchTree.AddRange(this.NodeCreationSearchTreeEntry<CompositeNode>("Composite", t => this.CreateNode(t, context)));
             searchTree.AddRange(this.NodeCreationSearchTreeEntry<DecoratorNode>("Decorator", t => this.CreateNode(t, context)));
 
-            searchTree.Add(new SearchTreeGroupEntry(new GUIContent("Graph Utility"), 1));
+            searchTree.Add(new SearchTreeGroupEntry(new GUIContent("Utility"), 1));
             searchTree.Add(this.CreateNodeViewGroupSearchTreeEntry(context));
             return searchTree;
         }

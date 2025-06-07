@@ -118,7 +118,6 @@ namespace BehaviourSystemEditor.BT
         {
             if (connectionSource is null || connectionTarget is null || connectionSource.outputPort is null || connectionTarget.inputPort is null)
             {
-                Debug.LogWarning("Failed to establish port connection");
                 linkedEdge = null;
                 return false;
             }

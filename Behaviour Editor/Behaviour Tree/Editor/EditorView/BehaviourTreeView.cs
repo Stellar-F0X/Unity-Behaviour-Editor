@@ -66,12 +66,12 @@ namespace BehaviourSystemEditor.BT
                         tree.nodeSet.nodeList.RemoveAt(i--);
                     }
                 }
-
+                
                 //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
                 tree.nodeSet.nodeList.ForEach(n => this.RecreateNodeViewOnLoad(n));
                 tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n, n as IBehaviourIterable));
-
-                tree.groupDataSet?.dataList.ForEach(d => this.RecreateNodeGroupViewOnLoad(d));
+                
+                tree.groupDataSet?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
             }
         }
 
@@ -99,25 +99,13 @@ namespace BehaviourSystemEditor.BT
                 _creationWindow = ScriptableObject.CreateInstance<CreationWindow>();
                 _creationWindow.Initialize(this);
             }
-            
+
             _creationWindow.RegisterNodeCreationCallbackOnce(onNewNodeCreatedOnce);
 
             Vector2 screenPoint = GUIUtility.GUIToScreenPoint(mousePosition);
             SearchWindowContext context = new SearchWindowContext(screenPoint, 200, 240);
 
             SearchWindow.Open(context, _creationWindow);
-        }
-
-
-        public override List<Port> GetCompatiblePorts(Port input, NodeAdapter nodeAdapter)
-        {
-            if (input == null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
-
-            //direction은 input과 output이므로, 다른 노드라도 같은 포트에 못 꽂게 방지
-            return ports.Where(output => input.direction != output.direction && input.node != output.node).ToList();
         }
 
 
@@ -250,13 +238,11 @@ namespace BehaviourSystemEditor.BT
         private void RecreateNodeGroupViewOnLoad(GroupData data)
         {
             NodeGroupView nodeGroupView = new NodeGroupView(_tree.groupDataSet, data);
+            
+            nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
+            nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));
+            
             base.AddElement(nodeGroupView);
-
-            nodeGroupView.schedule.Execute(() =>
-            {
-                nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));
-                nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
-            });
         }
     }
 }

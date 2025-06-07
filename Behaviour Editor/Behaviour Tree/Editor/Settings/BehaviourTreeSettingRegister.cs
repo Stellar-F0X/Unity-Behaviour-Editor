@@ -14,7 +14,7 @@ namespace BehaviourSystemEditor.BT
         {
             return new SettingsProvider("Project/BehaviourTreeProjectSettings", SettingsScope.Project)
             {
-                label = "Behaviour Tree Editor",
+                label = "Behaviour Tree",
                 activateHandler = ProvideSettingHandler
             };
         }

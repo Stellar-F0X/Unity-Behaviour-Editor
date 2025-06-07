@@ -46,7 +46,7 @@ namespace BehaviourSystemEditor.BT
 
         protected override void OnElementsAdded(IEnumerable<GraphElement> elements)
         {
-            if (BehaviourTreeEditor.Instance == null || _data == null)
+            if (BehaviourTreeEditor.Instance is null || _data is null)
             {
                 return;
             }
@@ -60,7 +60,7 @@ namespace BehaviourSystemEditor.BT
 
         protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
         {
-            if (BehaviourTreeEditor.Instance == null || _data == null)
+            if (BehaviourTreeEditor.Instance is null || _data is null)
             {
                 return;
             }
