@@ -7,19 +7,6 @@ namespace BehaviourSystem.BT
 {
     public static class NodeFactory
     {
-        public static void EditNodeName(NodeBase targetNode, string newName, bool automaticSpacing = true)
-        {
-            if (automaticSpacing)
-            {
-                targetNode.name = ApplySpacing(newName);
-            }
-            else
-            {
-                targetNode.name = newName;
-            }
-        }
-
-
         public static string ApplySpacing(string nodeName)
         {
             if (string.IsNullOrEmpty(nodeName))
@@ -53,7 +40,6 @@ namespace BehaviourSystem.BT
             newNode.guid = GUID.Generate().ToString();
             newNode.hideFlags = HideFlags.HideInHierarchy;
             newNode.name = ApplySpacing(nodeType.Name);
-            newNode.nodeTypeName = newNode.GetType().Name;
             return newNode;
         }
 
