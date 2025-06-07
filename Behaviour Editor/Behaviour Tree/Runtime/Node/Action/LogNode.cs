@@ -24,7 +24,7 @@ namespace BehaviourSystem.BT
         }
 
         
-        protected override EBehaviourResult OnUpdate()
+        protected override EBehaviourResult OnUpdate(in float deltaTime)
         {
             if (onUpdateMessages is not null && onUpdateMessages.Length > 0)
             {
@@ -33,7 +33,7 @@ namespace BehaviourSystem.BT
                     Debug.Log(onUpdateMessages[i]);
                 }
             }
-
+            
             return EBehaviourResult.Success;
         }
 

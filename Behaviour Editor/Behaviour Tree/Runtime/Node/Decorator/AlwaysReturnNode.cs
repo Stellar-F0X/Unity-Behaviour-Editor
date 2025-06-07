@@ -5,7 +5,7 @@ namespace BehaviourSystem.BT
         public bool forceResultOnRunning;
         public EBehaviourResult result;
 
-        protected override EBehaviourResult OnUpdate()
+        protected override EBehaviourResult OnUpdate(in float deltaTime)
         {
             EBehaviourResult currentResult = child.UpdateNode();
 

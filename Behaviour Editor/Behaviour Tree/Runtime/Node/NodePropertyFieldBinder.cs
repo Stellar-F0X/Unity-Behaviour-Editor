@@ -35,27 +35,20 @@ namespace BehaviourSystem.BT
             
             foreach (var field in fields)
             {
-                ProcessField(node, blackboard, field);
-            }
-        }
+                var accessor = ReflectionHelper.GetAccessor(field);
 
-        
-        /// <summary> 필드 타입에 따라 적절한 처리 방식을 적용합니다. </summary>
-        private static void ProcessField(NodeBase node, Blackboard blackboard, FieldInfo field)
-        {
-            var accessor = ReflectionHelper.GetAccessor(field);
-
-            if (_PropertyType.IsAssignableFrom(field.FieldType))
-            {
-                ProcessPropertyField(node, blackboard, accessor);
-            }
-            else if (_ConditionListType.IsAssignableFrom(field.FieldType))
-            {
-                ProcessConditionListField(node, blackboard, accessor);
-            }
-            else if (_ConditionType.IsAssignableFrom(field.FieldType))
-            {
-                ProcessConditionField(node, blackboard, accessor);
+                if (_PropertyType.IsAssignableFrom(field.FieldType))
+                {
+                    ProcessPropertyField(node, blackboard, accessor);
+                }
+                else if (_ConditionListType.IsAssignableFrom(field.FieldType))
+                {
+                    ProcessConditionListField(node, blackboard, accessor);
+                }
+                else if (_ConditionType.IsAssignableFrom(field.FieldType))
+                {
+                    ProcessConditionField(node, blackboard, accessor);
+                }
             }
         }
 

@@ -32,35 +32,36 @@ namespace BehaviourSystem.BT
             Decorator,
             Subset
         };
-        
+
         public event Action onNodeEnter;
 
         public event Action onNodeExit;
 
-        
+
         public string guid;
 
         public string tag;
-        
+
         public string description;
-        
+
         [NonSerialized]
         public int depth;
-        
+
         [NonSerialized]
         public ulong callCount;
+
         public string nodeTypeName;
-        
+
         public EBehaviourResult behaviourResult;
-        
+
         [NonSerialized]
         internal int callStackID;
-        
+
         public NodeBase parent;
 
         [NonSerialized]
         public BehaviourTreeRunner runner;
-        
+
 #if UNITY_EDITOR
         [SerializeField]
         internal Vector2 position;
@@ -71,7 +72,7 @@ namespace BehaviourSystem.BT
             get;
             private set;
         }
-        
+
         public Transform transform
         {
             get { return runner.transform; }
@@ -91,6 +92,11 @@ namespace BehaviourSystem.BT
 
         public EBehaviourResult UpdateNode()
         {
+            if (this.runner is null)
+            {
+                return EBehaviourResult.Failure;
+            }
+            
             this.callCount++;
 
             if (callState == ENodeCallState.BeforeEnter)
@@ -101,17 +107,19 @@ namespace BehaviourSystem.BT
 
             if (this.callState == ENodeCallState.Updating)
             {
-                this.behaviourResult = this.OnUpdate();
+                this.behaviourResult = this.OnUpdate(runner.useUpdateRate ? runner.updateInterval : Time.deltaTime);
 
-                if (this.behaviourResult != EBehaviourResult.Running)
+                if (this.behaviourResult == EBehaviourResult.Running)
                 {
-                    if (this.runner.handler.GetCurrentNode(callStackID) != this)
-                    {
-                        this.runner.handler.AbortSubtreeFrom(callStackID, this);
-                    }
-
-                    this.callState = ENodeCallState.BeforeExit;
+                    return EBehaviourResult.Running;
                 }
+
+                if (this.runner.handler.GetCurrentNode(callStackID) != this)
+                {
+                    this.runner.handler.AbortSubtreeFrom(callStackID, this);
+                }
+
+                this.callState = ENodeCallState.BeforeExit;
             }
 
             if (this.callState == ENodeCallState.BeforeExit)
@@ -167,30 +175,31 @@ namespace BehaviourSystem.BT
         /// processing nodes level by level starting from the root node.
         public virtual void PostTreeCreation() { }
 
-        
+
         /// Function called during the FixedUpdate cycle for this node.
         /// Used for physics-related operations that require consistent timing.
         public virtual void FixedUpdateNode() { }
 
-        
+
         /// Function used to draw gizmos in the scene view for this node.
         /// Helps visualize node's functionality in the editor.
         /// Only executes during runtime, not in edit mode.
         public virtual void GizmosUpdateNode() { }
 
-        
+
         /// Called when the node execution begins.
         /// Used for initialization when the node is first executed.
         protected virtual void OnEnter() { }
 
-        
+
         /// Called when the node execution ends.
         /// Used for cleanup and state reset when the node is no longer active.
         protected virtual void OnExit() { }
 
-        
+
         /// Core behavior update function that must be implemented by derived classes.
         /// Returns the execution result of the node's behavior.
-        protected abstract EBehaviourResult OnUpdate();
+        /// <param name="deltaTime"></param>
+        protected abstract EBehaviourResult OnUpdate(in float deltaTime);
     }
 }

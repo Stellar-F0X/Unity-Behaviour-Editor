@@ -17,7 +17,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        protected override EBehaviourResult OnUpdate()
+        protected override EBehaviourResult OnUpdate(in float deltaTime)
         {
             switch (child.UpdateNode())
             {

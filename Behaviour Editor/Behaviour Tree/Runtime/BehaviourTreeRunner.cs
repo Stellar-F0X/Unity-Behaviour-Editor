@@ -42,6 +42,12 @@ namespace BehaviourSystem.BT
             set;
         }
 
+        public float updateInterval
+        {
+            get { return _frameInterval; }
+        }
+        
+
         /// <summary> Controls the update frequency for the behaviour tree runner. </summary>
         /// <value> An integer representing the update rate in frames per second, or -1 if <see cref="useUpdateRate"/> is disabled. </value>
         public int updateRate

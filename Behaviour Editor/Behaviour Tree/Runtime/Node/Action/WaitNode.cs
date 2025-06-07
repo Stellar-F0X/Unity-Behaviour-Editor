@@ -12,7 +12,7 @@ namespace BehaviourSystem.BT
             _startTime = Time.time;
         }
 
-        protected override EBehaviourResult OnUpdate()
+        protected override EBehaviourResult OnUpdate(in float deltaTime)
         {
             if (Time.time < _startTime + duration)
             {

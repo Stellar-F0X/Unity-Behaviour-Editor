@@ -19,7 +19,10 @@ namespace BehaviourSystem.BT
             RequireAllFailure,
 
             [Tooltip("Returns Success immediately when at least one child node fails. Returns Failure only when all children succeed.")]
-            RequireOneFailure
+            RequireOneFailure,
+            
+            [Tooltip("Always returns Success after all child nodes complete, regardless of their individual results.")]
+            WaitForAllUnconditional
         };
 
         public EParallelPolicy parallelPolicy;
@@ -64,7 +67,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        protected override EBehaviourResult OnUpdate()
+        protected override EBehaviourResult OnUpdate(in float deltaTime)
         {
             int count = children.Count;
 
@@ -207,6 +210,16 @@ namespace BehaviourSystem.BT
                     if (_successfulChildCount + _failedChildCount == children.Count)
                     {
                         return EBehaviourResult.Failure;
+                    }
+
+                    return EBehaviourResult.Running;
+                }
+
+                case EParallelPolicy.WaitForAllUnconditional:
+                {
+                    if (_successfulChildCount + _failedChildCount == children.Count)
+                    {
+                        return EBehaviourResult.Success;
                     }
 
                     return EBehaviourResult.Running;
