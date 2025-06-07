@@ -85,8 +85,7 @@ namespace BehaviourSystem.BT
         {
             get;
         }
-
-
+        
 
         public EBehaviourResult UpdateNode()
         {
@@ -94,7 +93,7 @@ namespace BehaviourSystem.BT
             {
                 return EBehaviourResult.Failure;
             }
-            
+
             this.callCount++;
 
             if (callState == ENodeCallState.BeforeEnter)
@@ -166,23 +165,88 @@ namespace BehaviourSystem.BT
 
             return string.CompareOrdinal(this.guid, other.guid) == 0;
         }
+        
+        
+        /// <summary>Registers a callback to be executed during FixedUpdate. Used when the node needs to perform physics-based or time-consistent operations.</summary>
+        protected void RegisterFixedUpdateCallback(Action callback)
+        {
+            if (callback is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] FixedUpdate callback is null.");
+                return;
+            }
+
+            if (runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+
+            runner.onNodeFixedUpdate += callback;
+        }
+
+        
+        /// <summary>Unregisters a previously registered FixedUpdate callback.</summary>
+        protected void UnregisterFixedUpdateCallback(Action callback)
+        {
+            if (callback is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] FixedUpdate callback to unregister is null.");
+                return;
+            }
+
+            if (runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+
+            runner.onNodeFixedUpdate -= callback;
+        }
+
+        
+        /// <summary>Registers a callback for Gizmos rendering. Used when the node needs to draw debug visualization elements.</summary>
+        protected void RegisterGizmosUpdateCallback(Action callback)
+        {
+            if (callback is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] Gizmos callback is null.");
+                return;
+            }
+
+            if (runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+
+            runner.onNodeGizmosUpdate += callback;
+        }
+
+        
+        /// <summary>Unregisters a previously registered Gizmos rendering callback.</summary>
+        protected void UnregisterGizmosUpdateCallback(Action callback)
+        {
+            if (callback is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] Gizmos callback to unregister is null.");
+                return;
+            }
+
+            if (runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+
+            runner.onNodeGizmosUpdate -= callback;
+        }
 
 
         ///Function called after all nodes in the tree asset are created.
         /// This function is invoked using a breadth-first search (BFS) traversal pattern,
         /// processing nodes level by level starting from the root node.
         public virtual void PostTreeCreation() { }
-
-
-        /// Function called during the FixedUpdate cycle for this node.
-        /// Used for physics-related operations that require consistent timing.
-        public virtual void FixedUpdateNode() { }
-
-
-        /// Function used to draw gizmos in the scene view for this node.
-        /// Helps visualize node's functionality in the editor.
-        /// Only executes during runtime, not in edit mode.
-        public virtual void GizmosUpdateNode() { }
 
 
         /// Called when the node execution begins.

@@ -121,34 +121,6 @@ namespace BehaviourSystem.BT
             _failedChildCount = 0;
             _successfulChildCount = 0;
         }
-
-
-        public override void FixedUpdateNode()
-        {
-            int count = children.Count;
-
-            for (int i = 0; i < count; ++i)
-            {
-                if (_isChildStopped[i] == false)
-                {
-                    children[i].FixedUpdateNode();
-                }
-            }
-            
-            _failedChildCount = 0;
-            _successfulChildCount = 0;
-        }
-
-
-        public override void GizmosUpdateNode()
-        {
-            int count = children.Count;
-
-            for (int i = 0; i < count; ++i)
-            {
-                children[i].GizmosUpdateNode();
-            }
-        }
         
         
         private EBehaviourResult EvaluatePolicy()

@@ -25,6 +25,9 @@ namespace BehaviourSystem.BT
         private BehaviourNodeHandler _nodeHandler;
         private NodeBase _rootNode;
 
+        internal Action onNodeFixedUpdate;
+        internal Action onNodeGizmosUpdate;
+        
 
         internal BehaviourTree runtimeTree
         {
@@ -99,7 +102,7 @@ namespace BehaviourSystem.BT
                 return;
             }
 
-            _rootNode.FixedUpdateNode();
+            this.onNodeFixedUpdate?.Invoke();
         }
 
 
@@ -117,7 +120,7 @@ namespace BehaviourSystem.BT
                 return;
             }
 
-            _rootNode.GizmosUpdateNode();
+            this.onNodeGizmosUpdate?.Invoke();
         }
 
 

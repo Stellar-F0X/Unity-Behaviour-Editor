@@ -62,11 +62,5 @@ namespace BehaviourSystem.BT
                 return child.UpdateNode();
             }
         }
-
-
-        public override void GizmosUpdateNode()
-        {
-            child?.GizmosUpdateNode();
-        }
     }
 }

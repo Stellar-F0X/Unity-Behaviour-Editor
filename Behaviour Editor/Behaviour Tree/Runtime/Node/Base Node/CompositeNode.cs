@@ -33,24 +33,6 @@ namespace BehaviourSystem.BT
         {
             return children;
         }
-        
-        
-        public override void FixedUpdateNode()
-        {
-            if (currentChildIndex < children.Count)
-            {
-                children[_currentChildIndex].FixedUpdateNode();
-            }
-        }
-
-        
-        public override void GizmosUpdateNode()
-        {
-            if (currentChildIndex < children.Count)
-            {
-                children[_currentChildIndex].GizmosUpdateNode();
-            }
-        }
 
 
         internal override sealed void ExitNode()

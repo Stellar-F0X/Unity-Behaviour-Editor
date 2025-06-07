@@ -52,15 +52,5 @@ namespace BehaviourSystem.BT
         {
             return _child;
         }
-
-        public override sealed void FixedUpdateNode()
-        {
-            child?.FixedUpdateNode();
-        }
-
-        public override sealed void GizmosUpdateNode()
-        {
-            child?.GizmosUpdateNode();
-        }
     }
 }
