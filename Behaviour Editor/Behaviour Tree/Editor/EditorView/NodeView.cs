@@ -90,7 +90,7 @@ namespace BehaviourSystemEditor.BT
         private void Initialize()
         {
             _nodeBorder.AddToClassList($"behaviour-node-{targetNode.nodeType}");
-            _nodeTypeLabel.text = NodeFactory.ApplySpacing(targetNode.nodeTypeName);
+            _nodeTypeLabel.text = NodeFactory.ApplySpacing(targetNode.GetType().Name);
 
             if (Application.isPlaying)
             {
