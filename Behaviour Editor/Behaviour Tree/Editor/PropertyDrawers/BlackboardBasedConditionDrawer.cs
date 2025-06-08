@@ -12,7 +12,7 @@ namespace BehaviourSystemEditor.BT
     {
         private Rect _rect;
 
-        private readonly GUIStyle _popupStyle = new GUIStyle(EditorStyles.popup) { fontSize = 13 };
+        private readonly GUIStyle _popupStyle = new GUIStyle(EditorStyles.popup) { fontSize = 16 };
 
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -152,7 +152,7 @@ namespace BehaviourSystemEditor.BT
 
                     switch (condition)
                     {
-                        case EConditionType.Trigger: conditionTypes.Add("‼"); break;
+                        case EConditionType.Trigger: conditionTypes.Add("!!"); break;
 
                         case EConditionType.Equal: conditionTypes.Add("="); break;
 
