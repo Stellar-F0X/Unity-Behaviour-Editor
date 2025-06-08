@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    [Serializable]
     public class ParallelNode : CompositeNode
     {
         public enum EParallelPolicy
@@ -52,15 +51,12 @@ namespace BehaviourSystem.BT
 
         protected override void OnEnter()
         {
-            if (children is null || children.Count == 0)
-            {
-                return;
-            }
-
             _failedChildCount = 0;
             _successfulChildCount = 0;
 
-            for (int i = 0; i < children.Count; ++i)
+            int count = children?.Count ?? 0;
+
+            for (int i = 0; i < count; ++i)
             {
                 _isChildStopped[i] = false;
             }
@@ -100,7 +96,9 @@ namespace BehaviourSystem.BT
 
         protected override void OnExit()
         {
-            for (int i = 0; i < children.Count; ++i)
+            int count = children?.Count ?? 0;
+            
+            for (int i = 0; i < count; ++i)
             {
                 if (_isChildStopped[i] == false)
                 {
