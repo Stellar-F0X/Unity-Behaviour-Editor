@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace BehaviourSystem.BT
 {
-    public abstract class ConditionNode : DecoratorNode
+    public abstract class ConditionNodeBase : DecoratorNode
     {
         public enum ESuccessType
         {

@@ -3,7 +3,7 @@ using System;
 namespace BehaviourSystem.BT
 {
     [Serializable]
-    public sealed class BlackboardBasedConditionNode : ConditionNode
+    public sealed class BlackboardBasedConditionNode : ConditionNodeBase
     {
         public override string tooltip
         {

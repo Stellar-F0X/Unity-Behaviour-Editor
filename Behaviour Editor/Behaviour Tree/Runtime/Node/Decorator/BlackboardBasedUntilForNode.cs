@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public class BlackboardBasedUntilForNode : ConditionNode
+    public class BlackboardBasedUntilForNode : ConditionNodeBase
     {
         public override string tooltip
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public class ParallelNode : CompositeNode
+    public class ParallelNode : ParallelNodeBase
     {
         public enum EParallelPolicy
         {
@@ -29,37 +29,19 @@ namespace BehaviourSystem.BT
         private int _successfulChildCount = 0;
         private int _failedChildCount = 0;
 
-        private List<bool> _isChildStopped;
-
 
         public override string tooltip
         {
             get { return "Executes multiple child nodes simultaneously. \nSuccess/failure is determined by the configured policy."; }
         }
-
-
-        public override void PostTreeCreation()
-        {
-            _isChildStopped = new List<bool>(children.Count);
-
-            for (int i = 0; i < children.Count; ++i)
-            {
-                _isChildStopped.Add(false);
-            }
-        }
-
+        
 
         protected override void OnEnter()
         {
             _failedChildCount = 0;
             _successfulChildCount = 0;
 
-            int count = children?.Count ?? 0;
-
-            for (int i = 0; i < count; ++i)
-            {
-                _isChildStopped[i] = false;
-            }
+            base.OnEnter();
         }
 
 
@@ -92,36 +74,18 @@ namespace BehaviourSystem.BT
 
             return this.EvaluatePolicy();
         }
-
-
-        protected override void OnExit()
-        {
-            int count = children?.Count ?? 0;
-            
-            for (int i = 0; i < count; ++i)
-            {
-                if (_isChildStopped[i] == false)
-                {
-                    runner.handler.AbortSubtree(children[i].callStackID);
-                    _isChildStopped[i] = true;
-                }
-            }
-        }
         
         
         public void Stop()
         {
-            for (int i = 0; i < children.Count; ++i)
-            {
-                _isChildStopped[i] = false;
-            }
+            base.Stop();
             
             _failedChildCount = 0;
             _successfulChildCount = 0;
         }
         
         
-        private EBehaviourResult EvaluatePolicy()
+        protected override EBehaviourResult EvaluatePolicy()
         {
             switch (parallelPolicy)
             {
