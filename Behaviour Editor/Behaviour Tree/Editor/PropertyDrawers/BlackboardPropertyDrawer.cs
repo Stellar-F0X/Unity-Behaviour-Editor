@@ -6,6 +6,7 @@ using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
+using Object = System.Object;
 
 namespace BehaviourSystemEditor.BT
 {
@@ -50,14 +51,14 @@ namespace BehaviourSystemEditor.BT
 
         private bool GetProperties(Blackboard blackboard, SerializedProperty property, List<IBlackboardProperty> properties)
         {
-            if (property.serializedObject.targetObject == null)
+            if (property.serializedObject.targetObject is null)
             {
                 return false;
             }
 
             Type targetType = this.GetPropertyType(property);
 
-            if (targetType == null)
+            if (targetType is null)
             {
                 return false;
             }
@@ -79,23 +80,31 @@ namespace BehaviourSystemEditor.BT
 
             return properties.Count > 0;
         }
-        
+
 
         private Type GetPropertyType(SerializedProperty property)
         {
-            if (property.boxedValue is IBlackboardProperty castedProperty && castedProperty.type != null)
+            Type resultType = null;
+
+            if (property.boxedValue is IBlackboardProperty castedProperty && castedProperty.type is not null)
             {
-                return castedProperty.type;
+                resultType = castedProperty.type;
+            }
+            else if (property.serializedObject.targetObject is not null)
+            {
+                Type targetType = property.serializedObject.targetObject.GetType();
+                resultType = targetType.GetField(property.name, _BINDING_FLAG)?.FieldType;
             }
 
-            FieldInfo info = property.serializedObject.targetObject.GetType()?.GetField(property.name, _BINDING_FLAG);
-
-            if (info is not null)
+            // 제네릭 타입 파라미터가 자기 자신인지 확인
+            if (resultType is not null && resultType.IsGenericType && resultType.GetGenericArguments()[0] == resultType)
             {
-                return info.FieldType;
+                return null;
             }
-
-            return null;
+            else
+            {
+                return resultType;
+            }
         }
 
 
@@ -112,7 +121,7 @@ namespace BehaviourSystemEditor.BT
             if (property.boxedValue is not null)
             {
                 SerializedProperty keyProp = property.FindPropertyRelative("_key");
-                
+
                 if (string.IsNullOrEmpty(keyProp.stringValue) == false)
                 {
                     //property.boxedValue is not null가 True였다면 무조건 0보다 큰 인덱스일 것이므로 None을 제외하기 위해, 1을 빼준다.
@@ -135,6 +144,7 @@ namespace BehaviourSystemEditor.BT
                 }
             }
         }
+
 
         private void DrawNoPropertiesWarning(Rect position, Rect labelRect, Rect fieldRect, SerializedProperty property, GUIContent label)
         {

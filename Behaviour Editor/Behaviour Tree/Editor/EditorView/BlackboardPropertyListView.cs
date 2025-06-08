@@ -80,7 +80,7 @@ namespace BehaviourSystemEditor.BT
             this.RefreshItems();
         }
 
-        
+
 
         public void OnBehaviourTreeChanged(BehaviourTree tree)
         {
@@ -90,11 +90,11 @@ namespace BehaviourSystemEditor.BT
             }
 
             this.reorderable = !Application.isPlaying;
-            
+
             this._blackboard = tree.blackboard;
             this._blackboardBindingField.value = tree?.blackboard;
             this._blackboardBindingField.enabledSelf = BehaviourTreeEditor.CanEditTree;
-            
+
             this.RefreshBlackboardProperties();
         }
 
@@ -106,7 +106,7 @@ namespace BehaviourSystemEditor.BT
             {
                 return;
             }
-            
+
             this._serializedObject = new SerializedObject(this._blackboard);
             this._serializedListProperty = _serializedObject.FindProperty("_properties");
 
@@ -146,7 +146,7 @@ namespace BehaviourSystemEditor.BT
             this.RefreshItems();
         }
 
-        
+
 
         //아이템이 추가, 제거, 순서가 변경될 때마다 호출되어 콜백들을 다시 등록하므로 인덱스가 캐싱돼도 문제되지 않는다.
         private void BindItemToList(VisualElement element, int index)
@@ -165,9 +165,17 @@ namespace BehaviourSystemEditor.BT
                     IMGUIContainer imguiField = element.Q<IMGUIContainer>("IMGUIContainer");
                     SerializedProperty valueProp = elementProperty.FindPropertyRelative("_value");
 
-                    imguiField.Unbind();
-                    imguiField.TrackPropertyValue(valueProp, _ => imguiField.MarkDirtyRepaint());
-                    imguiField.onGUIHandler = () => this.DrawIMGUIForItem(elementProperty, valueProp);
+                    if (valueProp is null)
+                    {
+                        imguiField.Unbind();
+                        imguiField.onGUIHandler = () => DrawIMGUIForErrorMessage(elementProperty);
+                    }
+                    else
+                    {
+                        imguiField.Unbind();
+                        imguiField.TrackPropertyValue(valueProp, _ => imguiField.MarkDirtyRepaint());
+                        imguiField.onGUIHandler = () => this.DrawIMGUIForItem(elementProperty, valueProp);
+                    }
                 }
 
                 if (itemsSource[index] is IBlackboardProperty property)
@@ -183,11 +191,11 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
-        
+
 
         private void DrawIMGUIForItem(SerializedProperty property, SerializedProperty valueProp)
         {
-            if (property is null || property.boxedValue is null)
+            if (property is null || property.boxedValue is null || valueProp is null)
             {
                 return;
             }
@@ -199,7 +207,31 @@ namespace BehaviourSystemEditor.BT
         }
 
 
+
+        private void DrawIMGUIForErrorMessage(SerializedProperty property)
+        {
+            if (property is null || property.boxedValue is null)
+            {
+                return;
+            }
+
+            const float iconSize = 12f;
+                
+            using (new EditorGUI.DisabledScope(true))
+            {
+                Rect position = EditorGUILayout.GetControlRect();
         
+                Rect iconRect = new Rect(position.x, position.y + (position.height - iconSize) * 0.5f, iconSize, iconSize);
+                Rect textRect = new Rect(position.x + iconSize + 2f, position.y, position.width - iconSize - 2f, position.height);
+
+                Texture warningImg = EditorGUIUtility.IconContent("console.warnicon").image;
+                GUI.DrawTexture(iconRect, warningImg, ScaleMode.ScaleToFit);
+                EditorGUI.LabelField(textRect, "Invalid blackboard property type.");
+            }
+        }
+
+
+
         private void OnChangePropertyKey(string newKey, int index)
         {
             if (itemsSource[index] is IBlackboardProperty property)
@@ -213,7 +245,7 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
-        
+
 
         private void OnPropertyIndicesSwapped(int a, int b)
         {
