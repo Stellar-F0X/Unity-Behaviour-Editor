@@ -104,7 +104,7 @@ namespace BehaviourSystem.BT
 
             if (this.callState == ENodeCallState.Updating)
             {
-                this.behaviourResult = this.OnUpdate(runner.useUpdateRate ? runner.updateInterval : Time.deltaTime);
+                this.behaviourResult = this.OnUpdate();
 
                 if (this.behaviourResult == EBehaviourResult.Running)
                 {
@@ -261,7 +261,6 @@ namespace BehaviourSystem.BT
 
         /// Core behavior update function that must be implemented by derived classes.
         /// Returns the execution result of the node's behavior.
-        /// <param name="deltaTime"></param>
-        protected abstract EBehaviourResult OnUpdate(in float deltaTime);
+        protected abstract EBehaviourResult OnUpdate();
     }
 }

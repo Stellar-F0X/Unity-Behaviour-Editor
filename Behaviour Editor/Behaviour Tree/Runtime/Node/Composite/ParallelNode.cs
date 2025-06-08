@@ -45,7 +45,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        protected override EBehaviourResult OnUpdate(in float deltaTime)
+        protected override EBehaviourResult OnUpdate()
         {
             int count = children.Count;
 
@@ -76,7 +76,7 @@ namespace BehaviourSystem.BT
         }
         
         
-        public void Stop()
+        public override void Stop()
         {
             base.Stop();
             

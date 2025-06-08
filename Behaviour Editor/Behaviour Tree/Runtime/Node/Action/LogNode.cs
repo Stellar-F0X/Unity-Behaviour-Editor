@@ -24,7 +24,7 @@ namespace BehaviourSystem.BT
         }
 
         
-        protected override EBehaviourResult OnUpdate(in float deltaTime)
+        protected override EBehaviourResult OnUpdate()
         {
             if (onUpdateMessages is not null && onUpdateMessages.Length > 0)
             {

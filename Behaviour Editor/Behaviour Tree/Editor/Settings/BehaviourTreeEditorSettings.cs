@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
@@ -20,7 +19,6 @@ namespace BehaviourSystemEditor.BT
         public Color edgeDisappearingColor = new Color32(200, 200, 200, 255);
         
         [Header("Runtime Options")]
-        public uint runnerMaxUpdateRateLimit = 240;
         public float nodeViewUpdateInterval = 0.1f; // 0.1초마다 업데이트 (10Hz)
 
         [Header("Layout References")]

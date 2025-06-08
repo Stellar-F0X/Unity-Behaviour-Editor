@@ -1,33 +1,31 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("BehaviourSystemEditor-BT")]
+
 namespace BehaviourSystem.BT
 {
     [DefaultExecutionOrder(-1), AddComponentMenu("Behaviour System/Behaviour Tree Runner")]
     public class BehaviourTreeRunner : MonoBehaviour
     {
         private readonly Dictionary<string, IBlackboardProperty> _properties = new Dictionary<string, IBlackboardProperty>();
-        
-        public bool useUpdateRate = false;
+
         public bool useFixedUpdate = true;
         public bool useGizmos = true;
-        
-        [SerializeField]
-        private uint _updateRate = 60;
-        private float _frameInterval;
-        private float _timeSinceLastUpdate;
-        
+
+
         [SerializeField]
         private BehaviourTree _runtimeTree;
+
         private BehaviourNodeHandler _nodeHandler;
         private NodeBase _rootNode;
 
         internal Action onNodeFixedUpdate;
         internal Action onNodeGizmosUpdate;
-        
+
 
         internal BehaviourTree runtimeTree
         {
@@ -45,21 +43,6 @@ namespace BehaviourSystem.BT
             set;
         }
 
-        public float updateInterval
-        {
-            get { return _frameInterval; }
-        }
-        
-
-        /// <summary> Controls the update frequency for the behaviour tree runner. </summary>
-        /// <value> An integer representing the update rate in frames per second, or -1 if <see cref="useUpdateRate"/> is disabled. </value>
-        public int updateRate
-        {
-            get { return this.useUpdateRate ? (int)this._updateRate : -1; }
-            
-            set { this.SetUpdateRate((uint)value); }
-        }
-
 
         private void Awake()
         {
@@ -70,14 +53,16 @@ namespace BehaviourSystem.BT
                 return;
             }
 
-            if (this.useUpdateRate)
-            {
-                this.SetUpdateRate(_updateRate);
-            }
-            
             this._runtimeTree = BehaviourTree.MakeRuntimeTree(this, _runtimeTree);
             this._nodeHandler = new BehaviourNodeHandler(this._runtimeTree.nodeSet);
             this._rootNode = _runtimeTree.nodeSet.rootNode;
+        }
+
+
+        private void OnDestroy()
+        {
+            onNodeFixedUpdate = null;
+            onNodeGizmosUpdate = null;
         }
 
 
@@ -87,11 +72,8 @@ namespace BehaviourSystem.BT
             {
                 return;
             }
-
-            if (useUpdateRate == false || _frameInterval + _timeSinceLastUpdate < Time.time)
-            {
-                _rootNode.UpdateNode();
-            }
+            
+            _rootNode.UpdateNode();
         }
 
 
@@ -124,43 +106,19 @@ namespace BehaviourSystem.BT
         }
 
 
-
-        private void SetUpdateRate(uint targetUpdateRate)
+        public bool TrySetProperty<TValue>(in string key, TValue value)
         {
-            if (this.useUpdateRate)
+            if (this._runtimeTree?.blackboard is null || enabled == false)
             {
-                this._updateRate = (uint)Mathf.Max(Application.targetFrameRate, 0);
-                this._updateRate = _updateRate == 0 ? targetUpdateRate : _updateRate;
-                this._frameInterval = 1f / _updateRate;
+                return false;
             }
-#if UNITY_EDITOR
-            else
-            {
-                Debug.LogWarning("Cannot set the update rate because useUpdateRate is disabled.");
-            }
-#endif
-        }
 
-
-        public void SetProperty<TValue>(in string key, TValue property)
-        {
-            if (this._runtimeTree.blackboard is null)
-            {
-                Debug.Log("Blackboard is not assigned.");
-                return;
-            }
-            
-            if (enabled == false)
-            {
-                return;
-            }
-            
             if (_properties.TryGetValue(key, out var existingProperty))
             {
                 if (existingProperty is BlackboardProperty<TValue> prop)
                 {
-                    prop.value = property;
-                    return;
+                    prop.value = value;
+                    return true;
                 }
             }
             else
@@ -169,37 +127,30 @@ namespace BehaviourSystem.BT
 
                 if (newProperty is BlackboardProperty<TValue> prop)
                 {
-                    prop.value = property;
+                    prop.value = value;
                     _properties.Add(key, prop);
-                    return;
+                    return true;
                 }
             }
 
-#if UNITY_EDITOR
-            Debug.LogWarning($"Blackboard property with key '{key}' was not found.");
-#endif
+            return false;
         }
 
 
-        public TValue GetProperty<TValue>(in string key)
+        public bool TryGetProperty<TValue>(in string key, out TValue value)
         {
-            if (this._runtimeTree.blackboard is null)
+            if (this._runtimeTree?.blackboard is null || enabled == false)
             {
-                Debug.Log("Blackboard is not assigned.");
-                return default;
+                value = default;
+                return false;
             }
-            
-            if (enabled == false)
-            {
-                Debug.Log("Blackboard property was not found.");
-                return default;
-            }
-            
+
             if (_properties.TryGetValue(key, out var existingProperty))
             {
                 if (existingProperty is BlackboardProperty<TValue> castedProperty)
                 {
-                    return castedProperty.value;
+                    value = castedProperty.value;
+                    return true;
                 }
             }
             else
@@ -209,14 +160,13 @@ namespace BehaviourSystem.BT
                 if (newProperty is BlackboardProperty<TValue> castedProperty)
                 {
                     _properties.Add(key, newProperty);
-                    return castedProperty.value;
+                    value = castedProperty.value;
+                    return true;
                 }
             }
 
-#if UNITY_EDITOR
-            Debug.LogWarning($"Blackboard property with key '{key}' was not found.");
-#endif
-            return default;
+            value = default;
+            return false;
         }
 
 
@@ -236,7 +186,7 @@ namespace BehaviourSystem.BT
         public bool TryGetNodeByTag(string nodeTag, out NodeAccessor[] accessors)
         {
             accessors = _nodeHandler.GetNodeByTag(nodeTag);
-            
+
             if (accessors is null)
             {
                 return false;

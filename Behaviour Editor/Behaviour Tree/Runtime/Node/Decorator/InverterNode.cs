@@ -9,7 +9,7 @@ namespace BehaviourSystem.BT
             get { return "Inverts the result of the child node (Success to Failure, Failure to Success)"; }
         }
 
-        protected override EBehaviourResult OnUpdate(in float deltaTime)
+        protected override EBehaviourResult OnUpdate()
         {
             switch (child.UpdateNode())
             {
