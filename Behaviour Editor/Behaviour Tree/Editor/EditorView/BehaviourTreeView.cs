@@ -74,6 +74,21 @@ namespace BehaviourSystemEditor.BT
                 tree.groupDataSet?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
             }
         }
+        
+        
+        
+        public override List<Port> GetCompatiblePorts(Port input, NodeAdapter nodeAdapter)
+        {
+            if (input is null)
+            {
+                Debug.LogWarning($"{typeof(BehaviourTreeView)}: Input is null");
+                return null;
+            }
+
+            //direction은 input과 output이므로, 다른 노드라도 같은 포트에 못 꽂게 방지
+            return ports.Where(output => input.direction != output.direction && input.node != output.node).ToList();
+        }
+        
 
 
         public NodeView FindNodeView(NodeBase node)
