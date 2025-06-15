@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -53,7 +52,13 @@ namespace BehaviourSystemEditor.BT
 
             if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.isInLoadingBTAsset == false)
             {
-                _data.AddNodeGuids(elements.Where(x => x.selected && x is NodeView).ConvertAll(x => ((NodeView)x).targetNode));
+                foreach (var element in elements)
+                {
+                    if (element.selected && element is NodeView nodeView)
+                    {
+                        _data.AddNodeGuid(nodeView.targetNode);
+                    }
+                }
             }
         }
 
@@ -67,8 +72,14 @@ namespace BehaviourSystemEditor.BT
 
             if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.isInLoadingBTAsset == false)
             {
-                _data.RemoveNodeGuids(elements.Where(x => x.selected && x is NodeView).ConvertAll(x => ((NodeView)x).targetNode));
+                foreach (var element in elements)
+                {
+                    if (element.selected && element is NodeView nodeView)
+                    {
+                        _data.RemoveNodeGuid(nodeView.targetNode);
+                    }
+                }
             }
-        }
+        } 
     }
 }

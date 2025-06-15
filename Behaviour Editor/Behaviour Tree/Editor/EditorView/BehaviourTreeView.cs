@@ -66,17 +66,17 @@ namespace BehaviourSystemEditor.BT
                         tree.nodeSet.nodeList.RemoveAt(i--);
                     }
                 }
-                
+
                 //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
                 tree.nodeSet.nodeList.ForEach(n => this.RecreateNodeViewOnLoad(n));
-                tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n, n as IBehaviourIterable));
-                
+                tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n));
+
                 tree.groupDataSet?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
             }
         }
-        
-        
-        
+
+
+
         public override List<Port> GetCompatiblePorts(Port input, NodeAdapter nodeAdapter)
         {
             if (input is null)
@@ -88,7 +88,7 @@ namespace BehaviourSystemEditor.BT
             //direction은 input과 output이므로, 다른 노드라도 같은 포트에 못 꽂게 방지
             return ports.Where(output => input.direction != output.direction && input.node != output.node).ToList();
         }
-        
+
 
 
         public NodeView FindNodeView(NodeBase node)
@@ -165,19 +165,21 @@ namespace BehaviourSystemEditor.BT
 
         public void UpdateNodeView()
         {
-            if (Time.time > _nextUpdateTime)
+            if (Time.time < _nextUpdateTime)
             {
-                float currentTime = Time.time;
-                float actualDeltaTime = currentTime - _lastUpdateTime;
-
-                _lastUpdateTime = currentTime;
-                _nextUpdateTime = currentTime + BehaviourTreeEditor.Settings.nodeViewUpdateInterval;
-
-                foreach (Node view in nodes)
-                {
-                    ((NodeView)view)!.UpdateView(actualDeltaTime);
-                }
+                return;
             }
+            
+            float currentTime = Time.time;
+            float updateInterval = BehaviourTreeEditor.Settings.nodeViewUpdateInterval;
+
+            foreach (Node view in nodes)
+            {
+                ((NodeView)view).UpdateView(currentTime - _lastUpdateTime);
+            }
+            
+            _lastUpdateTime = currentTime;
+            _nextUpdateTime = currentTime + updateInterval;
         }
 
 
@@ -189,7 +191,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     switch (element)
                     {
-                        case Edge edge: NodeLinkHelper.RemoveEdgeAndNodeConnection(_tree.nodeSet, edge); break;
+                        case Edge edge: NodeLinkHelper.RemoveEdgeAndDisconnection(_tree.nodeSet, edge); break;
 
                         case NodeView nodeView: this._tree.nodeSet.DeleteNode(nodeView.targetNode); break;
 
@@ -253,10 +255,10 @@ namespace BehaviourSystemEditor.BT
         private void RecreateNodeGroupViewOnLoad(GroupData data)
         {
             NodeGroupView nodeGroupView = new NodeGroupView(_tree.groupDataSet, data);
-            
+
             nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
             nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));
-            
+
             base.AddElement(nodeGroupView);
         }
     }

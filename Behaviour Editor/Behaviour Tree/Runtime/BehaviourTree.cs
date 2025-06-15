@@ -12,8 +12,10 @@ namespace BehaviourSystem.BT
         [HideInInspector]
         public Blackboard blackboard;
 
+#if UNITY_EDITOR
         [HideInInspector]
         public GroupDataSet groupDataSet;
+#endif
 
 
         [field: SerializeField, ReadOnly]

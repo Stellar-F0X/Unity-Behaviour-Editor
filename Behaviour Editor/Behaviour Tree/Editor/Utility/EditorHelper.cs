@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -134,7 +135,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     return;
                 }
-                
+
                 int count = list.Count;
 
                 for (int i = 0; i < count; ++i)

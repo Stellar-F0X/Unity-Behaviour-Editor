@@ -25,6 +25,12 @@ namespace BehaviourSystem.BT
             
             set
             {
+                if (value is null)
+                {
+                    _child.Clear();
+                    return;
+                }
+                
                 if (_child.Count == 1)
                 {
                     _child[0] = value;

@@ -21,11 +21,11 @@
 }
 
 #node-border {
-    background-color: rgb(56, 56, 56);
-    border-left-color: rgb(37, 37, 37);
-    border-right-color: rgb(37, 37, 37);
-    border-top-color: rgb(37, 37, 37);
-    border-bottom-color: rgb(37, 37, 37);
+    background-color: rgb(45, 45, 45);
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -52,53 +52,6 @@
     -unity-font-style: bold;
     transform-origin: center;
     color: rgb(194, 194, 194);
-}
-
-#input {
-    align-self: stretch;
-    align-items: center;
-    justify-content: flex-start;
-    flex-direction: column;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-    height: auto;
-    background-color: rgb(50, 50, 50);
-    min-height: auto;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
-    min-width: auto;
-    padding-top: 0;
-    padding-right: 5px;
-    padding-bottom: 0;
-    padding-left: 5px;
-    flex-grow: 1;
-}
-
-#output {
-    align-items: center;
-    flex-direction: column;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-    align-self: stretch;
-    background-color: rgb(50, 50, 50);
-    justify-content: flex-start;
-    min-height: auto;
-    min-width: auto;
-    padding-top: 0;
-    padding-right: 5px;
-    padding-bottom: 0;
-    padding-left: 5px;
-    flex-grow: 1;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
 }
 
 #selection-border {
@@ -139,23 +92,39 @@
 
 #input > .port {
     min-width: 60%;
-    background-color: rgb(40, 40, 40);
+    background-color: rgb(25, 25, 25);
     border-bottom-right-radius: 7px;
     border-bottom-left-radius: 7px;
     align-self: center;
     align-items: auto;
     flex-wrap: nowrap;
+    border-top-width: 0;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgb(70, 70, 70);
+    border-right-color: rgb(70, 70, 70);
+    border-top-color: rgb(70, 70, 70);
+    border-bottom-color: rgb(70, 70, 70);
 }
 
 #output > .port {
     min-width: 60%;
-    background-color: rgb(40, 40, 40);
+    background-color: rgb(25, 25, 25);
     border-top-left-radius: 7px;
     border-top-right-radius: 7px;
     align-self: center;
     align-items: auto;
     flex-wrap: wrap-reverse;
     justify-content: flex-end;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 0;
+    border-left-width: 2px;
+    border-left-color: rgb(70, 70, 70);
+    border-right-color: rgb(70, 70, 70);
+    border-top-color: rgb(70, 70, 70);
+    border-bottom-color: rgb(70, 70, 70);
 }
 
 #input > .port > #connector {
@@ -174,4 +143,22 @@
     left: auto;
     right: auto;
     position: absolute;
+}
+
+.behaviour-node-Action {
+    background-color: rgb(108, 0, 221);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-repeat: no-repeat no-repeat;
+}
+
+.behaviour-node-Composite {
+    background-color: rgb(255, 118, 0);
+}
+
+.behaviour-node-Decorator {
+    background-color: rgb(0, 91, 255);
+}
+
+.behaviour-node-Root {
+    background-color: rgb(0, 176, 78);
 }

@@ -1,16 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System.Buffers;
+using System.Collections.Generic;
 using System.Linq;
 using BehaviourSystem.BT;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace BehaviourSystemEditor.BT
 {
     public static class NodeLinkHelper
     {
-        public static void CreateVisualEdgesFromNodeData(BehaviourTreeView treeView, NodeBase parentNodeBase, IBehaviourIterable iterable)
+        public static void CreateVisualEdgesFromNodeData(BehaviourTreeView treeView, NodeBase parentNodeBase)
         {
+            IBehaviourIterable iterable = parentNodeBase as IBehaviourIterable;
+            
             if (iterable is null || iterable.childCount == 0)
             {
                 return;
@@ -62,7 +66,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void RemoveEdgeAndNodeConnection(BehaviourNodeSet nodeSet, Edge edge)
+        public static void RemoveEdgeAndDisconnection(BehaviourNodeSet nodeSet, Edge edge)
         {
             NodeView parentView = edge.output.node as NodeView;
             NodeView childView = edge.input.node as NodeView;
@@ -89,7 +93,11 @@ namespace BehaviourSystemEditor.BT
             {
                 BehaviourTreeEditor.Instance.Tree.nodeSet.RemoveChild(view.targetNode, childNodeView.targetNode);
                 view.outputPort.Disconnect(childNodeView.parentConnectionEdge);
-                childNodeView.parentConnectionEdge.RemoveFromHierarchy();
+                
+                List<GraphElement> edges = ListPool<GraphElement>.Get();
+                edges.Add(childNodeView.parentConnectionEdge);
+                BehaviourTreeEditor.Instance.View.DeleteElements(edges);
+                ListPool<GraphElement>.Release(edges);
             }
         }
 
@@ -109,7 +117,11 @@ namespace BehaviourSystemEditor.BT
             {
                 BehaviourTreeEditor.Instance.Tree.nodeSet.RemoveChild(parentNodeView.targetNode, existingChildView.targetNode);
                 parentNodeView.outputPort.Disconnect(existingChildView.parentConnectionEdge);
-                existingChildView.parentConnectionEdge.RemoveFromHierarchy();
+                
+                List<GraphElement> edges = ListPool<GraphElement>.Get();
+                edges.Add(existingChildView.parentConnectionEdge);
+                BehaviourTreeEditor.Instance.View.DeleteElements(edges);
+                ListPool<GraphElement>.Release(edges);
             }
         }
 

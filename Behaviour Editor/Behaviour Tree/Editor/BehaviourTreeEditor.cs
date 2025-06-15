@@ -167,12 +167,12 @@ namespace BehaviourSystemEditor.BT
 
         private void RuntimeUpdate()
         {
-            if (Application.isPlaying == false || EditorApplication.isPaused)
+            if (Application.isPlaying == false)
             {
                 return;
             }
-
-            if (_treeRunner is null || _treeRunner.runtimeTree is null)
+            
+            if (_treeRunner?.runtimeTree is null)
             {
                 return;
             }
@@ -230,7 +230,6 @@ namespace BehaviourSystemEditor.BT
                     this.OnSelectionChange();
                     return;
                 }
-
                 case PlayModeStateChange.EnteredPlayMode:
                 {
                     EditorApplication.update += this.RuntimeUpdate;

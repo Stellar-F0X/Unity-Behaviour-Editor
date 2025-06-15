@@ -11,14 +11,6 @@ namespace BehaviourSystemEditor.BT
 {
     public class NodeView : Node
     {
-        private enum EIndicatorColor : byte
-        {
-            White,
-            Red,
-            Yellow,
-            Green
-        };
-
         public NodeView(NodeBase targetNode, VisualTreeAsset nodeUxml) : base(AssetDatabase.GetAssetPath(nodeUxml))
         {
             this.targetNode = targetNode;
@@ -29,48 +21,57 @@ namespace BehaviourSystemEditor.BT
             this.style.top = targetNode.position.y;
             this._lastProcessedCallCount = targetNode.callCount;
 
+            this._elementGroup = this.Q<VisualElement>("group");
             this._nodeBorder = this.Q<VisualElement>("node-border");
             this._nodeTypeLabel = this.Q<TextElement>("node-type-label");
-            this._nodeResultIndicator = this.Q<VisualElement>("executed-sign");
 
             this.Initialize();
             this.CreatePorts();
         }
 
-        private readonly static EIndicatorColor[] _CurrentIndicatorColor =
-        {
-            EIndicatorColor.Yellow, 
-            EIndicatorColor.Red,
-            EIndicatorColor.Green
-        };
-
-        private readonly static StyleColor[] _CurrentColor =
-        {
-            new StyleColor(Color.yellow),
-            new StyleColor(Color.red),
-            new StyleColor(Color.green)
-        };
-
         public event Action<NodeView> OnNodeSelected;
         public event Action<NodeView> OnNodeUnselected;
 
-        private readonly VisualElement _nodeResultIndicator;
+        public readonly NodeBase targetNode;
+        
+        private readonly VisualElement _elementGroup;
         private readonly VisualElement _nodeBorder;
         private readonly TextElement _nodeTypeLabel;
-        
-        public readonly NodeBase targetNode;
+
+        public Port inputPort;
+        public Port outputPort;
+        public Edge parentConnectionEdge;
 
         private bool _isHighlighted;
-
         private float _highlightDuration;
         private float _highlightRemainingTime;
         private ulong _lastProcessedCallCount;
 
-        private EIndicatorColor _previousColor = EIndicatorColor.White;
 
-        public Edge parentConnectionEdge;
-        public Port inputPort;
-        public Port outputPort;
+        private void Initialize()
+        {
+            _elementGroup.AddToClassList($"behaviour-node-{targetNode.nodeType}");
+            _nodeTypeLabel.text = NodeFactory.ApplySpacing(targetNode.GetType().Name);
+
+            if (Application.isPlaying)
+            {
+                if (_lastProcessedCallCount > 0)
+                {
+                    this.SetBorderColorByStatus();
+                }
+                else
+                {
+                    _nodeBorder.style.SetBorderColor(Color.gray * 0.3f);
+                }
+            }
+            else
+            {
+                //NodeBase CustomEditor에서 그려지는 NodeBase의 Name Field를 수정시, 에디터에서 값 변경을 확인 후, 알림이 전달.
+                //등록된 TrackPropertyValue에 등록된 람다가 호출되고 변경된 이름이 property.stringValue로 전돨되며 NodeView의 Title도 변경됨.
+                SerializedProperty nameProperty = new SerializedObject(targetNode).FindProperty("m_Name");
+                this.TrackPropertyValue(nameProperty, p => this.title = p.stringValue);
+            }
+        }
 
 
         public override void OnSelected()
@@ -79,41 +80,16 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-
         public override void OnUnselected()
         {
             OnNodeUnselected?.Invoke(this);
         }
 
 
-
-        private void Initialize()
-        {
-            _nodeBorder.AddToClassList($"behaviour-node-{targetNode.nodeType}");
-            _nodeTypeLabel.text = NodeFactory.ApplySpacing(targetNode.GetType().Name);
-
-            if (Application.isPlaying)
-            {
-                _nodeBorder.style.SetBorderColor(BehaviourTreeEditor.Settings.nodeDisappearingColor);
-            }
-            else
-            {
-                //NodeView의 커스텀 타이틀 변경을 위해 SerializedProperty 등록.
-                //CustomeEditor에서 그려지는 NodeBase의 Name Field를 수정시, 에디터에서 값 변경을 확인 후, 알림이 전달됨.
-                //그러면 등록된 TrackPropertyValue에 등록된 람다가 호출되고 변경된 이름이 property.stringValue로 전돨됨.
-                SerializedObject targetObject = new SerializedObject(targetNode);
-                SerializedProperty nameProperty = targetObject.FindProperty("m_Name");
-                this.TrackPropertyValue(nameProperty, p => this.title = p.stringValue);
-            }
-        }
-
-
-
         public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
         {
             return new PortView(direction, capacity);
         }
-
 
 
         private void CreatePorts()
@@ -179,10 +155,6 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        //상속받은 상위 클래스에서 Disconnect All이라는 ContextualMenu 생성을 방지하기 위해서 오버라이드
-        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt) { }
-
-
 #region Highlighting Logic
 
         public void UpdateView(float deltaTime)
@@ -192,23 +164,32 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
+            // 하이라이트되지 않은 상태이고 노드 호출 횟수가 변경되지 않았다면 업데이트 불필요
+            if (_isHighlighted == false && targetNode.callCount == _lastProcessedCallCount)
+            {
+                return;
+            }
+
             BehaviourTreeEditorSettings settings = BehaviourTreeEditor.Settings;
 
             if (this.UpdateNodeHighlightState(deltaTime, settings.highlightingDuration))
             {
-                this.UpdateNodeVisuals(settings, _highlightDuration / settings.highlightingDuration);
+                float progress = _highlightDuration / settings.highlightingDuration;
+
+                _nodeBorder?.style.SetBorderColor(Color.Lerp(settings.nodeDisappearingColor, settings.nodeAppearingColor, progress));
+
+                parentConnectionEdge?.edgeControl.SetEdgeColor(Color.Lerp(settings.edgeDisappearingColor, settings.edgeAppearingColor, progress));
             }
         }
 
 
-
+        /// <summary> 노드의 하이라이트 상태를 업데이트하고 시각적 효과를 관리합니다. </summary>
+        /// <param name="deltaTime">프레임 간 경과 시간</param>
+        /// <param name="highlightingDuration">하이라이트 효과 지속 시간</param>
+        /// <returns>노드 시각적 업데이트가 필요한 경우 true, 그렇지 않으면 false</returns>
         private bool UpdateNodeHighlightState(float deltaTime, float highlightingDuration)
         {
-            if (_isHighlighted == false && targetNode.callCount == _lastProcessedCallCount)
-            {
-                return false;
-            }
-
+            // 노드가 새로 호출되었는지 확인
             if (targetNode.callCount > _lastProcessedCallCount)
             {
                 if (_isHighlighted == false)
@@ -217,44 +198,44 @@ namespace BehaviourSystemEditor.BT
                     parentConnectionEdge?.BringToFront();
                 }
 
+                // 처리된 호출 횟수 업데이트 및 하이라이트 시간 초기화
                 _lastProcessedCallCount = targetNode.callCount;
                 _highlightRemainingTime = highlightingDuration;
             }
 
+            // 하이라이트 효과가 진행 중인 경우
             if (_highlightRemainingTime > 0f)
             {
+                // 하이라이트 지속 시간 증가
                 _highlightDuration = Mathf.Min(_highlightDuration + deltaTime, highlightingDuration);
+                // 남은 하이라이트 시간 감소
                 _highlightRemainingTime = Mathf.Max(_highlightRemainingTime - deltaTime, 0f);
-                return true;
             }
-
-            _highlightDuration = Mathf.Max(_highlightDuration - deltaTime, 0f);
-
-            if (_highlightDuration < 0.005f)
+            else
             {
-                _isHighlighted = false;
-                parentConnectionEdge?.SendToBack();
-                return true;
+                _highlightDuration = Mathf.Max(_highlightDuration - deltaTime, 0f);
+
+                // 하이라이트 효과가 거의 끝났을 때
+                if (_highlightDuration < 0.003f)
+                {
+                    _isHighlighted = false;
+                    parentConnectionEdge?.SendToBack();
+                    this.SetBorderColorByStatus();
+                }
             }
 
             return _isHighlighted;
         }
 
 
-
-        private void UpdateNodeVisuals(BehaviourTreeEditorSettings settings, float progress)
+        private void SetBorderColorByStatus()
         {
-            int index = (int)targetNode.status;
-            
-            if (_previousColor != _CurrentIndicatorColor[index])
+            switch (targetNode.status)
             {
-                _previousColor = _CurrentIndicatorColor[index];
-                _nodeResultIndicator.style.backgroundColor = _CurrentColor[index];
+                case NodeBase.EStatus.Failure: _nodeBorder?.style.SetBorderColor(BehaviourTreeEditor.Settings.nodeFailureColor); break;
+
+                case NodeBase.EStatus.Success: _nodeBorder?.style.SetBorderColor(BehaviourTreeEditor.Settings.nodeSuccessColor); break;
             }
-
-            _nodeBorder?.style.SetBorderColor(Color.Lerp(settings.nodeDisappearingColor, settings.nodeAppearingColor, progress));
-
-            parentConnectionEdge?.edgeControl.SetEdgeColor(Color.Lerp(settings.edgeDisappearingColor, settings.edgeAppearingColor, progress));
         }
 
 #endregion
@@ -272,5 +253,9 @@ namespace BehaviourSystemEditor.BT
             port.portName = portName;
             container.Add(port);
         }
+
+
+        //상속받은 상위 클래스에서 Disconnect All이라는 ContextualMenu 생성을 방지하기 위해서 오버라이드
+        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt) { }
     }
 }

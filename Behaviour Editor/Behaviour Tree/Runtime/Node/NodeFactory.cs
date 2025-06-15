@@ -37,7 +37,7 @@ namespace BehaviourSystem.BT
                 throw new Exception($"{typeof(NodeFactory)}: Failed to create node of type {nodeType}");
             }
             
-            newNode.guid = GUID.Generate().ToString();
+            newNode.guid = Guid.NewGuid().ToString();
             newNode.hideFlags = HideFlags.HideInHierarchy;
             newNode.name = ApplySpacing(nodeType.Name);
             return newNode;

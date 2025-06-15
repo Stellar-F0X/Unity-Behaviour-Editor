@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
+#if UNITY_EDITOR
     public class GroupDataSet : ScriptableObject
     {
         [SerializeField]
@@ -33,8 +34,7 @@ namespace BehaviourSystem.BT
             return newSet;
         }
         
-
-#if UNITY_EDITOR
+        
         public GroupData CreateGroupData(string title, Vector2 position)
         {
             GroupData newGroupData = CreateInstance<GroupData>();
@@ -61,7 +61,6 @@ namespace BehaviourSystem.BT
         }
 
 
-
         public void DeleteGroupData(GroupData data)
         {
             if (Application.isPlaying == false && Undo.isProcessing == false)
@@ -78,6 +77,6 @@ namespace BehaviourSystem.BT
                 AssetDatabase.SaveAssets();
             }
         }
-#endif
     }
+#endif
 }
