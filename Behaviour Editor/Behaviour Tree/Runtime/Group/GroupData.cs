@@ -70,22 +70,28 @@ namespace BehaviourSystem.BT
         }
 
         
-        public void AddNodeGuids(List<NodeBase> nodeGuid)
+        public void AddNodeGuid(NodeBase nodeGuid)
         {
+            if (_nodeGuidSet.Contains(nodeGuid.guid))
+            {
+                return;
+            }
+            
             Undo.RecordObject(this, "Behaviour Tree (AddNodeGuidToGroup)");
-            
-            nodeGuid.ForEach(node => _nodeGuidSet.Add(node.guid));
-            
+            _nodeGuidSet.Add(nodeGuid.guid);
             EditorUtility.SetDirty(this);
         }
 
 
-        public void RemoveNodeGuids(List<NodeBase> nodeGuid)
+        public void RemoveNodeGuid(NodeBase nodeGuid)
         {
+            if (_nodeGuidSet.Contains(nodeGuid.guid) == false)
+            {
+                return;
+            }
+            
             Undo.RecordObject(this, "Behaviour Tree (RemoveNodeGuidToGroup)");
-            
-            nodeGuid.ForEach(node => _nodeGuidSet.Remove(node.guid));
-            
+            _nodeGuidSet.Remove(nodeGuid.guid);
             EditorUtility.SetDirty(this);
         }
     }

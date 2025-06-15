@@ -69,7 +69,7 @@ namespace BehaviourSystemEditor.BT
                 
                 //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
                 tree.nodeSet.nodeList.ForEach(n => this.RecreateNodeViewOnLoad(n));
-                tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n, n as IBehaviourIterable));
+                tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n));
                 
                 tree.groupDataSet?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
             }
@@ -189,7 +189,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     switch (element)
                     {
-                        case Edge edge: NodeLinkHelper.RemoveEdgeAndNodeConnection(_tree.nodeSet, edge); break;
+                        case Edge edge: NodeLinkHelper.RemoveEdgeAndDisconnection(_tree.nodeSet, edge); break;
 
                         case NodeView nodeView: this._tree.nodeSet.DeleteNode(nodeView.targetNode); break;
 

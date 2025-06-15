@@ -181,11 +181,20 @@ namespace BehaviourSystem.BT
 
             switch (parent.nodeType)
             {
-                case NodeBase.ENodeType.Root: ((RootNode)parent).child = null; break;
+                case NodeBase.ENodeType.Root: 
+                    ((RootNode)parent).child = null; 
+                    child.parent = null;
+                    break;
 
-                case NodeBase.ENodeType.Decorator: ((DecoratorNode)parent).child = null; break;
+                case NodeBase.ENodeType.Decorator: 
+                    ((DecoratorNode)parent).child = null;
+                    child.parent = null;
+                    break;
 
-                case NodeBase.ENodeType.Composite: ((CompositeNode)parent).children.Remove(child); break;
+                case NodeBase.ENodeType.Composite:
+                    ((CompositeNode)parent).children.Remove(child);
+                    child.parent = null;
+                    break;
             }
 
             EditorUtility.SetDirty(child);
