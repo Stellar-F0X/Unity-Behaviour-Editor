@@ -5,6 +5,10 @@ namespace BehaviourSystem.BT.Demo
 {
     public class Tracking : ActionNode
     {
+        [Header("Tracking Settings")]
+        public float distanceOffset = 0.1f;
+        
+        [Space]
         [SerializeReference]
         public BlackboardProperty<Transform> target;
 
@@ -24,9 +28,14 @@ namespace BehaviourSystem.BT.Demo
             {
                 return EStatus.Running;
             }
+            
+            float offsetDis1 = navigator.value.stoppingDistance + distanceOffset;
+            float offsetDis2 = navigator.value.stoppingDistance - distanceOffset;
+            float remainingDis = navigator.value.remainingDistance;
 
-            if (navigator.value.remainingDistance <= navigator.value.stoppingDistance)
+            if (remainingDis <= offsetDis1 && remainingDis >= offsetDis2)
             {
+                navigator.value.velocity = Vector3.zero;
                 return EStatus.Success;
             }
             else

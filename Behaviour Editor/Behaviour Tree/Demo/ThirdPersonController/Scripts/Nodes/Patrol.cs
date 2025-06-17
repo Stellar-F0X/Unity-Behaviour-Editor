@@ -36,6 +36,8 @@ namespace BehaviourSystem.BT.Demo
             
             if (navigator.value.remainingDistance <= navigator.value.stoppingDistance)
             {
+                navigator.value.velocity = Vector3.zero;
+                
                 currentWaypointIndex.value = (currentWaypointIndex.value + 1) % waypoints.value.Count;
                 return EStatus.Success;
             }
