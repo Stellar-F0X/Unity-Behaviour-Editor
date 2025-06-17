@@ -1,7 +1,7 @@
 GridBackground {
     --grid-background-color: rgb(40, 40, 40);
-    --line-color: rgba(193, 196, 192, 0.1);
-    --thick-line-color: rgba(193, 196, 192, 0.1);
+    --line-color: rgba(0, 0, 0, 0.25);
+    --thick-line-color: rgba(0, 0, 0, 0.5);
     --spacing: 15;
 }
 
@@ -19,59 +19,10 @@ GridBackground {
     background-color: rgb(42, 42, 42);
 }
 
-#tab-view > #unity-tab-view__header-container {
-    flex-direction: row;
-    width: auto;
-    flex-wrap: nowrap;
-}
-
-#tab-view > #unity-tab-view__content-container {
-    height: auto;
-    flex-grow: 1;
-}
-
-#tab > #unity-tab__content-container {
-    flex-grow: 1;
-}
-
-#unity-tab__header {
-    background-color: rgb(50, 50, 50);
-    border-left-color: rgb(42, 42, 42);
-    border-right-color: rgb(42, 42, 42);
-    border-top-color: rgb(42, 42, 42);
-    border-bottom-color: rgb(42, 42, 42);
-    border-top-width: 0;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 0;
-    border-bottom-left-radius: 1px;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 1px;
-    border-bottom-right-radius: 1px;
-    flex-direction: row;
-    flex-grow: 1;
-    -unity-text-align: upper-center;
-}
-
-#unity-tab__header > #unity-tab__header-label {
-    background-color: rgb(50, 50, 50);
-    border-left-color: rgb(42, 42, 42);
-    border-right-color: rgb(42, 42, 42);
-    border-top-color: rgb(42, 42, 42);
-    border-bottom-color: rgb(42, 42, 42);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    min-height: auto;
-    -unity-text-align: middle-center;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    flex-grow: 1;
+#left-view-label {
+    min-height: 14px;
+    background-color: rgb(42, 42, 42);
+    height: 14px;
 }
 
 #add-element-button > VisualElement {
@@ -92,4 +43,14 @@ GridBackground {
 
 .graphView > .graphElement > .unity-label {
     color: rgb(255, 241, 97);
+}
+
+InspectorView > .unity-imgui-container {
+    border-bottom-width: 1px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    padding-bottom: 5px;
+    padding-top: 0;
 }

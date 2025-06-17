@@ -21,7 +21,7 @@
 }
 
 #node-border {
-    background-color: rgb(45, 45, 45);
+    background-color: rgb(50, 50, 50);
     border-left-color: rgb(0, 0, 0);
     border-right-color: rgb(0, 0, 0);
     border-top-color: rgb(0, 0, 0);
@@ -99,9 +99,9 @@
     align-items: auto;
     flex-wrap: nowrap;
     border-top-width: 0;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
     border-left-color: rgb(70, 70, 70);
     border-right-color: rgb(70, 70, 70);
     border-top-color: rgb(70, 70, 70);
@@ -117,10 +117,10 @@
     align-items: auto;
     flex-wrap: wrap-reverse;
     justify-content: flex-end;
-    border-top-width: 2px;
-    border-right-width: 2px;
+    border-top-width: 0;
+    border-right-width: 0;
     border-bottom-width: 0;
-    border-left-width: 2px;
+    border-left-width: 0;
     border-left-color: rgb(70, 70, 70);
     border-right-color: rgb(70, 70, 70);
     border-top-color: rgb(70, 70, 70);
@@ -156,9 +156,9 @@
 }
 
 .behaviour-node-Decorator {
-    background-color: rgb(0, 91, 255);
+    background-color: rgb(0, 119, 255);
 }
 
 .behaviour-node-Root {
-    background-color: rgb(0, 176, 78);
+    background-color: rgb(0, 192, 90);
 }
