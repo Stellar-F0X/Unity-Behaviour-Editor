@@ -50,7 +50,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.isInLoadingBTAsset == false)
+            if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.IsLoadingTreeToView == false)
             {
                 foreach (var element in elements)
                 {
@@ -70,7 +70,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.isInLoadingBTAsset == false)
+            if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.IsLoadingTreeToView == false)
             {
                 foreach (var element in elements)
                 {

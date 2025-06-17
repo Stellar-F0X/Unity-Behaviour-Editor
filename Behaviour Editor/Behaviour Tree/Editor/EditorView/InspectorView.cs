@@ -9,7 +9,6 @@ namespace BehaviourSystemEditor.BT
     [UxmlElement]
     public partial class InspectorView : InspectorElement
     {
-        private bool _isBorrowing;
         private Editor _editor;
         
         
@@ -34,12 +33,6 @@ namespace BehaviourSystemEditor.BT
 
         public void BorrowInspectorGUI(VisualElement element)
         {
-            if (_isBorrowing)
-            {
-                Debug.LogError("Already borrowing inspector GUI");
-                return;
-            }
-
             this.ClearInspectorView();
             base.Add(element);
         }
@@ -47,7 +40,7 @@ namespace BehaviourSystemEditor.BT
 
         private void DrawInspectorGUI()
         {
-            if (this._editor is null || this._editor.target is null || this._editor.serializedObject.targetObject is null)
+            if (this._editor?.target is null || this._editor.serializedObject.targetObject is null)
             {
                 this.ClearInspectorView();
                 return;

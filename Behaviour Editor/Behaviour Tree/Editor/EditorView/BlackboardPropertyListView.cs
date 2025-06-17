@@ -36,7 +36,7 @@ namespace BehaviourSystemEditor.BT
 
         private void OnBindBlackboardAsset(ChangeEvent<Object> changeEvent)
         {
-            if (BehaviourTreeEditor.Instance is null)
+            if (BehaviourTreeEditor.Instance?.Tree is null)
             {
                 return;
             }
@@ -52,7 +52,7 @@ namespace BehaviourSystemEditor.BT
 
         public void RefreshItemsWhenUndoPerformed()
         {
-            if (_serializedObject.targetObject is null)
+            if (_serializedObject?.targetObject is null)
             {
                 return;
             }
@@ -70,6 +70,7 @@ namespace BehaviourSystemEditor.BT
             this._blackboard = null;
             this._serializedObject = null;
             this._serializedListProperty = null;
+            this._blackboardBindingField.SetValueWithoutNotify(null);
 
             _propertyAddMenu.menu.ClearItems();
 
@@ -89,7 +90,7 @@ namespace BehaviourSystemEditor.BT
             this.reorderable = !Application.isPlaying;
 
             this._blackboard = tree.blackboard;
-            this._blackboardBindingField.value = tree?.blackboard;
+            this._blackboardBindingField.value = tree.blackboard;
             this._blackboardBindingField.enabledSelf = BehaviourTreeEditor.CanEditTree;
 
             this.RefreshBlackboardProperties();
