@@ -10,21 +10,21 @@ namespace BehaviourSystem.BT
     [Serializable]
     public abstract class NodeBase : ScriptableObject, IEquatable<NodeBase>
     {
-        public enum ENodeCallState
+        public enum ENodeCallState : byte
         {
             BeforeEnter,
             Updating,
             BeforeExit,
         };
 
-        public enum EStatus
+        public enum EStatus : byte
         {
             Running,
             Failure,
             Success
         };
 
-        public enum ENodeType
+        public enum ENodeType : byte
         {
             Root,
             Action,

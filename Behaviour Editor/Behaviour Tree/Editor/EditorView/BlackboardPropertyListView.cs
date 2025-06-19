@@ -27,6 +27,7 @@ namespace BehaviourSystemEditor.BT
             this._blackboardBindingField = blackboardBindingField;
 
             this.bindItem = this.BindItemToList;
+            this.fixedItemHeight = 50f;
             this.itemIndexChanged += this.OnPropertyIndicesSwapped;
 
             this._blackboardBindingField.UnregisterValueChangedCallback(this.OnBindBlackboardAsset);
@@ -88,7 +89,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            this.reorderable = !Application.isPlaying;
+            this.enabledSelf = !Application.isPlaying;
 
             this._blackboard = tree.blackboard;
             this._blackboardBindingField.value = tree.blackboard;

@@ -6,7 +6,7 @@ namespace BehaviourSystem.BT
 {
     public class ParallelNode : CompositeNode
     {
-        public enum EParallelPolicy
+        public enum EParallelPolicy : byte
         {
             [Tooltip("Returns Success only when all child nodes succeed. Returns Failure immediately if any child fails.")]
             RequireAllSuccess,
@@ -18,13 +18,7 @@ namespace BehaviourSystem.BT
             RequireAllFailure,
 
             [Tooltip("Returns Success immediately when at least one child node fails. Returns Failure only when all children succeed.")]
-            RequireOneFailure,
-
-            [Tooltip("Always returns Success after all child nodes complete, regardless of their individual results.")]
-            WaitForAllUnconditional,
-
-            [Tooltip("Runs all children until each has finished at least once.")]
-            UntilAllCompleteNode
+            RequireOneFailure
         };
 
 
@@ -97,8 +91,15 @@ namespace BehaviourSystem.BT
                         }
                     }
                 }
-            }
 
+                EStatus result = this.EvaluatePolicy();
+
+                if (result != EStatus.Running)
+                {
+                    return result;
+                }
+            }
+            
             return this.EvaluatePolicy();
         }
 
@@ -116,22 +117,18 @@ namespace BehaviourSystem.BT
             {
                 if (_isChildStopped[i] == false)
                 {
-                    runner.handler.AbortSubtree(children[i].callStackID);
-                    _isChildStopped[i] = true;
+                    int id = children[i].callStackID;
+                    runner.handler.AbortSubtree(id);
+                }
+                else
+                {
+                    // Reset the stopped state
+                    _isChildStopped[i] = false;
                 }
             }
-        }
-
-
-        public void Stop()
-        {
-            for (int i = 0; i < children.Count; ++i)
-            {
-                _isChildStopped[i] = false;
-            }
-
-            _failedChildCount = 0;
-            _successfulChildCount = 0;
+            
+            this._failedChildCount = 0;
+            this._successfulChildCount = 0;
         }
 
 
@@ -194,42 +191,6 @@ namespace BehaviourSystem.BT
                     if (_successfulChildCount + _failedChildCount == children.Count)
                     {
                         return EStatus.Failure;
-                    }
-
-                    return EStatus.Running;
-                }
-
-                case EParallelPolicy.WaitForAllUnconditional:
-                {
-                    if (_successfulChildCount + _failedChildCount == children.Count)
-                    {
-                        return EStatus.Success;
-                    }
-
-                    return EStatus.Running;
-                }
-
-                case EParallelPolicy.UntilAllCompleteNode:
-                {
-                    int count = children.Count;
-                    bool allCompletedOnce = true;
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (children[i].UpdateNode() != EStatus.Running)
-                        {
-                            _isChildStopped[i] = true;
-                        }
-
-                        if (_isChildStopped[i] == false)
-                        {
-                            allCompletedOnce = false;
-                        }
-                    }
-
-                    if (allCompletedOnce)
-                    {
-                        return EStatus.Success;
                     }
 
                     return EStatus.Running;

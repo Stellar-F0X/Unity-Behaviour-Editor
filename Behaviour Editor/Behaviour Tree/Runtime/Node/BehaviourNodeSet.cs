@@ -36,8 +36,8 @@ namespace BehaviourSystem.BT
 
         [HideInInspector]
         public List<NodeBase> nodeList = new List<NodeBase>();
-
-
+        
+        [field: NonSerialized]
         public int callStackSize
         {
             get;

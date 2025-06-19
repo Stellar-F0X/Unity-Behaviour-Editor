@@ -1,6 +1,6 @@
 namespace BehaviourSystem.BT
 {
-    public enum ETickUpdateMode
+    public enum ETickUpdateMode : byte
     {
         /// <summary> None </summary>
         None,

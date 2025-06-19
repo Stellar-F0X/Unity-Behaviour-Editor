@@ -33,9 +33,9 @@ namespace BehaviourSystem.BT
 
         private readonly static Lazy<Dictionary<FieldInfo, FieldAccessor>> _DelegateCacher = new Lazy<Dictionary<FieldInfo, FieldAccessor>>(() => new());
 
-        private readonly static Type _ObjectType = typeof(object);
+        private readonly static Type[] _GetterParamTypes = new[] { typeof(NodeBase) };
 
-        private readonly static Type _NodeBaseType = typeof(NodeBase);
+        private readonly static Type[] _SetterParamTypes = new[] { typeof(NodeBase), typeof(object) };
 
 
 #if UNITY_EDITOR
@@ -62,7 +62,7 @@ namespace BehaviourSystem.BT
             _FieldCacher[type] = fieldInfos;
             return fieldInfos;
         }
-        
+
 
 
         public static FieldAccessor GetAccessor(FieldInfo fieldInfo)
@@ -80,7 +80,7 @@ namespace BehaviourSystem.BT
 
         private static Getter CreateGetter(FieldInfo fieldInfo)
         {
-            DynamicMethod dynamicMethod = new DynamicMethod($"Get_{fieldInfo.Name}", _ObjectType, new[] { _NodeBaseType }, fieldInfo.DeclaringType.Module);
+            DynamicMethod dynamicMethod = new DynamicMethod($"Get_{fieldInfo.Name}", _SetterParamTypes[1], _GetterParamTypes, fieldInfo.DeclaringType.Module);
 
             ILGenerator il = dynamicMethod.GetILGenerator();
 
@@ -101,8 +101,7 @@ namespace BehaviourSystem.BT
 
         private static Setter CreateSetter(FieldInfo fieldInfo)
         {
-            DynamicMethod dynamicMethod =
-                new DynamicMethod($"Set_{fieldInfo.Name}", typeof(void), new[] { _NodeBaseType, _ObjectType }, fieldInfo.DeclaringType.Module);
+            DynamicMethod dynamicMethod = new DynamicMethod($"Set_{fieldInfo.Name}", typeof(void), _SetterParamTypes, fieldInfo.DeclaringType.Module);
 
             ILGenerator il = dynamicMethod.GetILGenerator();
 

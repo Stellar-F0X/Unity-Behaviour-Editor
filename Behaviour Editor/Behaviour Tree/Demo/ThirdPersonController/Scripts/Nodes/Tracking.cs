@@ -29,11 +29,7 @@ namespace BehaviourSystem.BT.Demo
                 return EStatus.Running;
             }
             
-            float offsetDis1 = navigator.value.stoppingDistance + distanceOffset;
-            float offsetDis2 = navigator.value.stoppingDistance - distanceOffset;
-            float remainingDis = navigator.value.remainingDistance;
-
-            if (remainingDis <= offsetDis1 && remainingDis >= offsetDis2)
+            if (navigator.value.remainingDistance <= navigator.value.stoppingDistance + distanceOffset)
             {
                 navigator.value.velocity = Vector3.zero;
                 return EStatus.Success;

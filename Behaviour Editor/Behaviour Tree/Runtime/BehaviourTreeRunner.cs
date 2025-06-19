@@ -2,39 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Pool;
+using UnityEngine.Profiling;
 
 [assembly: InternalsVisibleTo("BehaviourSystemEditor-BT")]
+
 namespace BehaviourSystem.BT
 {
     [DefaultExecutionOrder(-1), AddComponentMenu("Behaviour System/Behaviour Tree Runner")]
     public class BehaviourTreeRunner : MonoBehaviour
     {
         private readonly Dictionary<string, IBlackboardProperty> _properties = new Dictionary<string, IBlackboardProperty>();
-        
+
         public ETickUpdateMode tickUpdateMode = ETickUpdateMode.NormalUpdate;
-        
+
         public bool useFixedUpdate = true;
         public bool useGizmos = true;
 
 
         [SerializeField]
         private BehaviourTree _runtimeTree;
-        private BehaviourNodeHandler _nodeHandler;
+
+        private BehaviourCallStack _callStackHandler;
         private NodeBase _rootNode;
-        
 
-        internal Action onNodeFixedUpdate;
-        internal Action onNodeGizmosUpdate;
 
+        internal event Action onNodeFixedUpdate;
+        internal event Action onNodeGizmosUpdate;
 
         internal BehaviourTree runtimeTree
         {
             get { return _runtimeTree; }
         }
 
-        internal BehaviourNodeHandler handler
+        internal BehaviourCallStack handler
         {
-            get { return _nodeHandler; }
+            get { return _callStackHandler; }
         }
 
         public bool pause
@@ -54,7 +57,7 @@ namespace BehaviourSystem.BT
             }
 
             this._runtimeTree = BehaviourTree.MakeRuntimeTree(this, _runtimeTree);
-            this._nodeHandler = new BehaviourNodeHandler(this._runtimeTree.nodeSet);
+            this._callStackHandler = new BehaviourCallStack(this._runtimeTree.nodeSet);
             this._rootNode = _runtimeTree.nodeSet.rootNode;
         }
 
@@ -75,7 +78,13 @@ namespace BehaviourSystem.BT
 
             if (tickUpdateMode == ETickUpdateMode.NormalUpdate)
             {
+#if UNITY_EDITOR
+                Profiler.BeginSample("BehaviourTreeRunner.Update");
+#endif
                 _rootNode.UpdateNode();
+#if UNITY_EDITOR
+                Profiler.EndSample();
+#endif
             }
         }
 
@@ -89,13 +98,19 @@ namespace BehaviourSystem.BT
 
             if (tickUpdateMode == ETickUpdateMode.FixedUpdate)
             {
+#if UNITY_EDITOR
+                Profiler.BeginSample("BehaviourTreeRunner.FixedUpdate");
+#endif
                 _rootNode.UpdateNode();
+#if UNITY_EDITOR
+                Profiler.EndSample();
+#endif
             }
-            
+
             this.onNodeFixedUpdate?.Invoke();
         }
-        
-        
+
+
         private void LateUpdate()
         {
             if (_runtimeTree is null || pause)
@@ -105,7 +120,13 @@ namespace BehaviourSystem.BT
 
             if (tickUpdateMode == ETickUpdateMode.LateUpdate)
             {
+#if UNITY_EDITOR
+                Profiler.BeginSample("BehaviourTreeRunner.LateUpdate");
+#endif
                 _rootNode.UpdateNode();
+#if UNITY_EDITOR
+                Profiler.EndSample();
+#endif
             }
         }
 
@@ -126,8 +147,8 @@ namespace BehaviourSystem.BT
 
             this.onNodeGizmosUpdate?.Invoke();
         }
-        
-        
+
+
         public void ExternalUpdate()
         {
             if (_runtimeTree is null || pause)
@@ -137,14 +158,20 @@ namespace BehaviourSystem.BT
 
             if (tickUpdateMode == ETickUpdateMode.ExternalUpdate)
             {
+#if UNITY_EDITOR
+                Profiler.BeginSample("BehaviourTreeRunner.ExternalUpdate");
+#endif
                 _rootNode.UpdateNode();
+#if UNITY_EDITOR
+                Profiler.EndSample();
+#endif
             }
             else
             {
                 Debug.LogWarning("ExternalUpdate는 tickUpdateMode가 ExternalUpdate로 설정되어 있을 때만 호출해야 합니다.");
             }
         }
-        
+
 
         public void SetProperty<TValue>(in string key, TValue value)
         {
@@ -189,7 +216,9 @@ namespace BehaviourSystem.BT
             if (_properties.TryGetValue(key, out var existingProperty))
             {
                 if (existingProperty is BlackboardProperty<TValue> castedProperty)
+                {
                     return castedProperty.value;
+                }
 
                 throw new InvalidOperationException($"키 '{key}'에 대한 타입이 일치하지 않습니다.");
             }
@@ -208,31 +237,37 @@ namespace BehaviourSystem.BT
         }
 
 
-        public bool TryGetNodeByTreePath(string path, out NodeAccessor accessor)
-        {
-            if (_nodeHandler.TryGetNodeByPath(path, out accessor))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-
         public bool TryGetNodeByTag(string nodeTag, out NodeAccessor[] accessors)
         {
-            accessors = _nodeHandler.GetNodeByTag(nodeTag);
+            int count = _runtimeTree.nodeSet.nodeList.Count;
 
-            if (accessors is null)
+            List<NodeBase> nodeListPool = ListPool<NodeBase>.Get();
+            IReadOnlyList<NodeBase> nodes = _runtimeTree.nodeSet.nodeList;
+
+            for (int i = 0; i < count; ++i)
             {
+                if (string.Compare(nodes[i].tag, nodeTag) == 0)
+                {
+                    nodeListPool.Add(nodes[i]);
+                }
+            }
+
+            if (nodeListPool.Count == 0)
+            {
+                ListPool<NodeBase>.Release(nodeListPool);
+                accessors = null;
                 return false;
             }
-            else
+
+            accessors = new NodeAccessor[nodeListPool.Count];
+            
+            for (int i= 0; i < nodeListPool.Count; ++i)
             {
-                return true;
+                accessors[i] = new NodeAccessor(nodeListPool[i]);
             }
+
+            ListPool<NodeBase>.Release(nodeListPool);
+            return true;
         }
     }
 }

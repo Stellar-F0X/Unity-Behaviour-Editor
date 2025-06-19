@@ -54,9 +54,9 @@ namespace BehaviourSystemEditor.BT
             {
                 foreach (var element in elements)
                 {
-                    if (element.selected && element is NodeView nodeView)
+                    if (element.selected && element is NodeView view && view.targetNode != null)
                     {
-                        _data.AddNodeGuid(nodeView.targetNode);
+                        _data.AddNodeGuid(view.targetNode);
                     }
                 }
             }
@@ -74,9 +74,9 @@ namespace BehaviourSystemEditor.BT
             {
                 foreach (var element in elements)
                 {
-                    if (element.selected && element is NodeView nodeView)
+                    if (element.selected && element is NodeView view && view.targetNode != null)
                     {
-                        _data.RemoveNodeGuid(nodeView.targetNode);
+                        _data.RemoveNodeGuid(view.targetNode);
                     }
                 }
             }

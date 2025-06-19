@@ -63,6 +63,11 @@ namespace BehaviourSystem.BT
 
         public void DeleteGroupData(GroupData data)
         {
+            if (data is null)
+            {
+                return;
+            }
+            
             if (Application.isPlaying == false && Undo.isProcessing == false)
             {
                 Undo.RecordObject(this, "Behaviour Tree (RemoveGroup)");

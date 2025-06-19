@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviourSystem.BT
 {
@@ -72,28 +73,29 @@ namespace BehaviourSystem.BT
         }
 
 
-        public void AddNodeGuid(NodeBase nodeGuid)
+        public void AddNodeGuid(NodeBase nodeBase)
         {
-            if (_nodeGuidSet.Contains(nodeGuid.guid))
+            if (nodeBase == null || _nodeGuidSet.Contains(nodeBase.guid))
             {
                 return;
             }
 
             Undo.RecordObject(this, "Behaviour Tree (AddNodeGuidToGroup)");
-            _nodeGuidSet.Add(nodeGuid.guid);
+            _nodeGuidSet.Add(nodeBase.guid);
             EditorUtility.SetDirty(this);
         }
 
 
-        public void RemoveNodeGuid(NodeBase nodeGuid)
+        public void RemoveNodeGuid(NodeBase nodeBase)
         {
-            if (_nodeGuidSet.Contains(nodeGuid.guid) == false)
+            //Object에서 연산자 오버라이딩된 == null을 통해 해당 프레임에서 삭제된 객체를 체크.
+            if (nodeBase == null || _nodeGuidSet.Contains(nodeBase.guid) == false)
             {
                 return;
             }
 
             Undo.RecordObject(this, "Behaviour Tree (RemoveNodeGuidToGroup)");
-            _nodeGuidSet.Remove(nodeGuid.guid);
+            _nodeGuidSet.Remove(nodeBase.guid);
             EditorUtility.SetDirty(this);
         }
     }
