@@ -18,21 +18,21 @@ namespace BehaviourSystemEditor.BT
         private ToolbarMenu _propertyAddMenu;
         private Blackboard _blackboard;
 
-        
+
         /// <summary>블랙보드 프로퍼티 리스트 뷰를 초기화하고 UI 요소들을 설정합니다.</summary>
         public void Setup(ToolbarMenu toolbarMenu, ObjectField blackboardBindingField)
         {
             this._propertyAddMenu = toolbarMenu;
             this._blackboardBindingField = blackboardBindingField;
 
-            this.bindItem = this.BindItemToList;
             this.fixedItemHeight = 50f;
+            this.bindItem = this.BindItemToList;
             this.itemIndexChanged += this.OnPropertyIndicesSwapped;
 
             this._blackboardBindingField.UnregisterValueChangedCallback(this.OnBindBlackboardAsset);
             this._blackboardBindingField.RegisterValueChangedCallback(this.OnBindBlackboardAsset);
         }
-        
+
 
         /// <summary>블랙보드 에셋이 바인딩될 때 호출되는 콜백 메서드입니다.</summary>
         private void OnBindBlackboardAsset(ChangeEvent<Object> changeEvent)
@@ -46,9 +46,17 @@ namespace BehaviourSystemEditor.BT
             BehaviourTreeEditor.Instance.Tree.blackboard = newBlackboardAsset;
             this._blackboard = newBlackboardAsset;
 
+            if (changeEvent.newValue == null && BehaviourTreeEditor.Instance.Tree.nodeSet.nodeList is not null)
+            {
+                foreach (NodeBase node in BehaviourTreeEditor.Instance.Tree.nodeSet.nodeList)
+                {
+                    NodePropertyFieldBinder.ResetNodeProperties(node);
+                }
+            }
+
             this.RefreshBlackboardProperties();
         }
-        
+
 
         /// <summary>언두 작업이 수행될 때 아이템을 새로고침합니다.</summary>
         public void RefreshItemsWhenUndoPerformed()
@@ -62,7 +70,7 @@ namespace BehaviourSystemEditor.BT
             _serializedObject.ApplyModifiedProperties();
             this.RefreshItems();
         }
-        
+
 
         /// <summary>블랙보드 뷰를 초기화하고 모든 데이터를 제거합니다.</summary>
         public void ClearBlackboardView()
@@ -78,7 +86,7 @@ namespace BehaviourSystemEditor.BT
             this.Clear();
             this.RefreshItems();
         }
-        
+
 
         /// <summary>Behaviour Tree가 변경될 때 블랙보드 뷰를 업데이트합니다.</summary>
         public void OnBehaviourTreeChanged(BehaviourTree tree)
@@ -97,7 +105,7 @@ namespace BehaviourSystemEditor.BT
             this.RefreshBlackboardProperties();
         }
 
-        
+
         /// <summary>블랙보드 프로퍼티들을 새로고침하고 UI를 업데이트합니다.</summary>
         private void RefreshBlackboardProperties()
         {
@@ -114,33 +122,57 @@ namespace BehaviourSystemEditor.BT
 
             this._serializedObject = new SerializedObject(this._blackboard);
             this._serializedListProperty = _serializedObject.FindProperty("_properties");
-
             this.itemsSource = this._blackboard.properties;
-            this.RefreshItems();
 
+            this.RefreshItems();
+            this.AppendPropertyAddMenuItems();
+        }
+
+
+
+        /// <summary>블랙보드 프로퍼티 추가 메뉴 아이템을 추가합니다.</summary>
+        private void AppendPropertyAddMenuItems()
+        {
             if (BehaviourTreeEditor.CanEditTree)
             {
-                //IBlackboardProperty를 상속받은 자식 클래스들 타입을 가져와, 블랙보드 프로퍼티 추가 메뉴를 설정합니다.
-                TypeCache.GetTypesDerivedFrom<IBlackboardProperty>()
-                         .OrderByNameAndFilterAbstracts()
-                         .ForEach(t => _propertyAddMenu.menu.AppendAction(t.Name, _ => this.MakeProperty(t)));
+                TypeCache.TypeCollection collection = TypeCache.GetTypesDerivedFrom<IBlackboardProperty>();
+
+                if (collection.Count == 0)
+                {
+                    return;
+                }
+
+                Type[] types = collection.OrderByNameAndFilterAbstracts();
+
+                if (types.Length == 0)
+                {
+                    return;
+                }
+
+                foreach (var type in types)
+                {
+                    _propertyAddMenu.menu.AppendAction(type.Name, _ => this.MakeProperty(type));
+                }
             }
         }
 
-        
+
         /// <summary>새로운 블랙보드 프로퍼티를 생성합니다.</summary>
         private void MakeProperty(Type type)
         {
             Undo.RecordObject(_blackboard, "Behaviour Tree (AddBlackboardProperty)");
 
-            itemsSource.Add(IBlackboardProperty.Create(type));
+            IBlackboardProperty property = IBlackboardProperty.Create(type);
+            _blackboard.CheckAndGenerateUniqueKey(property, true);
+
+            itemsSource.Add(property);
             _serializedObject.Update();
             _serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(_blackboard);
             this.RefreshItems();
         }
 
-        
+
         /// <summary>지정된 인덱스의 블랙보드 프로퍼티를 삭제합니다.</summary>
         private void DeleteProperty(int index)
         {
@@ -153,7 +185,19 @@ namespace BehaviourSystemEditor.BT
             this.RefreshItems();
         }
 
-        
+
+        /// <summary>프로퍼티의 순서가 변경될 때 호출되는 콜백 메서드입니다.</summary>
+        private void OnPropertyIndicesSwapped(int a, int b)
+        {
+            if (BehaviourTreeEditor.CanEditTree)
+            {
+                _serializedObject.Update();
+                _serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(_blackboard);
+            }
+        }
+
+
         /// <summary>리스트 아이템을 UI 요소에 바인딩합니다.</summary>
         private void BindItemToList(VisualElement element, int index)
         {
@@ -165,41 +209,73 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
-        
+
         /// <summary>삭제 버튼을 바인딩하고 클릭 이벤트를 설정합니다.</summary>
         private void BindDeleteButton(VisualElement element, int index)
         {
             Button buttonField = element.Q<Button>("delete-button");
-            buttonField.clickable = null; //reset all callback
-            buttonField.clicked += () => this.DeleteProperty(index);
+
             buttonField.enabledSelf = BehaviourTreeEditor.CanEditTree;
+            
+            buttonField.RemoveCallback<ClickEvent>();
+            buttonField.RegisterRemovableCallback<ClickEvent>(_ => this.DeleteProperty(index));
         }
 
-        
+
         /// <summary>IMGUI 컨테이너를 바인딩하고 프로퍼티 값을 표시합니다.</summary>
         private void BindIMGUIContainer(VisualElement element, int index)
         {
             SerializedProperty elementProperty = _serializedListProperty.GetArrayElementAtIndex(index);
 
-            if (elementProperty.boxedValue is not null)
+            if (elementProperty?.boxedValue is not null)
             {
-                IMGUIContainer imguiField = element.Q<IMGUIContainer>("property-imgui-field");
+                IMGUIContainer imguiField = element.Q<IMGUIContainer>("imgui-field");
                 SerializedProperty valueProp = elementProperty.FindPropertyRelative("_value");
-
-                if (valueProp is null)
-                {
-                    imguiField.Unbind();
-                    imguiField.onGUIHandler = () => DrawIMGUIForErrorMessage(elementProperty);
-                }
-                else
-                {
-                    imguiField.Unbind();
-                    imguiField.TrackPropertyValue(valueProp, _ => imguiField.MarkDirtyRepaint());
-                    imguiField.onGUIHandler = () => this.DrawIMGUIForItem(elementProperty, valueProp);
-                }
+                
+                valueProp.isExpanded = false;
+                
+                imguiField.Unbind();
+                imguiField.onGUIHandler = () => this.DrawIMGUIForItem(valueProp);
+                
+                var scheduled = imguiField.schedule
+                                          .Execute(_ => imguiField.MarkDirtyRepaint())
+                                          .Until(() => !EditorApplication.isPlaying)
+                                          .Every(125);
+                
+                imguiField.RegisterCallback<DetachFromPanelEvent>(_ => scheduled.Pause());
             }
         }
         
+        
+        /// <summary>프로퍼티 아이템을 IMGUI로 그립니다.</summary>
+        private void DrawIMGUIForItem(SerializedProperty valueProp)
+        {
+            using (new EditorGUI.DisabledScope(true))
+            {
+                if (valueProp is null)
+                {
+                    const float iconSize = 12f;
+
+                    Rect pos = EditorGUILayout.GetControlRect();
+                    Rect iconRect = new Rect(pos.x, pos.y + (pos.height - iconSize) * 0.5f, iconSize, iconSize);
+                    Rect textRect = new Rect(pos.x + iconSize + 2f, pos.y, pos.width - iconSize - 2f, pos.height);
+
+                    Texture warningImg = EditorGUIUtility.IconContent("console.warnicon").image;
+                    GUI.DrawTexture(iconRect, warningImg, ScaleMode.ScaleToFit);
+                    EditorGUI.LabelField(textRect, "Invalid blackboard property type.");
+                }
+                else
+                {
+                    using (new EditorGUI.DisabledScope(true))
+                    {
+                        valueProp.serializedObject.Update();
+                        
+                        EditorGUILayout.PropertyField(valueProp, GUIContent.none, true);
+                    }
+                }
+            }
+        }
+
 
         /// <summary>프로퍼티 키 필드를 바인딩하고 변경 이벤트를 설정합니다.</summary>
         private void BindPropertyKeyField(VisualElement element, int index)
@@ -207,54 +283,21 @@ namespace BehaviourSystemEditor.BT
             if (itemsSource[index] is IBlackboardProperty property)
             {
                 element.tooltip = property.type.Name;
-
                 TextField keyField = element.Q<TextField>("name-field");
-                keyField.UnregisterAllValueChangedCallback<string>();
-                keyField.RegisterValueChangedCallback<string>(e => this.OnChangePropertyKey(e.newValue, index));
-                keyField.value = property.key;
+
+                keyField.RemoveCallback<FocusOutEvent>();
+                keyField.RegisterRemovableCallback<FocusOutEvent>(_ =>
+                {
+                    this.OnChangePropertyKey(keyField.value, index);
+                    keyField.SetValueWithoutNotify(property.key);
+                    this.RefreshItem(index);
+                });
+
+                keyField.SetValueWithoutNotify(property.key);
                 keyField.enabledSelf = BehaviourTreeEditor.CanEditTree;
             }
         }
-        
 
-        /// <summary>프로퍼티 아이템을 IMGUI로 그립니다.</summary>
-        private void DrawIMGUIForItem(SerializedProperty property, SerializedProperty valueProp)
-        {
-            if (property is null || property.boxedValue is null || valueProp is null)
-            {
-                return;
-            }
-
-            using (new EditorGUI.DisabledScope(true))
-            {
-                EditorGUILayout.PropertyField(valueProp, GUIContent.none, true);
-            }
-        }
-
-        
-        /// <summary>유효하지 않은 프로퍼티 타입에 대한 경고 메시지를 IMGUI로 그립니다.</summary>
-        private void DrawIMGUIForErrorMessage(SerializedProperty property)
-        {
-            if (property is null || property.boxedValue is null)
-            {
-                return;
-            }
-
-            const float iconSize = 12f;
-
-            using (new EditorGUI.DisabledScope(true))
-            {
-                Rect position = EditorGUILayout.GetControlRect();
-
-                Rect iconRect = new Rect(position.x, position.y + (position.height - iconSize) * 0.5f, iconSize, iconSize);
-                Rect textRect = new Rect(position.x + iconSize + 2f, position.y, position.width - iconSize - 2f, position.height);
-
-                Texture warningImg = EditorGUIUtility.IconContent("console.warnicon").image;
-                GUI.DrawTexture(iconRect, warningImg, ScaleMode.ScaleToFit);
-                EditorGUI.LabelField(textRect, "Invalid blackboard property type.");
-            }
-        }
-        
 
         /// <summary>프로퍼티 키가 변경될 때 호출되는 콜백 메서드입니다.</summary>
         private void OnChangePropertyKey(string newKey, int index)
@@ -262,20 +305,17 @@ namespace BehaviourSystemEditor.BT
             if (itemsSource[index] is IBlackboardProperty property)
             {
                 bool isKeyValid = string.IsNullOrEmpty(newKey);
-                property.key = isKeyValid ? string.Empty : newKey;
 
-                _serializedObject.Update();
-                _serializedObject.ApplyModifiedProperties();
-                EditorUtility.SetDirty(_blackboard);
-            }
-        }
+                if (isKeyValid)
+                {
+                    property.key = string.Empty;
+                }
+                else
+                {
+                    property.key = newKey;
+                    _blackboard.CheckAndGenerateUniqueKey(property);
+                }
 
-        
-        /// <summary>프로퍼티의 순서가 변경될 때 호출되는 콜백 메서드입니다.</summary>
-        private void OnPropertyIndicesSwapped(int a, int b)
-        {
-            if (BehaviourTreeEditor.CanEditTree)
-            {
                 _serializedObject.Update();
                 _serializedObject.ApplyModifiedProperties();
                 EditorUtility.SetDirty(_blackboard);

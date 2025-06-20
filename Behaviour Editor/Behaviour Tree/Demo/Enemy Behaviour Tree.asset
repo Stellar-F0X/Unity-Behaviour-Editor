@@ -1,3 +1,984 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5dac3686ba53a7cfd1bf58f04ab3cdc93bc533d1fb7090787524e6f2e3537cb5
-size 25908
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8320051669713059228
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6563dd266a3c03142aad5b47e15e6658, type: 3}
+  m_Name: Root
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 851791740
+    _value1: 1149984810
+    _value2: 2992954041
+    _value3: 2294516617
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 0}
+  position: {x: 38, y: 222}
+  _child:
+  - {fileID: -7214530375376403928}
+--- !u!114 &-7214530375376403928
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f93d129ccb34f66836be2b6b973863a, type: 3}
+  m_Name: Selector
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 302464854
+    _value1: 1216987539
+    _value2: 862188981
+    _value3: 2394543948
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: -8320051669713059228}
+  position: {x: 38, y: 348}
+  children:
+  - {fileID: 2338204620795502981}
+  - {fileID: 4124410743719211719}
+--- !u!114 &-7199976533513108709
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a2cda397bce1d74aa7975d25291ddb0, type: 3}
+  m_Name: Patrol
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 333715339
+    _value1: 1284869223
+    _value2: 498096773
+    _value3: 1343929118
+  tag: patrol
+  description: 
+  status: 0
+  parent: {fileID: 8588069631626060843}
+  position: {x: -428, y: 919}
+  navigator:
+    rid: 2900691391436554327
+  waypoints:
+    rid: 2900691391436554328
+  currentWaypointIndex:
+    rid: 2900691391436554329
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691391436554327
+      type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Navigator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.NavMeshAgentProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -347780270
+    - rid: 2900691391436554328
+      type: {class: TransformListProperty, ns: BehaviourSystem.BT.Demo, asm: Assembly-CSharp}
+      data:
+        _key: Way Point
+        _value:
+        - {fileID: 0}
+        - {fileID: 0}
+        - {fileID: 0}
+        _typeName: BehaviourSystem.BT.Demo.TransformListProperty, Assembly-CSharp,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        _hashCode: 576791495
+    - rid: 2900691391436554329
+      type: {class: IntProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Way Point Index
+        _value: 0
+        _typeName: BehaviourSystem.BT.IntProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: 52519613
+--- !u!114 &-6538695077349027103
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 338454deab5849749f9376ca8a188d89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Chase
+  position: {x: 120.00003, y: 705}
+  _nodeGuidList:
+  - _value0: 62840245
+    _value1: 1088864073
+    _value2: 3650417037
+    _value3: 1104788892
+  - _value0: 491363091
+    _value1: 1126422547
+    _value2: 2222235794
+    _value3: 868074721
+  - _value0: 4127354263
+    _value1: 1315434345
+    _value2: 3209051025
+    _value3: 2403050523
+--- !u!114 &-6283652558232748886
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa0f85ee834e4f14b967ebfafb6e43e4, type: 3}
+  m_Name: Waiting
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 4275145912
+    _value1: 1091816317
+    _value2: 4041760934
+    _value3: 3462470298
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 4654863201273758922}
+  position: {x: 707, y: 919}
+  distanceOffset: 0.1
+  waitTime: 2
+  distance:
+    rid: 2900691391436554356
+  navigator:
+    rid: 2900691391436554357
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691391436554356
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Distance
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -437978921
+    - rid: 2900691391436554357
+      type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Navigator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.NavMeshAgentProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -347780270
+--- !u!114 &-6257181215781778634
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c5f48c4289b4e8484bae71a39383138, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rootNode: {fileID: -8320051669713059228}
+  nodeList:
+  - {fileID: -8320051669713059228}
+  - {fileID: -7214530375376403928}
+  - {fileID: 2338204620795502981}
+  - {fileID: 8588069631626060843}
+  - {fileID: -7199976533513108709}
+  - {fileID: 6425859100100965725}
+  - {fileID: 4403392224684806807}
+  - {fileID: -5950011494101703366}
+  - {fileID: -2684021354622265107}
+  - {fileID: -885669274296663557}
+  - {fileID: 4654863201273758922}
+  - {fileID: 890177714185595948}
+  - {fileID: 8968426404551306207}
+  - {fileID: 4124410743719211719}
+  - {fileID: -6283652558232748886}
+--- !u!114 &-5950011494101703366
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84266bc38451e2e49bb68af89b374249, type: 3}
+  m_Name: Wait
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 1939871811
+    _value1: 1084012929
+    _value2: 3381752722
+    _value3: 1809947516
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 8588069631626060843}
+  position: {x: -94, y: 919}
+  duration: 1
+--- !u!114 &-5560473935474557977
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df2286943c582fb438f858b77951e011, type: 3}
+  m_Name: Fall
+  m_EditorClassIdentifier: 
+  guid: 15be9369b2dbc1942ac347e755633805
+  tag: 
+  description: 
+  behaviourResult: 0
+  parent: {fileID: 0}
+  position: {x: 159, y: 697}
+  <callState>k__BackingField: 0
+  terminalVelocity: 53
+  verticalVelocity:
+    rid: 2900691100803793038
+  gravity:
+    rid: 2900691100803793039
+  animator:
+    rid: 2900691100803793040
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691100803793038
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Vertical Speed
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691100803793039
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Gravity
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691100803793040
+      type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Player Animator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.AnimatorProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+--- !u!114 &-3609991511107822908
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f4c78fe87bdf4943b5386d97894c3bf, type: 3}
+  m_Name: Move And Rotate
+  m_EditorClassIdentifier: 
+  guid: 513c7198842cbdb48a816ea1a2669fbf
+  tag: 
+  description: 
+  nodeTypeName: MoveAndRotateNode
+  behaviourResult: 0
+  parent: {fileID: 0}
+  position: {x: 350, y: 740}
+  <callState>k__BackingField: 0
+  speedOffset: 0.1
+  speedChangeRate: 10
+  moveSpeed: 2
+  sprintSpeed: 5.335
+  rotationSmoothTime: 0.12
+  isSprint:
+    rid: -2
+  currentSpeed:
+    rid: -2
+  verticalVelocity:
+    rid: -2
+  controller:
+    rid: -2
+  cameraAxisY:
+    rid: -2
+  faceDirection:
+    rid: -2
+  _targetRotation: 0
+  _rotationVelocity: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &-2850508106786804319
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1774c4e1f9ca8574e8a8bde29cbf3445, type: 3}
+  m_Name: Apply Animation Prameter
+  m_EditorClassIdentifier: 
+  guid: a5cb2047200a4414fbdae0d2a4bc953d
+  tag: 
+  description: 
+  behaviourResult: 0
+  parent: {fileID: 0}
+  position: {x: 435, y: 418}
+  <callState>k__BackingField: 0
+--- !u!114 &-2684021354622265107
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
+  m_Name: Sequencer
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 62840245
+    _value1: 1088864073
+    _value2: 3650417037
+    _value3: 1104788892
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 4124410743719211719}
+  position: {x: 229, y: 764}
+  children:
+  - {fileID: -885669274296663557}
+  - {fileID: 8968426404551306207}
+--- !u!114 &-885669274296663557
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
+  m_Name: Cross Fade
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 491363091
+    _value1: 1126422547
+    _value2: 2222235794
+    _value3: 868074721
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: -2684021354622265107}
+  position: {x: 145, y: 918}
+  animator:
+    rid: 2900691391436554346
+  animationName: Run
+  _animationHash: 0
+  layer: 0
+  transitionDuration: 0.2
+  timeOffset: 0
+  transitionTime: 0
+  useFixedCrossFade: 0
+  waitForTransition: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691391436554346
+      type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Animator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.AnimatorProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -1714818978
+--- !u!114 &-304656814862750387
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff4661a4c9f9b174389d4d59f5601f97, type: 3}
+  m_Name: Player Animation
+  m_EditorClassIdentifier: 
+  guid: aafc41c2e475134459a9c7ffe924b857
+  tag: 
+  description: 
+  nodeTypeName: PlayerAnimation
+  behaviourResult: 0
+  parent: {fileID: 0}
+  position: {x: 165, y: 309}
+  <callState>k__BackingField: 0
+  currentSpeed:
+    rid: 2900691071768723456
+  isGrounded:
+    rid: 2900691071768723457
+  verticalVelocity:
+    rid: 2900691071768723458
+  animator:
+    rid: 2900691071768723459
+  _animIDSpeed: 0
+  _animIDGrounded: 0
+  _animIDJump: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691071768723456
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Current Speed
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691071768723457
+      type: {class: BoolProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Grouneded
+        _value: 0
+        _typeName: BehaviourSystem.BT.BoolProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691071768723458
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Vertical Speed
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691071768723459
+      type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Anime
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.AnimatorProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ff390c6a0488f41b85a84e73c6e39b, type: 3}
+  m_Name: Enemy Behaviour Tree
+  m_EditorClassIdentifier: 
+  nodeSet: {fileID: -6257181215781778634}
+  blackboard: {fileID: 11400000, guid: a962069790c7b8749b4bcd229978252b, type: 2}
+  groupDataSet: {fileID: 4804473791141916721}
+  <treeGuid>k__BackingField:
+    _value0: 1730569011
+    _value1: 1335766294
+    _value2: 2834311345
+    _value3: 993369307
+--- !u!114 &890177714185595948
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
+  m_Name: Cross Fade
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 2768810953
+    _value1: 1187272603
+    _value2: 2032302471
+    _value3: 1455519884
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 4654863201273758922}
+  position: {x: 539, y: 917}
+  animator:
+    rid: 2900691391436554345
+  animationName: Idle
+  _animationHash: 0
+  layer: 0
+  transitionDuration: 0.2
+  timeOffset: 0
+  transitionTime: 0
+  useFixedCrossFade: 0
+  waitForTransition: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691391436554345
+      type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Animator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.AnimatorProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -1714818978
+--- !u!114 &2338204620795502981
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3669e05573d84e4c8fe616c4d15945f5, type: 3}
+  m_Name: Check Distance
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 1868267036
+    _value1: 1339502000
+    _value2: 1580060343
+    _value3: 2891910112
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: -7214530375376403928}
+  position: {x: -355, y: 547}
+  _child:
+  - {fileID: 8588069631626060843}
+  successType: 0
+  conditions:
+  - property:
+      rid: 2900691390679220344
+    comparableValue:
+      rid: 2900691359615156370
+    conditionType: 8
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691359615156370
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: New FloatProperty
+        _value: 5
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -1317224361
+    - rid: 2900691390679220344
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Distance
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -437978921
+--- !u!114 &4124410743719211719
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
+  m_Name: Sequencer
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 2385500166
+    _value1: 1251283046
+    _value2: 902026132
+    _value3: 1572711454
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: -7214530375376403928}
+  position: {x: 427, y: 547}
+  children:
+  - {fileID: -2684021354622265107}
+  - {fileID: 4654863201273758922}
+--- !u!114 &4403392224684806807
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
+  m_Name: Cross Fade
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 2821010508
+    _value1: 1322518978
+    _value2: 2056669595
+    _value3: 3846028239
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 8588069631626060843}
+  position: {x: -262, y: 919}
+  animator:
+    rid: 2900691376869474502
+  animationName: Idle
+  _animationHash: 0
+  layer: 0
+  transitionDuration: 0.15
+  timeOffset: 0
+  transitionTime: 0
+  useFixedCrossFade: 0
+  waitForTransition: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691376869474502
+      type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Animator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.AnimatorProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -1714818978
+--- !u!114 &4654863201273758922
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
+  m_Name: Sequencer
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 858851753
+    _value1: 1231768757
+    _value2: 4189800093
+    _value3: 21058302
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 4124410743719211719}
+  position: {x: 623, y: 765}
+  children:
+  - {fileID: 890177714185595948}
+  - {fileID: -6283652558232748886}
+--- !u!114 &4804473791141916721
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdd5d0e2feb4d6a9241d6980114b12c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _groupDataList:
+  - {fileID: 8194309790601151554}
+  - {fileID: -6538695077349027103}
+  - {fileID: 9045665763732000765}
+--- !u!114 &6425859100100965725
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
+  m_Name: Cross Fade
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 3604039321
+    _value1: 1093437560
+    _value2: 2244388746
+    _value3: 3055825897
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 8588069631626060843}
+  position: {x: -596, y: 919}
+  animator:
+    rid: 2900691391436554347
+  animationName: Run
+  _animationHash: 0
+  layer: 0
+  transitionDuration: 0.2
+  timeOffset: 0
+  transitionTime: 0
+  useFixedCrossFade: 0
+  waitForTransition: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691391436554347
+      type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Animator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.AnimatorProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -1714818978
+--- !u!114 &7228079266482733434
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd48e9e0dde802f428f5b5000339be55, type: 3}
+  m_Name: Jump
+  m_EditorClassIdentifier: 
+  guid: 3d611f297cf62d84897b700a4661c177
+  tag: 
+  description: 
+  behaviourResult: 0
+  parent: {fileID: 0}
+  position: {x: -33, y: 697}
+  <callState>k__BackingField: 0
+  jumpHeight: 1.2
+  jumpTimeout: 0.5
+  _fallTimeoutDelta: 0
+  verticalVelocity:
+    rid: 2900691100803793041
+  gravity:
+    rid: 2900691100803793042
+  animator:
+    rid: 2900691100803793043
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691100803793041
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Vertical Speed
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691100803793042
+      type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Gravity
+        _value: 0
+        _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691100803793043
+      type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Player Animator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.AnimatorProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+--- !u!114 &8194309790601151554
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 338454deab5849749f9376ca8a188d89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Patrol
+  position: {x: -620.99994, y: 705}
+  _nodeGuidList:
+  - _value0: 1637445515
+    _value1: 1316883709
+    _value2: 3017842338
+    _value3: 3631873921
+  - _value0: 333715339
+    _value1: 1284869223
+    _value2: 498096773
+    _value3: 1343929118
+  - _value0: 3604039321
+    _value1: 1093437560
+    _value2: 2244388746
+    _value3: 3055825897
+  - _value0: 2821010508
+    _value1: 1322518978
+    _value2: 2056669595
+    _value3: 3846028239
+  - _value0: 1939871811
+    _value1: 1084012929
+    _value2: 3381752722
+    _value3: 1809947516
+--- !u!114 &8419655583964896394
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9ccdd4b4b354bbab4541d41a0ac1da0, type: 3}
+  m_Name: Set Movement
+  m_EditorClassIdentifier: 
+  guid: e0f831572bb599b4caeb248f65763f0a
+  tag: 
+  description: 
+  behaviourResult: 0
+  parent: {fileID: 0}
+  position: {x: 248.00009, y: 418}
+  <callState>k__BackingField: 0
+  moveThreshold: 0.03
+  isRunning:
+    rid: 2900691100803793021
+  faceDirection:
+    rid: 2900691100803793022
+  controller:
+    rid: 2900691100803793023
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691100803793021
+      type: {class: BoolProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Run
+        _value: 0
+        _typeName: BehaviourSystem.BT.BoolProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691100803793022
+      type: {class: Vector2Property, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Face Direction
+        _value: {x: 0, y: 0}
+        _typeName: BehaviourSystem.BT.Vector2Property, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 2900691100803793023
+      type: {class: ThirdPersonControllerProperty, ns: StarterAssets, asm: Assembly-CSharp}
+      data:
+        _key: Controller
+        _value: {fileID: 0}
+        _typeName: StarterAssets.ThirdPersonControllerProperty, Assembly-CSharp,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+--- !u!114 &8588069631626060843
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
+  m_Name: Sequencer
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 1637445515
+    _value1: 1316883709
+    _value2: 3017842338
+    _value3: 3631873921
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: 2338204620795502981}
+  position: {x: -344, y: 764}
+  children:
+  - {fileID: 6425859100100965725}
+  - {fileID: -7199976533513108709}
+  - {fileID: 4403392224684806807}
+  - {fileID: -5950011494101703366}
+--- !u!114 &8968426404551306207
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0aeac55382394a66ba439113d46dca12, type: 3}
+  m_Name: Chase Player
+  m_EditorClassIdentifier: 
+  guid:
+    _value0: 4127354263
+    _value1: 1315434345
+    _value2: 3209051025
+    _value3: 2403050523
+  tag: 
+  description: 
+  status: 0
+  parent: {fileID: -2684021354622265107}
+  position: {x: 313, y: 918}
+  distanceOffset: 0.1
+  target:
+    rid: 2900691376869474551
+  navigator:
+    rid: 2900691376869474552
+  references:
+    version: 2
+    RefIds:
+    - rid: 2900691376869474551
+      type: {class: TransformProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Target
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.TransformProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: 1103309514
+    - rid: 2900691376869474552
+      type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
+      data:
+        _key: Navigator
+        _value: {fileID: 0}
+        _typeName: BehaviourSystem.BT.NavMeshAgentProperty, BehaviourSystem-BT, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        _hashCode: -347780270
+--- !u!114 &9045665763732000765
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 338454deab5849749f9376ca8a188d89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: Wait
+  position: {x: 514, y: 705.99994}
+  _nodeGuidList:
+  - _value0: 858851753
+    _value1: 1231768757
+    _value2: 4189800093
+    _value3: 21058302
+  - _value0: 2768810953
+    _value1: 1187272603
+    _value2: 2032302471
+    _value3: 1455519884
+  - _value0: 142793064
+    _value1: 1079699770
+    _value2: 2178689201
+    _value3: 366558907
+  - _value0: 4275145912
+    _value1: 1091816317
+    _value2: 4041760934
+    _value3: 3462470298

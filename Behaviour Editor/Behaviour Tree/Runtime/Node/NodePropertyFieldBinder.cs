@@ -50,6 +50,42 @@ namespace BehaviourSystem.BT
                 }
             }
         }
+        
+        
+        
+        public static void ResetNodeProperties(NodeBase node)
+        {
+            if (node is null)
+            {
+                return;
+            }
+
+            var fields = ReflectionHelper.GetCachedFieldInfo(node.GetType(), _PropertyType, _ConditionType, _ConditionListType);
+
+            if (fields.Length == 0)
+            {
+                return;
+            }
+            
+            foreach (var field in fields)
+            {
+                var accessor = ReflectionHelper.GetAccessor(field);
+                
+                if (_PropertyType.IsAssignableFrom(field.FieldType))
+                {
+                    accessor.setter(node, null);
+                }
+                else if (_ConditionListType.IsAssignableFrom(field.FieldType))
+                {
+                    accessor.setter(node, null);
+                }
+                else if (_ConditionType.IsAssignableFrom(field.FieldType))
+                {
+                    accessor.setter(node, null);
+                }
+            }
+        }
+        
 
         
         /// <summary> 블랙보드 프로퍼티 필드를 처리합니다. </summary>
@@ -57,7 +93,7 @@ namespace BehaviourSystem.BT
         {
             if (accessor.getter(node) is IBlackboardProperty property)
             {
-                var foundProperty = blackboard.FindProperty(property.key);
+                var foundProperty = blackboard.FindProperty(property.hashCode);
 
                 if (foundProperty != null)
                 {
@@ -95,7 +131,7 @@ namespace BehaviourSystem.BT
         {
             if (condition.property is not null && condition.property.key is not null)
             {
-                IBlackboardProperty foundProperty = blackboard.FindProperty(condition.property.key);
+                IBlackboardProperty foundProperty = blackboard.FindProperty(condition.property.hashCode);
                 
                 if (foundProperty is not null)
                 {
@@ -105,7 +141,7 @@ namespace BehaviourSystem.BT
 
             if (condition.comparableValue is not null && condition.comparableValue.key is not null)
             {
-                IBlackboardProperty foundProperty = blackboard.FindProperty(condition.comparableValue.key);
+                IBlackboardProperty foundProperty = blackboard.FindProperty(condition.comparableValue.hashCode);
                 
                 if (foundProperty is not null)
                 {

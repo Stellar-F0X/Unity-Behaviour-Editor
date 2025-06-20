@@ -16,6 +16,11 @@ namespace BehaviourSystem.BT
             get;
             set;
         }
+        
+        public int hashCode
+        {
+            get;
+        }
 
         public EConditionType comparableConditions
         {

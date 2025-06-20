@@ -11,9 +11,9 @@ public class #SCRIPTNAME# : CompositeNode
     #NOTRIM#
     }
 
-    protected override NodeBase.EBehaviourResult OnUpdate()
+    protected override NodeBase.EStatus OnUpdate()
     {
-        return NodeBase.EBehaviourResult.Failure;
+        return NodeBase.EStatus.Failure;
     }
 
     protected override void OnExit()

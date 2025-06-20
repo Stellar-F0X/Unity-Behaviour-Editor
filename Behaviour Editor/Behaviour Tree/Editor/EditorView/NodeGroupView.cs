@@ -56,7 +56,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     if (element.selected && element is NodeView view && view.targetNode != null)
                     {
-                        _data.AddNodeGuid(view.targetNode);
+                        _data.AddNodeGuid(view.targetNode.guid);
                     }
                 }
             }
@@ -76,7 +76,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     if (element.selected && element is NodeView view && view.targetNode != null)
                     {
-                        _data.RemoveNodeGuid(view.targetNode);
+                        _data.RemoveNodeGuid(view.targetNode.guid);
                     }
                 }
             }

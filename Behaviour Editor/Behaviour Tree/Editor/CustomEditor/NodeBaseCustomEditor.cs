@@ -25,8 +25,9 @@ namespace BehaviourSystemEditor.BT
             using (new EditorGUI.DisabledScope(true))
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("guid"));
             }
-
+            
             SerializedProperty nameProp = serializedObject.FindProperty("m_Name");
             SerializedProperty tagProp = serializedObject.FindProperty("tag");
             SerializedProperty desProp = serializedObject.FindProperty("description");
