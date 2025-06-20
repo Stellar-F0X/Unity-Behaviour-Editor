@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace BehaviourSystem.BT
 {
     public class BlackboardBasedUntilForNode : ConditionNodeBase

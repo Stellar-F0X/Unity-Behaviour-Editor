@@ -1,8 +1,7 @@
-﻿using BehaviourSystem.BT;
-using UnityEditor;
+﻿using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {

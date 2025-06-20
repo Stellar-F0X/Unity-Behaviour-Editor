@@ -1,5 +1,3 @@
-using System;
-
 namespace BehaviourSystem.BT
 {
     public class InverterNode : DecoratorNode

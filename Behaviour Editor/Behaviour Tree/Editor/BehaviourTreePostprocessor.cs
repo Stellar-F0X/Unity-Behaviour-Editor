@@ -1,6 +1,6 @@
-using UnityEditor;
 using System;
 using BehaviourSystem.BT;
+using UnityEditor;
 using UnityEngine;
 
 namespace BehaviourSystemEditor.BT

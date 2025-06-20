@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-
-using UObject = UnityEngine.Object;
 
 namespace BehaviourSystem.BT
 {

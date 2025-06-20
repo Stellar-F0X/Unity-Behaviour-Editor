@@ -6,7 +6,6 @@ using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
-using Object = System.Object;
 
 namespace BehaviourSystemEditor.BT
 {

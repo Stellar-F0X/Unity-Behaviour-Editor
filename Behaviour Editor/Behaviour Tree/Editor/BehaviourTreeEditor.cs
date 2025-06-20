@@ -1,12 +1,11 @@
-using System;
 using BehaviourSystem.BT;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.UIElements;
 using UnityEditor.Callbacks;
 using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using UObject = UnityEngine.Object;
 
 namespace BehaviourSystemEditor.BT

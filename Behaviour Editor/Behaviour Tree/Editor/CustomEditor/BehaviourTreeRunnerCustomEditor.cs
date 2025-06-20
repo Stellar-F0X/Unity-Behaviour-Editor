@@ -1,7 +1,5 @@
 using BehaviourSystem.BT;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {

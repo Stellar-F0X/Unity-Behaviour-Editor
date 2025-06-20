@@ -1,11 +1,10 @@
 using System;
-using System.Text.RegularExpressions;
-using UnityEngine;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine.UIElements;
 using BehaviourSystem.BT;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {
