@@ -12,36 +12,126 @@ namespace BehaviourSystemEditor.BT
             foreach (string path in importedAssets)
             {
                 BehaviourTree asset = AssetDatabase.LoadAssetAtPath<BehaviourTree>(path);
-                
+
                 if (asset != null)
                 {
-                    asset.treeGuid = $"{Guid.NewGuid()}";
-                    EditorUtility.SetDirty(asset);
-                    
-                    if (asset.nodeSet is null)
-                    {
-                        asset.nodeSet = ScriptableObject.CreateInstance<BehaviourNodeSet>();
-                        asset.nodeSet.hideFlags = HideFlags.HideInHierarchy;
-                        AssetDatabase.AddObjectToAsset(asset.nodeSet, asset);
+                    bool changed = false;
 
-                        if (asset.nodeSet.rootNode is null)
-                        {
-                            asset.nodeSet.rootNode = asset.nodeSet.CreateNode(typeof(RootNode));
-                            EditorUtility.SetDirty(asset);
-                        }
-                        
-                        AssetDatabase.SaveAssets();
+                    if (asset.treeGuid.IsEmpty() || IsGuidDuplicated(asset))
+                    {
+                        asset.treeGuid = UGUID.Create();
+                        ChangeNodesOfTreeGuid(asset);
+                        EditorUtility.SetDirty(asset);
+                        changed = true;
                     }
 
-                    if (asset.groupDataSet is null)
+                    changed |= TryInitializeNodeSetList(asset);
+                    changed |= TryInitializeGroupDataSet(asset);
+
+                    if (changed)
                     {
-                        asset.groupDataSet = ScriptableObject.CreateInstance<GroupDataSet>();
-                        asset.groupDataSet.hideFlags = HideFlags.HideInHierarchy;
-                        AssetDatabase.AddObjectToAsset(asset.groupDataSet, asset);
                         AssetDatabase.SaveAssets();
                     }
                 }
             }
+        }
+
+
+
+        private static void ChangeNodesOfTreeGuid(BehaviourTree asset)
+        {
+            if (asset.nodeSet == null || asset.nodeSet.nodeList.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var nodeBase in asset.nodeSet.nodeList)
+            {
+                UGUID originalGuid = nodeBase.guid;
+                nodeBase.guid = UGUID.Create();
+
+                if (asset.groupDataSet.dataList.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (GroupData groupData in asset.groupDataSet.dataList)
+                {
+                    if (groupData.containedNodeCount > 0 && groupData.Contains(originalGuid))
+                    {
+                        groupData.RemoveNodeGuid(originalGuid);
+                        groupData.AddNodeGuid(nodeBase.guid);
+                    }
+                }
+            }
+        }
+
+
+
+        private static bool TryInitializeNodeSetList(BehaviourTree asset)
+        {
+            if (asset.nodeSet != null)
+            {
+                return false;
+            }
+
+            asset.nodeSet = ScriptableObject.CreateInstance<BehaviourNodeSet>();
+            asset.nodeSet.hideFlags = HideFlags.HideInHierarchy;
+            AssetDatabase.AddObjectToAsset(asset.nodeSet, asset);
+
+            if (asset.nodeSet.rootNode == null)
+            {
+                asset.nodeSet.rootNode = asset.nodeSet.CreateNode(typeof(RootNode));
+                EditorUtility.SetDirty(asset);
+            }
+
+            return true;
+        }
+
+
+
+        private static bool TryInitializeGroupDataSet(BehaviourTree asset)
+        {
+            if (asset.groupDataSet != null)
+            {
+                return false;
+            }
+            
+            asset.groupDataSet = ScriptableObject.CreateInstance<GroupDataSet>();
+            asset.groupDataSet.hideFlags = HideFlags.HideInHierarchy;
+            AssetDatabase.AddObjectToAsset(asset.groupDataSet, asset);
+            return false;
+        }
+
+
+        private static bool IsGuidDuplicated(BehaviourTree currentAsset)
+        {
+            if (currentAsset.treeGuid.IsEmpty())
+            {
+                return false;
+            }
+
+            string[] guids = AssetDatabase.FindAssets("t:BehaviourTree");
+
+            int count = 0;
+
+            foreach (string guid in guids)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                BehaviourTree asset = AssetDatabase.LoadAssetAtPath<BehaviourTree>(assetPath);
+
+                if (asset != null && asset.treeGuid == currentAsset.treeGuid)
+                {
+                    count++;
+
+                    if (count > 1) // 자기 자신 포함해서 2개 이상이면 중복
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

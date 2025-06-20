@@ -36,23 +36,10 @@ namespace BehaviourSystem.BT
                 throw new Exception($"{typeof(NodeFactory)}: Failed to create node of type {nodeType}");
             }
             
-            newNode.guid = Guid.NewGuid().ToString();
+            newNode.guid = UGUID.Create();
             newNode.hideFlags = HideFlags.HideInHierarchy;
             newNode.name = ApplySpacing(nodeType.Name);
             return newNode;
-        }
-
-
-        public static bool HasChild(this NodeBase targetNode, out int childCount)
-        {
-            if (targetNode is IBehaviourIterable iterable)
-            {
-                childCount = iterable.childCount;
-                return true;
-            }
-
-            childCount = 0;
-            return false;
         }
     }
 }

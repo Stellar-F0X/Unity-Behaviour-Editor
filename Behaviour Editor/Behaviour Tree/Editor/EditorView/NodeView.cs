@@ -15,7 +15,7 @@ namespace BehaviourSystemEditor.BT
             this.targetNode = targetNode;
             this.title = targetNode.name;
             this.tooltip = targetNode.tooltip;
-            this.viewDataKey = targetNode.guid;
+            this.viewDataKey = targetNode.guid.ToString();
             this.style.left = targetNode.position.x;
             this.style.top = targetNode.position.y;
             this._lastProcessedCallCount = targetNode.callCount;
@@ -133,8 +133,8 @@ namespace BehaviourSystemEditor.BT
 
             Undo.RecordObject(targetNode, "Behaviour Tree (Set Position)");
 
-            targetNode.position.x = newPos.xMin;
-            targetNode.position.y = newPos.yMin;
+            targetNode.position.x = Mathf.RoundToInt(newPos.xMin);
+            targetNode.position.y = Mathf.RoundToInt(newPos.yMin);
 
             EditorUtility.SetDirty(targetNode);
         }

@@ -79,7 +79,7 @@ namespace BehaviourSystem.BT
             if (tickUpdateMode == ETickUpdateMode.NormalUpdate)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample("BehaviourTreeRunner.Update");
+                Profiler.BeginSample("BehaviourTreeRunner.RuntimeUpdate");
 #endif
                 _rootNode.UpdateNode();
 #if UNITY_EDITOR
@@ -99,7 +99,7 @@ namespace BehaviourSystem.BT
             if (tickUpdateMode == ETickUpdateMode.FixedUpdate)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample("BehaviourTreeRunner.FixedUpdate");
+                Profiler.BeginSample("BehaviourTreeRunner.RuntimeFixedUpdate");
 #endif
                 _rootNode.UpdateNode();
 #if UNITY_EDITOR
@@ -121,7 +121,7 @@ namespace BehaviourSystem.BT
             if (tickUpdateMode == ETickUpdateMode.LateUpdate)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample("BehaviourTreeRunner.LateUpdate");
+                Profiler.BeginSample("BehaviourTreeRunner.RuntimeLateUpdate");
 #endif
                 _rootNode.UpdateNode();
 #if UNITY_EDITOR
@@ -159,7 +159,7 @@ namespace BehaviourSystem.BT
             if (tickUpdateMode == ETickUpdateMode.ExternalUpdate)
             {
 #if UNITY_EDITOR
-                Profiler.BeginSample("BehaviourTreeRunner.ExternalUpdate");
+                Profiler.BeginSample("BehaviourTreeRunner.RuntimeExternalUpdate");
 #endif
                 _rootNode.UpdateNode();
 #if UNITY_EDITOR

@@ -15,29 +15,67 @@ namespace BehaviourSystem.BT
         [SerializeField]
         private string _typeName;
         private Type _type;
+        
+        [SerializeField]
+        private int _hashCode;
 
+        
         public virtual string key
         {
-            get { return _key; }
-            set { _key = value; }
+            get
+            {
+                return _key;
+            }
+            
+            set
+            {
+                _key = value;
+                _hashCode = Blackboard.StringToHash(_key);
+            }
         }
 
         public virtual T value
         {
-            get { return _value; }
-            set { _value = value; }
+            get
+            {
+                return _value;
+            }
+            
+            set
+            {
+                _value = value;
+            }
         }
 
         public Type type
         {
-            get { return _type; }
-            set { _type = value; }
+            get
+            {
+                return _type;
+            }
+            
+            set
+            {
+                _type = value;
+            }
         }
 
         public virtual EConditionType comparableConditions
         {
-            get { return EConditionType.None; }
+            get
+            {
+                return EConditionType.None;
+            }
         }
+
+        public int hashCode
+        {
+            get
+            {
+                return _hashCode;
+            }
+        } 
+        
 
         public void OnBeforeSerialize()
         {
@@ -48,7 +86,13 @@ namespace BehaviourSystem.BT
         {
             _type = Type.GetType(_typeName);
         }
+        
+        public virtual int CompareTo(IBlackboardProperty other)
+        {
+            return -1;
+        }
 
+        
         public IBlackboardProperty Clone(IBlackboardProperty origin)
         {
             BlackboardProperty<T> newProperty = IBlackboardProperty.Create(origin.type) as BlackboardProperty<T>;
@@ -62,16 +106,12 @@ namespace BehaviourSystem.BT
             {
                 newProperty._key      = originalProp._key;
                 newProperty._value    = originalProp._value;
+                newProperty._hashCode = originalProp._hashCode;
                 newProperty._typeName = originalProp._type.AssemblyQualifiedName;
                 newProperty._type     = originalProp._type;
             }
 
             return newProperty;
-        }
-
-        public virtual int CompareTo(IBlackboardProperty other)
-        {
-            return -1;
         }
     }
 }

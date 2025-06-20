@@ -13,9 +13,9 @@ namespace BehaviourSystem.BT
         public Vector2 position;
 
         [SerializeField]
-        private List<string> _nodeGuidList = new List<string>();
+        private List<UGUID> _nodeGuidList = new List<UGUID>();
 
-        private HashSet<string> _nodeGuidSet = new HashSet<string>(StringComparer.Ordinal);
+        private HashSet<UGUID> _nodeGuidSet = new HashSet<UGUID>();
 
 
         public int containedNodeCount
@@ -38,7 +38,7 @@ namespace BehaviourSystem.BT
         {
             if (_nodeGuidSet is null)
             {
-                _nodeGuidSet = new HashSet<string>(_nodeGuidList, StringComparer.Ordinal);
+                _nodeGuidSet = new HashSet<UGUID>(_nodeGuidList);
             }
             else
             {
@@ -48,7 +48,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        public bool Contains(string nodeGuid)
+        public bool Contains(UGUID nodeGuid)
         {
             return _nodeGuidSet.Contains(nodeGuid);
         }
@@ -72,29 +72,29 @@ namespace BehaviourSystem.BT
         }
 
 
-        public void AddNodeGuid(NodeBase nodeBase)
+        public void AddNodeGuid(UGUID guid)
         {
-            if (nodeBase == null || _nodeGuidSet.Contains(nodeBase.guid))
+            if (guid.IsEmpty() || _nodeGuidSet.Contains(guid))
             {
                 return;
             }
 
             Undo.RecordObject(this, "Behaviour Tree (AddNodeGuidToGroup)");
-            _nodeGuidSet.Add(nodeBase.guid);
+            _nodeGuidSet.Add(guid);
             EditorUtility.SetDirty(this);
         }
 
 
-        public void RemoveNodeGuid(NodeBase nodeBase)
+        public void RemoveNodeGuid(UGUID guid)
         {
             //Object에서 연산자 오버라이딩된 == null을 통해 해당 프레임에서 삭제된 객체를 체크.
-            if (nodeBase == null || _nodeGuidSet.Contains(nodeBase.guid) == false)
+            if (guid.IsEmpty() || _nodeGuidSet.Contains(guid) == false)
             {
                 return;
             }
 
             Undo.RecordObject(this, "Behaviour Tree (RemoveNodeGuidToGroup)");
-            _nodeGuidSet.Remove(nodeBase.guid);
+            _nodeGuidSet.Remove(guid);
             EditorUtility.SetDirty(this);
         }
     }

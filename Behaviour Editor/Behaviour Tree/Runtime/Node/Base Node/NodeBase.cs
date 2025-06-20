@@ -37,7 +37,7 @@ namespace BehaviourSystem.BT
         public event Action onNodeExit;
 
 
-        public string guid;
+        public UGUID guid;
 
         public string tag;
 
@@ -162,7 +162,7 @@ namespace BehaviourSystem.BT
                 return true;
             }
 
-            return string.CompareOrdinal(this.guid, other.guid) == 0;
+            return this.guid == other.guid;
         }
         
         

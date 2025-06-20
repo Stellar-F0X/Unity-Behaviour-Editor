@@ -8,18 +8,17 @@ namespace BehaviourSystem.BT
     {
         [HideInInspector]
         public BehaviourNodeSet nodeSet;
-
-        [HideInInspector]
+        
+        [ReadOnly]
         public Blackboard blackboard;
 
 #if UNITY_EDITOR
         [HideInInspector]
         public GroupDataSet groupDataSet;
 #endif
-
-
+        
         [field: SerializeField, ReadOnly]
-        public string treeGuid
+        public UGUID treeGuid
         {
             get;
             internal set;
@@ -57,14 +56,24 @@ namespace BehaviourSystem.BT
                 return false;
             }
 
-            if (string.CompareOrdinal(this.treeGuid, other.treeGuid) != 0)
+            if (this.treeGuid == other.treeGuid)
             {
                 return false;
             }
 
-            if (string.CompareOrdinal(this.nodeSet.rootNode.guid, other.nodeSet.rootNode.guid) != 0)
+            if (this.nodeSet.nodeList.Count != other.nodeSet.nodeList.Count)
             {
                 return false;
+            }
+            else
+            {
+                for (int i = 0; i < this.nodeSet.nodeList.Count; i++)
+                {
+                    if (this.nodeSet.nodeList[i].guid != other.nodeSet.nodeList[i].guid)
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;

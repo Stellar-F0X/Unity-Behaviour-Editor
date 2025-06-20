@@ -106,16 +106,25 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void RegisterValueChangedCallback<T>(this VisualElement element, EventCallback<ChangeEvent<T>> callback)
+        public static void RegisterRemovableCallback<T>(this VisualElement element, EventCallback<T> callback) where T : EventBase<T>, new()
         {
             if (element.userData is null)
             {
-                element.userData = new List<EventCallback<ChangeEvent<T>>>();
+                element.userData = new Dictionary<Type, List<Delegate>>();
             }
 
-            if (element.userData is List<EventCallback<ChangeEvent<T>>> callbackList)
+            if (element.userData is Dictionary<Type, List<Delegate>> callbackList)
             {
-                callbackList.Add(callback);
+                Type key = typeof(T);
+
+                if (callbackList.ContainsKey(key))
+                {
+                    callbackList[key].Add(callback);
+                }
+                else
+                {
+                    callbackList.Add(key, new List<Delegate>() { callback });
+                }
 
                 element.RegisterCallback(callback);
             }
@@ -126,23 +135,30 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void UnregisterAllValueChangedCallback<T>(this VisualElement element)
+        public static void RemoveCallback<T>(this VisualElement element) where T : EventBase<T>, new()
         {
-            if (element.userData is List<EventCallback<ChangeEvent<T>>> list)
+            if (element.userData is Dictionary<Type, List<Delegate>> dictionary)
             {
-                if (list.Count == 0)
+                if (dictionary.Count == 0)
                 {
                     return;
                 }
 
-                int count = list.Count;
-
-                for (int i = 0; i < count; ++i)
+                foreach (var list in dictionary.Values)
                 {
-                    element.UnregisterCallback(list[i]);
-                }
+                    if (list != null && list.Count > 0 && list[0] is EventCallback<T>)
+                    {
+                        foreach (var callback in list)
+                        {
+                            if (callback is EventCallback<T> convertedCallback)
+                            {
+                                element.UnregisterCallback(convertedCallback);
+                            }
+                        }
 
-                list.Clear();
+                        list.Clear();
+                    }
+                }
             }
         }
     }

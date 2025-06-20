@@ -9,6 +9,15 @@ namespace BehaviourSystem.BT
     [StructLayout(LayoutKind.Explicit), Serializable]
     public struct UGUID : IComparable, IComparable<UGUID>, IEquatable<UGUID>
     {
+        public UGUID(Guid guid = default)
+        {
+            this._value0 = 0;
+            this._value1 = 0;
+            this._value2 = 0;
+            this._value3 = 0;
+            this.guid = guid;
+        }
+
         [NonSerialized, FieldOffset(0)]
         public Guid guid;
 
@@ -96,13 +105,13 @@ namespace BehaviourSystem.BT
 
         public static bool operator ==(UGUID x, UGUID y)
         {
-            return x._value0 == y._value0 && x._value1 == y._value1 && x._value2 == y._value2 && x._value3 == y._value3;
+            return (x._value0 == y._value0) && (x._value1 == y._value1) && (x._value2 == y._value2) && (x._value3 == y._value3);
         }
 
 
         public static bool operator !=(UGUID x, UGUID y)
         {
-            return x._value0 != y._value0 || x._value1 != y._value1 || x._value2 != y._value2 || x._value3 != y._value3;
+            return (x._value0 != y._value0) || (x._value1 != y._value1) || (x._value2 != y._value2) || (x._value3 != y._value3);
         }
 
 
@@ -151,7 +160,6 @@ namespace BehaviourSystem.BT
                 EditorGUILayout.TextField(label, ((UGUID)property.boxedValue).ToString());
             }
         }
-
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
