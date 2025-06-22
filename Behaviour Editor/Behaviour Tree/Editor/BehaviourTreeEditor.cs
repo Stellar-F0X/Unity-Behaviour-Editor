@@ -88,17 +88,31 @@ namespace BehaviourSystemEditor.BT
 
         /// <summary>Unity 메뉴에서 Behaviour Tree 에디터 창을 엽니다.</summary>
         [MenuItem("Tools/Behaviour Tree Editor")]
-        private static void OpenWindow()
+        public static void OpenWindow()
         {
             BehaviourTreeEditor wnd = GetWindow<BehaviourTreeEditor>();
             wnd.titleContent = new GUIContent("BT Editor");
             Instance = wnd;
         }
 
+
+        public static void OpenWindow(BehaviourTree tree)
+        {
+            if (Instance != null && Instance._tree == tree)
+            {
+                Instance.Focus();
+                return;
+            }
+            
+            OpenWindow();
+            Instance.Initialize();
+            Instance.ChangeBehaviourTree(tree);
+        }
+
         
         /// <summary>Behaviour Tree 에셋을 더블클릭했을 때 에디터를 엽니다.</summary>
         [OnOpenAsset]
-        public static bool OnOpenAsset(int instanceID, int line)
+        private static bool OnOpenAsset(int instanceID, int line)
         {
             if (Selection.activeObject is BehaviourTree)
             {

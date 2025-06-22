@@ -1,3 +1,88 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b9e8e2c3587e555c911c65f6fc9163d1598bc1a0d4f719b5e8a134a87b278438
-size 1653
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aac07710716244448e2a6524ebf68a5e, type: 3}
+  m_Name: EditorSettings
+  m_EditorClassIdentifier: 
+  miniMapBackgroundColor: {r: 0.11764706, g: 0.11764706, b: 0.11764706, a: 1}
+  nodeGroupColor: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 0.78431374}
+  nodeSuccessColor: {r: 0, g: 0.39215687, b: 0, a: 1}
+  nodeFailureColor: {r: 0.39215687, g: 0, b: 0, a: 1}
+  nodeStatusLinearColor:
+    serializedVersion: 2
+    key0: {r: 0.09411765, g: 0.3647059, b: 0.49019608, a: 1}
+    key1: {r: 0.21176471, g: 0.6039216, b: 0.8, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  edgeStatusLinearColor:
+    serializedVersion: 2
+    key0: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    key1: {r: 0.21176471, g: 0.6039216, b: 0.8, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 65535
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  nodeViewHighlightingDuration: 0.25
+  nodeViewUpdateInterval: 0.05
+  behaviourTreeEditorXml: {fileID: 9197481963319205126, guid: e97556cb6f1cfe64da771ca095336409, type: 3}
+  behaviourTreeStyle: {fileID: 7433441132597879392, guid: 9f7ef0b4ed1e21f4580d6f651abac776, type: 3}
+  nodeViewXml: {fileID: 9197481963319205126, guid: 541193e97a9200f48afb0a976ac925c1, type: 3}
+  nodeViewStyle: {fileID: 7433441132597879392, guid: 2c3e5f919fbc7c0468933b90f2ec4fd6, type: 3}
+  blackboardPropertyViewXml: {fileID: 9197481963319205126, guid: c8a586cd667247c419ff74d87f2587b8, type: 3}
+  blackboardPropertyViewStyle: {fileID: 7433441132597879392, guid: 64c8fb2f8709a824cb398043c8843094, type: 3}
+  editorSettingsXml: {fileID: 9197481963319205126, guid: 5c48b9bc236747847a51ebd4ef08230d, type: 3}
+  editorSettingsStyle: {fileID: 7433441132597879392, guid: c3008b48ac881364d8c155d3be3c25e4, type: 3}

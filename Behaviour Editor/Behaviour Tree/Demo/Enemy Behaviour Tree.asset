@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Chase
-  position: {x: 120.00003, y: 705}
+  position: {x: 120.000046, y: 705}
   _nodeGuidList:
   - _value0: 62840245
     _value1: 1088864073
@@ -721,7 +721,7 @@ MonoBehaviour:
   parent: {fileID: 8588069631626060843}
   position: {x: -596, y: 919}
   animator:
-    rid: 2900691391436554347
+    rid: 2900691401621372928
   animationName: Run
   _animationHash: 0
   layer: 0
@@ -733,7 +733,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691391436554347
+    - rid: 2900691401621372928
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -964,7 +964,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Wait
-  position: {x: 514, y: 705.99994}
+  position: {x: 514.00006, y: 706}
   _nodeGuidList:
   - _value0: 858851753
     _value1: 1231768757

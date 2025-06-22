@@ -18,7 +18,7 @@ MonoBehaviour:
   - rid: 2900691237377671905
   - rid: 2900691237377671788
   - rid: 2900691239657013248
-  - rid: 2900691237377671790
+  - rid: 2900691403086495827
   references:
     version: 2
     RefIds:
@@ -30,17 +30,6 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: -437978921
-    - rid: 2900691237377671790
-      type: {class: TransformListProperty, ns: BehaviourSystem.BT.Demo, asm: Assembly-CSharp}
-      data:
-        _key: Way Point
-        _value:
-        - {fileID: 0}
-        - {fileID: 0}
-        - {fileID: 0}
-        _typeName: BehaviourSystem.BT.Demo.TransformListProperty, Assembly-CSharp,
-          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-        _hashCode: 576791495
     - rid: 2900691237377671791
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
@@ -73,3 +62,11 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.IntProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: 52519613
+    - rid: 2900691403086495827
+      type: {class: TransformListProperty, ns: BehaviourSystem.BT.Demo, asm: Assembly-CSharp}
+      data:
+        _key: Way Point
+        _value: []
+        _typeName: BehaviourSystem.BT.Demo.TransformListProperty, Assembly-CSharp,
+          Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        _hashCode: 576791495

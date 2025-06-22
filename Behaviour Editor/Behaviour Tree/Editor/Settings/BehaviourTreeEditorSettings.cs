@@ -5,26 +5,25 @@ namespace BehaviourSystemEditor.BT
 {
     public class BehaviourTreeEditorSettings : ScriptableObject
     {
-        [Header("View Options")]
-        public float maxZoomScale = 1.5f;
-        public float minZoomScale = 0.5f;
         public Color miniMapBackgroundColor = new Color32(30, 30, 30, 255);
         public Color nodeGroupColor = new Color32(65, 65, 65, 255);
+        
         
         [Header("View Color Options")]
         public Color nodeSuccessColor = new Color32(0, 100, 0, 255);
         public Color nodeFailureColor = new Color32(100, 0, 0, 255);
         
+        
         [Space]
-        public Color nodeAppearingColor = new Color32(54, 154, 204, 255);
-        public Color nodeDisappearingColor = new Color32(24, 93, 125, 255);
-        public Color edgeAppearingColor = new Color32(54, 154, 204, 255);
-        public Color edgeDisappearingColor = new Color32(200, 200, 200, 255);
+        public Gradient nodeStatusLinearColor;
+        public Gradient edgeStatusLinearColor;
+
         
         [Header("Runtime Options")]
-        public float highlightingDuration = 0.5f;
-        public float nodeViewUpdateInterval = 0.1f; // 0.1초마다 업데이트 (10Hz)
+        public float nodeViewHighlightingDuration = 0.2f;
+        public float nodeViewUpdateInterval = 0.04f; // 0.1초마다 업데이트 (10Hz)
 
+        
         [Header("Layout References")]
         [HideInInspector] public VisualTreeAsset behaviourTreeEditorXml;
         [HideInInspector] public StyleSheet behaviourTreeStyle;
@@ -32,5 +31,7 @@ namespace BehaviourSystemEditor.BT
         [HideInInspector] public StyleSheet nodeViewStyle;
         [HideInInspector] public VisualTreeAsset blackboardPropertyViewXml;
         [HideInInspector] public StyleSheet blackboardPropertyViewStyle;
+        [HideInInspector] public VisualTreeAsset editorSettingsXml;
+        [HideInInspector] public StyleSheet editorSettingsStyle;
     }
 }

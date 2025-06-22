@@ -1,0 +1,19 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Unity-Behaviour-System/Behaviour%20Editor/Behaviour%20Tree/Editor/Layout/EditorSettingsStyle.uss?fileID=7433441132597879392&amp;guid=c3008b48ac881364d8c155d3be3c25e4&amp;type=3#EditorSettingsStyle" />
+    <ui:Label text="Behaviour System Settings" name="header" />
+    <ui:VisualElement name="container" style="flex-grow: 1; margin-left: 0;">
+        <ui:VisualElement name="properties" style="flex-grow: 1;">
+            <ui:FloatField label="Runtime Update Interval" value="0.05" name="update-interval" />
+            <ui:Label text="Editor Color Options" name="sub-header" parse-escape-sequences="false" />
+            <uie:ColorField label="Minimap" value="#1E1E1EFF" name="minimap-background-color" style="flex-shrink: 1;" />
+            <uie:ColorField label="Node Group" value="#323232AA" name="node-group-color" />
+            <ui:Label text="Node Executed Color" name="sub-header" parse-escape-sequences="false" />
+            <uie:ColorField label="Success" value="#006400FF" name="node-success-color" />
+            <uie:ColorField label="Failure" value="#640000FF" name="node-failure-color" />
+            <ui:Label text="Playmode Color" name="sub-header" parse-escape-sequences="false" />
+            <ui:FloatField label="Highlight Duration" value="0.2" name="highlight-duration" />
+            <uie:GradientField label="Node Disappeared to Appeared" value="Blend:{0,#185D7DFF};{1,#369ACCFF}+{0,1};{1,1}" name="node-gradient-field" />
+            <uie:GradientField label="Edge Disappeared to Appeared" value="Blend:{0,#C8C8C8FF};{1,#369ACCFF}+{0,1};{1,1}" name="edge-gradient-field" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

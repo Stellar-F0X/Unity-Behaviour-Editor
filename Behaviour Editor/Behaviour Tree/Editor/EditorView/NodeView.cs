@@ -171,13 +171,13 @@ namespace BehaviourSystemEditor.BT
 
             BehaviourTreeEditorSettings settings = BehaviourTreeEditor.Settings;
 
-            if (this.UpdateNodeHighlightState(deltaTime, settings.highlightingDuration))
+            if (this.UpdateNodeHighlightState(deltaTime, settings.nodeViewHighlightingDuration))
             {
-                float progress = _highlightDuration / settings.highlightingDuration;
+                float progress = _highlightDuration / settings.nodeViewHighlightingDuration;
 
-                _nodeBorder?.style.SetBorderColor(Color.Lerp(settings.nodeDisappearingColor, settings.nodeAppearingColor, progress));
+                _nodeBorder?.style.SetBorderColor(settings.nodeStatusLinearColor.Evaluate(progress));
 
-                parentConnectionEdge?.edgeControl.SetEdgeColor(Color.Lerp(settings.edgeDisappearingColor, settings.edgeAppearingColor, progress));
+                parentConnectionEdge?.edgeControl.SetEdgeColor(settings.edgeStatusLinearColor.Evaluate(progress));
             }
         }
 

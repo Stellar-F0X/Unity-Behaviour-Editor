@@ -20,8 +20,8 @@ namespace BehaviourSystemEditor.BT
             this.AddManipulator(new RectangleSelector());
             this.AddManipulator(new ContentZoomer()
             {
-                maxScale = BehaviourTreeEditor.Settings.maxZoomScale,
-                minScale = BehaviourTreeEditor.Settings.minZoomScale
+                maxScale = 2f,
+                minScale = 0.2f
             });
 
             styleSheets.Add(BehaviourTreeEditor.Settings.behaviourTreeStyle);

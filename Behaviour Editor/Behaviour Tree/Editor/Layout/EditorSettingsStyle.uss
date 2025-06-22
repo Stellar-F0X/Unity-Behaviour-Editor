@@ -1,0 +1,29 @@
+#header {
+    font-size: 19px;
+    -unity-font-style: bold;
+    padding-bottom: 0;
+    margin-left: 0;
+    margin-top: 2px;
+    margin-bottom: 10px;
+}
+
+#sub-header {
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-top: 8px;
+    margin-left: 3px;
+    padding-bottom: 0;
+    margin-bottom: 2px;
+}
+
+Label {
+    margin-right: 2px;
+    width: 250px;
+    min-width: auto;
+    padding-right: 2px;
+    padding-left: 1px;
+    overflow: visible;
+    visibility: visible;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}

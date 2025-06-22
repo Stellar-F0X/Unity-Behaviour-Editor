@@ -217,7 +217,7 @@ namespace BehaviourSystemEditor.BT
 
             buttonField.enabledSelf = BehaviourTreeEditor.CanEditTree;
             
-            buttonField.RemoveCallback<ClickEvent>();
+            buttonField.RemoveAllCallbacksOfType<ClickEvent>();
             buttonField.RegisterRemovableCallback<ClickEvent>(_ => this.DeleteProperty(index));
         }
 
@@ -239,10 +239,10 @@ namespace BehaviourSystemEditor.BT
                 
                 var scheduled = imguiField.schedule
                                           .Execute(_ => imguiField.MarkDirtyRepaint())
-                                          .Until(() => !EditorApplication.isPlaying)
-                                          .Every(125);
+                                          .Until(() => !EditorApplication.isPlayingOrWillChangePlaymode)
+                                          .Every(250);
                 
-                imguiField.RegisterCallback<DetachFromPanelEvent>(_ => scheduled.Pause());
+                imguiField.RegisterCallbackOnce<DetachFromPanelEvent>(_ => scheduled.Pause());
             }
         }
         
@@ -285,7 +285,7 @@ namespace BehaviourSystemEditor.BT
                 element.tooltip = property.type.Name;
                 TextField keyField = element.Q<TextField>("name-field");
 
-                keyField.RemoveCallback<FocusOutEvent>();
+                keyField.RemoveAllCallbacksOfType<FocusOutEvent>();
                 keyField.RegisterRemovableCallback<FocusOutEvent>(_ =>
                 {
                     this.OnChangePropertyKey(keyField.value, index);

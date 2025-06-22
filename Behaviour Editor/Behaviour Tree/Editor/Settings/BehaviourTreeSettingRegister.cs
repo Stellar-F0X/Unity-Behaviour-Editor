@@ -11,33 +11,18 @@ namespace BehaviourSystemEditor.BT
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
         {
-            return new SettingsProvider("Project/BehaviourTreeProjectSettings", SettingsScope.Project)
+            return new SettingsProvider("Project/Behaviour Tree Settings", SettingsScope.Project)
             {
-                label = "Behaviour Tree",
+                label = "Behaviour System",
                 activateHandler = ProvideSettingHandler
             };
         }
 
         private static void ProvideSettingHandler(string searchContext, VisualElement rootElement)
         {
-            Label title = new Label();
-            title.text = "Behaviour Tree Settings";
-            title.AddToClassList("title");
-            title.AddToClassList("header-label");
-            title.style.fontSize = 19;
-            title.style.paddingLeft = new StyleLength(10f);
-            title.style.paddingTop = new StyleLength(2f);
-            title.style.unityFontStyleAndWeight = FontStyle.Bold; 
-            rootElement.Add(title);
-
-            VisualElement properties = new VisualElement();
-            properties.style.flexDirection = FlexDirection.Column;
-            properties.AddToClassList("property-list");
-            rootElement.Add(properties);
-
             var settings = EditorHelper.FindAssetByName<BehaviourTreeEditorSettings>($"t:{nameof(BehaviourTreeEditorSettings)}");
 
-            properties.Add(new InspectorElement(settings));
+            rootElement.Add(new InspectorElement(settings));
             rootElement.Bind(new SerializedObject(settings));
         }
     }

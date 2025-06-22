@@ -135,7 +135,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void RemoveCallback<T>(this VisualElement element) where T : EventBase<T>, new()
+        public static void RemoveAllCallbacksOfType<T>(this VisualElement element) where T : EventBase<T>, new()
         {
             if (element.userData is Dictionary<Type, List<Delegate>> dictionary)
             {
@@ -146,18 +146,20 @@ namespace BehaviourSystemEditor.BT
 
                 foreach (var list in dictionary.Values)
                 {
-                    if (list != null && list.Count > 0 && list[0] is EventCallback<T>)
+                    if (list == null || list.Count == 0 && list[0] is not EventCallback<T>)
                     {
-                        foreach (var callback in list)
-                        {
-                            if (callback is EventCallback<T> convertedCallback)
-                            {
-                                element.UnregisterCallback(convertedCallback);
-                            }
-                        }
-
-                        list.Clear();
+                        continue;
                     }
+
+                    foreach (var callback in list)
+                    {
+                        if (callback is EventCallback<T> convertedCallback)
+                        {
+                            element.UnregisterCallback(convertedCallback);
+                        }
+                    }
+
+                    list.Clear();
                 }
             }
         }
