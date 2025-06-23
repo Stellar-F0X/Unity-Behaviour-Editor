@@ -17,35 +17,29 @@ namespace BehaviourSystem.BT.Demo
         public BlackboardProperty<NavMeshAgent> navigator;
 
         private float _startTime = 0f;
-        private bool _isWaiting = false; 
 
 
         protected override void OnEnter()
         {
             _startTime = 0f;
-            _isWaiting = false;
         }
 
 
         protected override EStatus OnUpdate()
         {
-            if (_isWaiting == false && distance.value <= navigator.value.stoppingDistance + distanceOffset)
+            if (distance.value <= navigator.value.stoppingDistance + distanceOffset)
             {
                 _startTime = Time.time;
-                _isWaiting = true;
             }
             
-            if (_isWaiting)
+            if (Time.time > _startTime + waitTime)
             {
-                if (Time.time - _startTime >= waitTime)
-                {
-                    return EStatus.Success;
-                }
-                
+                return EStatus.Success;
+            }
+            else
+            {
                 return EStatus.Running;
             }
-            
-            return EStatus.Running;
         }
     }
 }

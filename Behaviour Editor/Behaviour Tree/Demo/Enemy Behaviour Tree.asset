@@ -69,15 +69,15 @@ MonoBehaviour:
   _parent: {fileID: 4185019513994121237}
   position: {x: -428, y: 919}
   navigator:
-    rid: 2900691416914591858
+    rid: 2900691416914591968
   waypoints:
-    rid: 2900691416914591859
+    rid: 2900691416914591969
   currentWaypointIndex:
-    rid: 2900691416914591860
+    rid: 2900691416914591970
   references:
     version: 2
     RefIds:
-    - rid: 2900691416914591858
+    - rid: 2900691416914591968
       type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Navigator
@@ -85,7 +85,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.NavMeshAgentProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: -347780270
-    - rid: 2900691416914591859
+    - rid: 2900691416914591969
       type: {class: TransformListProperty, ns: BehaviourSystem.BT.Demo, asm: Assembly-CSharp}
       data:
         _key: Way Point
@@ -93,7 +93,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.Demo.TransformListProperty, Assembly-CSharp,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
         _hashCode: 576791495
-    - rid: 2900691416914591860
+    - rid: 2900691416914591970
       type: {class: IntProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Way Point Index
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Chase
-  position: {x: 120, y: 705}
+  position: {x: 119.999985, y: 705.00006}
   _nodeGuidList:
   - _value0: 62840245
     _value1: 1088864073
@@ -150,15 +150,15 @@ MonoBehaviour:
   _parent: {fileID: 0}
   position: {x: 707, y: 919}
   distanceOffset: 0.1
-  waitTime: 2
+  waitTime: 1
   distance:
-    rid: 2900691416914591814
+    rid: 2900691416914591961
   navigator:
-    rid: 2900691416914591815
+    rid: 2900691416914591962
   references:
     version: 2
     RefIds:
-    - rid: 2900691416914591814
+    - rid: 2900691416914591961
       type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Distance
@@ -166,7 +166,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: -437978921
-    - rid: 2900691416914591815
+    - rid: 2900691416914591962
       type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Navigator
@@ -384,11 +384,11 @@ MonoBehaviour:
   _parent: {fileID: 0}
   position: {x: 145, y: 918}
   animator:
-    rid: 2900691416914591818
+    rid: 2900691416914591991
   animationName: Run
   _animationHash: 0
   layer: 0
-  transitionDuration: 0.2
+  transitionDuration: 0.1
   timeOffset: 0
   transitionTime: 0
   useFixedCrossFade: 0
@@ -396,7 +396,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691416914591818
+    - rid: 2900691416914591991
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -508,11 +508,11 @@ MonoBehaviour:
   _parent: {fileID: 0}
   position: {x: 539, y: 917}
   animator:
-    rid: 2900691416914591813
+    rid: 2900691416914591990
   animationName: Idle
   _animationHash: 0
   layer: 0
-  transitionDuration: 0.2
+  transitionDuration: 0.1
   timeOffset: 0
   transitionTime: 0
   useFixedCrossFade: 0
@@ -520,7 +520,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691416914591813
+    - rid: 2900691416914591990
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -554,7 +554,7 @@ MonoBehaviour:
   successType: 0
   conditions:
   - property:
-      rid: 2900691416914591857
+      rid: 2900691416914591861
     comparableValue:
       rid: 2900691359615156370
     conditionType: 8
@@ -569,7 +569,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: -1317224361
-    - rid: 2900691416914591857
+    - rid: 2900691416914591861
       type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Distance
@@ -649,11 +649,11 @@ MonoBehaviour:
   _parent: {fileID: 4185019513994121237}
   position: {x: -262, y: 919}
   animator:
-    rid: 2900691416914591819
+    rid: 2900691416914591993
   animationName: Idle
   _animationHash: 0
   layer: 0
-  transitionDuration: 0.15
+  transitionDuration: 0.1
   timeOffset: 0
   transitionTime: 0
   useFixedCrossFade: 0
@@ -661,7 +661,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691416914591819
+    - rid: 2900691416914591993
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -731,11 +731,11 @@ MonoBehaviour:
   _parent: {fileID: 4185019513994121237}
   position: {x: -596, y: 919}
   animator:
-    rid: 2900691416914591823
+    rid: 2900691416914591992
   animationName: Run
   _animationHash: 0
   layer: 0
-  transitionDuration: 0.2
+  transitionDuration: 0.1
   timeOffset: 0
   transitionTime: 0
   useFixedCrossFade: 0
@@ -743,7 +743,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691416914591823
+    - rid: 2900691416914591992
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -816,7 +816,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Patrol
-  position: {x: -621, y: 705}
+  position: {x: -621.00006, y: 705.00006}
   _nodeGuidList:
   - _value0: 1637445515
     _value1: 1316883709
@@ -915,13 +915,13 @@ MonoBehaviour:
   position: {x: 313, y: 918}
   distanceOffset: 0.1
   target:
-    rid: 2900691416914591816
+    rid: 2900691416914591964
   navigator:
-    rid: 2900691416914591817
+    rid: 2900691416914591965
   references:
     version: 2
     RefIds:
-    - rid: 2900691416914591816
+    - rid: 2900691416914591964
       type: {class: TransformProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Target
@@ -929,7 +929,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.TransformProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: 1103309514
-    - rid: 2900691416914591817
+    - rid: 2900691416914591965
       type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Navigator
@@ -950,7 +950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Wait
-  position: {x: 514, y: 706}
+  position: {x: 514, y: 706.00006}
   _nodeGuidList:
   - _value0: 858851753
     _value1: 1231768757
