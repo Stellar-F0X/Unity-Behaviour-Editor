@@ -35,7 +35,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        internal override sealed void ExitNode()
+        public override sealed void ExitNode()
         {
             base.ExitNode();
             _currentChildIndex = 0;

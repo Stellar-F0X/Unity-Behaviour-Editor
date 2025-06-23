@@ -68,10 +68,10 @@
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
-    border-left-color: rgb(68, 192, 255);
-    border-right-color: rgb(68, 192, 255);
-    border-top-color: rgb(68, 192, 255);
-    border-bottom-color: rgb(68, 192, 255);
+    border-left-color: rgb(255, 128, 0);
+    border-right-color: rgb(255, 128, 0);
+    border-top-color: rgb(255, 128, 0);
+    border-bottom-color: rgb(255, 128, 0);
     overflow: hidden;
     visibility: visible;
     display: flex;

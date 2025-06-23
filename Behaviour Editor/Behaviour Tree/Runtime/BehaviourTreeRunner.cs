@@ -237,7 +237,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        public bool TryGetNodeByTag(string nodeTag, out NodeAccessor[] accessors)
+        public bool TryGetNodeByTag(string nodeTag, out NodeBase[] resultNodes)
         {
             int count = _runtimeTree.nodeSet.nodeList.Count;
 
@@ -255,17 +255,11 @@ namespace BehaviourSystem.BT
             if (nodeListPool.Count == 0)
             {
                 ListPool<NodeBase>.Release(nodeListPool);
-                accessors = null;
+                resultNodes = null;
                 return false;
             }
 
-            accessors = new NodeAccessor[nodeListPool.Count];
-            
-            for (int i= 0; i < nodeListPool.Count; ++i)
-            {
-                accessors[i] = new NodeAccessor(nodeListPool[i]);
-            }
-
+            resultNodes = nodeListPool.ToArray();
             ListPool<NodeBase>.Release(nodeListPool);
             return true;
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -33,56 +34,96 @@ namespace BehaviourSystem.BT
         };
 
         public event Action onNodeEnter;
-
+        
         public event Action onNodeExit;
+        
+        
+        [SerializeField]
+        private string _tag;
 
-
-        public UGUID guid;
-
-        public string tag;
-
-        public string description;
-
-        [NonSerialized]
-        public int depth;
-
-        [NonSerialized]
-        public ulong callCount;
-
-        public EStatus status;
-
-        [NonSerialized]
-        internal int callStackID;
-
-        public NodeBase parent;
-
-        [NonSerialized]
-        public BehaviourTreeRunner runner;
-
+        [SerializeField]
+        private string _description;
+        
+        private ENodeCallState _callState;
+        
+        [SerializeField]
+        private UGUID _guid;
+        
+        [SerializeField]
+        private NodeBase _parent;
+        
 #if UNITY_EDITOR
         [SerializeField]
         internal Vector2 position;
 #endif
-
-        public ENodeCallState callState
+        
+        public int callStackID
+        {
+            get;
+            internal set;
+        }
+        
+        public ulong callCount
         {
             get;
             private set;
         }
-
-        public Transform transform
+        
+        public int depth
         {
-            get { return runner.transform; }
+            get;
+            internal set;
         }
-
+        
+        public virtual string tooltip
+        {
+            get;
+        }
+        
         public abstract ENodeType nodeType
         {
             get;
         }
-
-        public virtual string tooltip
+        
+        public EStatus status
         {
             get;
+            private set;
+        }
+        
+        public string tag
+        {
+            get { return _tag; }
+        }
+        
+        public string description
+        {
+            get { return _description; }
+        }
+        
+        public UGUID guid
+        {
+            get { return _guid; }
+            
+            internal set { _guid = value; }
+        }
+        
+        public NodeBase parent
+        {
+            get { return _parent; }
+            
+            internal set { _parent = value; }
+        }
+        
+        public BehaviourTreeRunner runner
+        {
+            get;
+            internal set;
+        }
+
+        public Transform transform
+        {
+            get { return runner?.transform; }
         }
         
 
@@ -95,13 +136,13 @@ namespace BehaviourSystem.BT
 
             this.callCount++;
 
-            if (callState == ENodeCallState.BeforeEnter)
+            if (_callState == ENodeCallState.BeforeEnter)
             {
                 this.EnterNode();
                 this.onNodeEnter?.Invoke();
             }
 
-            if (this.callState == ENodeCallState.Updating)
+            if (this._callState == ENodeCallState.Updating)
             {
                 this.status = this.OnUpdate();
 
@@ -115,10 +156,10 @@ namespace BehaviourSystem.BT
                     this.runner.handler.AbortSubtreeFrom(callStackID, this);
                 }
 
-                this.callState = ENodeCallState.BeforeExit;
+                this._callState = ENodeCallState.BeforeExit;
             }
 
-            if (this.callState == ENodeCallState.BeforeExit)
+            if (this._callState == ENodeCallState.BeforeExit)
             {
                 this.onNodeExit?.Invoke();
                 this.ExitNode();
@@ -128,19 +169,19 @@ namespace BehaviourSystem.BT
         }
 
 
-        internal virtual void EnterNode()
+        public virtual void EnterNode()
         {
             this.runner.handler.PushInCallStack(callStackID, this);
             this.OnEnter();
-            this.callState = ENodeCallState.Updating;
+            this._callState = ENodeCallState.Updating;
         }
 
 
-        internal virtual void ExitNode()
+        public virtual void ExitNode()
         {
             this.runner.handler.PopInCallStack(callStackID);
             this.OnExit();
-            this.callState = ENodeCallState.BeforeEnter;
+            this._callState = ENodeCallState.BeforeEnter;
 
             // If a parent node fails during execution, this node's result is set to Failure.
             if (this.status == EStatus.Running)
@@ -162,7 +203,91 @@ namespace BehaviourSystem.BT
                 return true;
             }
 
-            return this.guid == other.guid;
+            return this._guid == other._guid;
+        }
+        
+        
+        public void StartCoroutine(IEnumerator coroutine)
+        {
+            if (this.runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+            
+            if (coroutine is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] Coroutine to start is null.");
+                return;
+            }
+
+            this.runner.StartCoroutine(coroutine);
+        }
+        
+        
+        public void StartCoroutine(string methodName, object value = null)
+        {
+            if (this.runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+            
+            if (string.IsNullOrEmpty(methodName))
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] Method name is null or empty.");
+                return;
+            }
+
+            this.runner.StartCoroutine(methodName, value);
+        }
+        
+        
+        public void StopCoroutine(IEnumerator coroutine)
+        {
+            if (this.runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+            
+            if (coroutine is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] Coroutine to stop is null.");
+                return;
+            }
+
+            this.runner.StopCoroutine(coroutine);
+        }
+        
+        
+        public void StopCoroutine(string methodName)
+        {
+            if (this.runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+            
+            if (string.IsNullOrEmpty(methodName))
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] Method name is null or empty.");
+                return;
+            }
+
+            this.runner.StopCoroutine(methodName);
+        }
+        
+        
+        public void StopAllCoroutines()
+        {
+            if (this.runner is null)
+            {
+                Debug.LogError($"[{nameof(NodeBase)}] BehaviourTreeRunner is not set.");
+                return;
+            }
+
+            this.runner.StopAllCoroutines();
         }
         
         

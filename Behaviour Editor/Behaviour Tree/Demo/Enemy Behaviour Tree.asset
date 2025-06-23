@@ -12,15 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6563dd266a3c03142aad5b47e15e6658, type: 3}
   m_Name: Root
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 851791740
     _value1: 1149984810
     _value2: 2992954041
     _value3: 2294516617
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 0}
+  _parent: {fileID: 0}
   position: {x: 38, y: 222}
   _child:
   - {fileID: -7214530375376403928}
@@ -36,15 +35,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f93d129ccb34f66836be2b6b973863a, type: 3}
   m_Name: Selector
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 302464854
     _value1: 1216987539
     _value2: 862188981
     _value3: 2394543948
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: -8320051669713059228}
+  _parent: {fileID: 0}
   position: {x: 38, y: 348}
   children:
   - {fileID: 2338204620795502981}
@@ -61,26 +59,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a2cda397bce1d74aa7975d25291ddb0, type: 3}
   m_Name: Patrol
   m_EditorClassIdentifier: 
-  guid:
+  _tag: patrol
+  _description: 
+  _guid:
     _value0: 333715339
     _value1: 1284869223
     _value2: 498096773
     _value3: 1343929118
-  tag: patrol
-  description: 
-  status: 0
-  parent: {fileID: 8588069631626060843}
+  _parent: {fileID: 4185019513994121237}
   position: {x: -428, y: 919}
   navigator:
-    rid: 2900691391436554327
+    rid: 2900691416914591858
   waypoints:
-    rid: 2900691391436554328
+    rid: 2900691416914591859
   currentWaypointIndex:
-    rid: 2900691391436554329
+    rid: 2900691416914591860
   references:
     version: 2
     RefIds:
-    - rid: 2900691391436554327
+    - rid: 2900691416914591858
       type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Navigator
@@ -88,18 +85,15 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.NavMeshAgentProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: -347780270
-    - rid: 2900691391436554328
+    - rid: 2900691416914591859
       type: {class: TransformListProperty, ns: BehaviourSystem.BT.Demo, asm: Assembly-CSharp}
       data:
         _key: Way Point
-        _value:
-        - {fileID: 0}
-        - {fileID: 0}
-        - {fileID: 0}
+        _value: []
         _typeName: BehaviourSystem.BT.Demo.TransformListProperty, Assembly-CSharp,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
         _hashCode: 576791495
-    - rid: 2900691391436554329
+    - rid: 2900691416914591860
       type: {class: IntProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Way Point Index
@@ -120,7 +114,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Chase
-  position: {x: 120.000046, y: 705}
+  position: {x: 120, y: 705}
   _nodeGuidList:
   - _value0: 62840245
     _value1: 1088864073
@@ -146,26 +140,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa0f85ee834e4f14b967ebfafb6e43e4, type: 3}
   m_Name: Waiting
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 4275145912
     _value1: 1091816317
     _value2: 4041760934
     _value3: 3462470298
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 4654863201273758922}
+  _parent: {fileID: 0}
   position: {x: 707, y: 919}
   distanceOffset: 0.1
   waitTime: 2
   distance:
-    rid: 2900691391436554356
+    rid: 2900691416914591814
   navigator:
-    rid: 2900691391436554357
+    rid: 2900691416914591815
   references:
     version: 2
     RefIds:
-    - rid: 2900691391436554356
+    - rid: 2900691416914591814
       type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Distance
@@ -173,7 +166,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: -437978921
-    - rid: 2900691391436554357
+    - rid: 2900691416914591815
       type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Navigator
@@ -198,7 +191,6 @@ MonoBehaviour:
   - {fileID: -8320051669713059228}
   - {fileID: -7214530375376403928}
   - {fileID: 2338204620795502981}
-  - {fileID: 8588069631626060843}
   - {fileID: -7199976533513108709}
   - {fileID: 6425859100100965725}
   - {fileID: 4403392224684806807}
@@ -210,6 +202,7 @@ MonoBehaviour:
   - {fileID: 8968426404551306207}
   - {fileID: 4124410743719211719}
   - {fileID: -6283652558232748886}
+  - {fileID: 4185019513994121237}
 --- !u!114 &-5950011494101703366
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -222,15 +215,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84266bc38451e2e49bb68af89b374249, type: 3}
   m_Name: Wait
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 1939871811
     _value1: 1084012929
     _value2: 3381752722
     _value3: 1809947516
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 8588069631626060843}
+  _parent: {fileID: 4185019513994121237}
   position: {x: -94, y: 919}
   duration: 1
 --- !u!114 &-5560473935474557977
@@ -358,15 +350,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
   m_Name: Sequencer
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 62840245
     _value1: 1088864073
     _value2: 3650417037
     _value3: 1104788892
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 4124410743719211719}
+  _parent: {fileID: 0}
   position: {x: 229, y: 764}
   children:
   - {fileID: -885669274296663557}
@@ -383,18 +374,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
   m_Name: Cross Fade
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 491363091
     _value1: 1126422547
     _value2: 2222235794
     _value3: 868074721
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: -2684021354622265107}
+  _parent: {fileID: 0}
   position: {x: 145, y: 918}
   animator:
-    rid: 2900691391436554346
+    rid: 2900691416914591818
   animationName: Run
   _animationHash: 0
   layer: 0
@@ -406,7 +396,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691391436554346
+    - rid: 2900691416914591818
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -508,18 +498,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
   m_Name: Cross Fade
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 2768810953
     _value1: 1187272603
     _value2: 2032302471
     _value3: 1455519884
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 4654863201273758922}
+  _parent: {fileID: 0}
   position: {x: 539, y: 917}
   animator:
-    rid: 2900691391436554345
+    rid: 2900691416914591813
   animationName: Idle
   _animationHash: 0
   layer: 0
@@ -531,7 +520,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691391436554345
+    - rid: 2900691416914591813
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -551,22 +540,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3669e05573d84e4c8fe616c4d15945f5, type: 3}
   m_Name: Check Distance
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 1868267036
     _value1: 1339502000
     _value2: 1580060343
     _value3: 2891910112
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: -7214530375376403928}
+  _parent: {fileID: 0}
   position: {x: -355, y: 547}
   _child:
-  - {fileID: 8588069631626060843}
+  - {fileID: 4185019513994121237}
   successType: 0
   conditions:
   - property:
-      rid: 2900691390679220344
+      rid: 2900691416914591857
     comparableValue:
       rid: 2900691359615156370
     conditionType: 8
@@ -581,7 +569,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.FloatProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: -1317224361
-    - rid: 2900691390679220344
+    - rid: 2900691416914591857
       type: {class: FloatProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Distance
@@ -601,19 +589,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
   m_Name: Sequencer
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 2385500166
     _value1: 1251283046
     _value2: 902026132
     _value3: 1572711454
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: -7214530375376403928}
+  _parent: {fileID: 0}
   position: {x: 427, y: 547}
   children:
   - {fileID: -2684021354622265107}
   - {fileID: 4654863201273758922}
+--- !u!114 &4185019513994121237
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
+  m_Name: Sequencer
+  m_EditorClassIdentifier: 
+  _tag: 
+  _description: 
+  _guid:
+    _value0: 1203465248
+    _value1: 1281283050
+    _value2: 133832103
+    _value3: 2914522538
+  _parent: {fileID: 2338204620795502981}
+  position: {x: -344, y: 764}
+  children:
+  - {fileID: 6425859100100965725}
+  - {fileID: -7199976533513108709}
+  - {fileID: 4403392224684806807}
+  - {fileID: -5950011494101703366}
 --- !u!114 &4403392224684806807
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -626,18 +639,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
   m_Name: Cross Fade
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 2821010508
     _value1: 1322518978
     _value2: 2056669595
     _value3: 3846028239
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 8588069631626060843}
+  _parent: {fileID: 4185019513994121237}
   position: {x: -262, y: 919}
   animator:
-    rid: 2900691376869474502
+    rid: 2900691416914591819
   animationName: Idle
   _animationHash: 0
   layer: 0
@@ -649,7 +661,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691376869474502
+    - rid: 2900691416914591819
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -669,15 +681,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
   m_Name: Sequencer
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 858851753
     _value1: 1231768757
     _value2: 4189800093
     _value3: 21058302
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 4124410743719211719}
+  _parent: {fileID: 0}
   position: {x: 623, y: 765}
   children:
   - {fileID: 890177714185595948}
@@ -710,18 +721,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d35c0ccd44f5840a22c7a96da1ff64, type: 3}
   m_Name: Cross Fade
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 3604039321
     _value1: 1093437560
     _value2: 2244388746
     _value3: 3055825897
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 8588069631626060843}
+  _parent: {fileID: 4185019513994121237}
   position: {x: -596, y: 919}
   animator:
-    rid: 2900691401621372928
+    rid: 2900691416914591823
   animationName: Run
   _animationHash: 0
   layer: 0
@@ -733,7 +743,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2900691401621372928
+    - rid: 2900691416914591823
       type: {class: AnimatorProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Animator
@@ -806,7 +816,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Patrol
-  position: {x: -620.99994, y: 705}
+  position: {x: -621, y: 705}
   _nodeGuidList:
   - _value0: 1637445515
     _value1: 1316883709
@@ -828,6 +838,10 @@ MonoBehaviour:
     _value1: 1084012929
     _value2: 3381752722
     _value3: 1809947516
+  - _value0: 1203465248
+    _value1: 1281283050
+    _value2: 133832103
+    _value3: 2914522538
 --- !u!114 &8419655583964896394
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -878,33 +892,6 @@ MonoBehaviour:
         _value: {fileID: 0}
         _typeName: StarterAssets.ThirdPersonControllerProperty, Assembly-CSharp,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
---- !u!114 &8588069631626060843
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ed0c02321058e24cabc1881149d1e4c, type: 3}
-  m_Name: Sequencer
-  m_EditorClassIdentifier: 
-  guid:
-    _value0: 1637445515
-    _value1: 1316883709
-    _value2: 3017842338
-    _value3: 3631873921
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: 2338204620795502981}
-  position: {x: -344, y: 764}
-  children:
-  - {fileID: 6425859100100965725}
-  - {fileID: -7199976533513108709}
-  - {fileID: 4403392224684806807}
-  - {fileID: -5950011494101703366}
 --- !u!114 &8968426404551306207
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -917,25 +904,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0aeac55382394a66ba439113d46dca12, type: 3}
   m_Name: Chase Player
   m_EditorClassIdentifier: 
-  guid:
+  _tag: 
+  _description: 
+  _guid:
     _value0: 4127354263
     _value1: 1315434345
     _value2: 3209051025
     _value3: 2403050523
-  tag: 
-  description: 
-  status: 0
-  parent: {fileID: -2684021354622265107}
+  _parent: {fileID: 0}
   position: {x: 313, y: 918}
   distanceOffset: 0.1
   target:
-    rid: 2900691376869474551
+    rid: 2900691416914591816
   navigator:
-    rid: 2900691376869474552
+    rid: 2900691416914591817
   references:
     version: 2
     RefIds:
-    - rid: 2900691376869474551
+    - rid: 2900691416914591816
       type: {class: TransformProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Target
@@ -943,7 +929,7 @@ MonoBehaviour:
         _typeName: BehaviourSystem.BT.TransformProperty, BehaviourSystem-BT, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         _hashCode: 1103309514
-    - rid: 2900691376869474552
+    - rid: 2900691416914591817
       type: {class: NavMeshAgentProperty, ns: BehaviourSystem.BT, asm: BehaviourSystem-BT}
       data:
         _key: Navigator
@@ -964,7 +950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Wait
-  position: {x: 514.00006, y: 706}
+  position: {x: 514, y: 706}
   _nodeGuidList:
   - _value0: 858851753
     _value1: 1231768757

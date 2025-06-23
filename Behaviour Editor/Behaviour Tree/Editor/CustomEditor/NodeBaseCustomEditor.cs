@@ -25,12 +25,12 @@ namespace BehaviourSystemEditor.BT
             using (new EditorGUI.DisabledScope(true))
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("guid"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("_guid"));
             }
             
             SerializedProperty nameProp = serializedObject.FindProperty("m_Name");
-            SerializedProperty tagProp = serializedObject.FindProperty("tag");
-            SerializedProperty desProp = serializedObject.FindProperty("description");
+            SerializedProperty tagProp = serializedObject.FindProperty("_tag");
+            SerializedProperty desProp = serializedObject.FindProperty("_description");
             SerializedProperty iterator = desProp;
 
             using (new EditorGUI.DisabledScope(!BehaviourTreeEditor.CanEditTree))
