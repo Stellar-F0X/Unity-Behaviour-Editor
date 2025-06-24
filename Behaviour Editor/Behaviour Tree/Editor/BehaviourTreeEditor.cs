@@ -105,7 +105,6 @@ namespace BehaviourSystemEditor.BT
             }
             
             OpenWindow();
-            Instance.Initialize();
             Instance.ChangeBehaviourTree(tree);
         }
 
