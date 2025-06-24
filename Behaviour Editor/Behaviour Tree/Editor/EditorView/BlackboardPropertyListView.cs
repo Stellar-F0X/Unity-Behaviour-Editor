@@ -216,7 +216,7 @@ namespace BehaviourSystemEditor.BT
             Button buttonField = element.Q<Button>("delete-button");
 
             buttonField.enabledSelf = BehaviourTreeEditor.CanEditTree;
-            
+
             buttonField.RemoveAllCallbacksOfType<ClickEvent>();
             buttonField.RegisterRemovableCallback<ClickEvent>(_ => this.DeleteProperty(index));
         }
@@ -231,22 +231,22 @@ namespace BehaviourSystemEditor.BT
             {
                 IMGUIContainer imguiField = element.Q<IMGUIContainer>("imgui-field");
                 SerializedProperty valueProp = elementProperty.FindPropertyRelative("_value");
-                
+
                 valueProp.isExpanded = false;
-                
+
                 imguiField.Unbind();
                 imguiField.onGUIHandler = () => this.DrawIMGUIForItem(valueProp);
-                
+
                 var scheduled = imguiField.schedule
                                           .Execute(_ => imguiField.MarkDirtyRepaint())
                                           .Until(() => !EditorApplication.isPlayingOrWillChangePlaymode)
                                           .Every(250);
-                
+
                 imguiField.RegisterCallbackOnce<DetachFromPanelEvent>(_ => scheduled.Pause());
             }
         }
-        
-        
+
+
         /// <summary>프로퍼티 아이템을 IMGUI로 그립니다.</summary>
         private void DrawIMGUIForItem(SerializedProperty valueProp)
         {
@@ -269,7 +269,7 @@ namespace BehaviourSystemEditor.BT
                     using (new EditorGUI.DisabledScope(true))
                     {
                         valueProp.serializedObject.Update();
-                        
+
                         EditorGUILayout.PropertyField(valueProp, GUIContent.none, true);
                     }
                 }
@@ -302,20 +302,13 @@ namespace BehaviourSystemEditor.BT
         /// <summary>프로퍼티 키가 변경될 때 호출되는 콜백 메서드입니다.</summary>
         private void OnChangePropertyKey(string newKey, int index)
         {
-            if (itemsSource[index] is IBlackboardProperty property)
+            bool isKeyValid = string.IsNullOrEmpty(newKey);
+
+            if (isKeyValid == false && itemsSource[index] is IBlackboardProperty property)
             {
-                bool isKeyValid = string.IsNullOrEmpty(newKey);
-
-                if (isKeyValid)
-                {
-                    property.key = string.Empty;
-                }
-                else
-                {
-                    property.key = newKey;
-                    _blackboard.CheckAndGenerateUniqueKey(property);
-                }
-
+                property.key = newKey;
+                _blackboard.CheckAndGenerateUniqueKey(property);
+                
                 _serializedObject.Update();
                 _serializedObject.ApplyModifiedProperties();
                 EditorUtility.SetDirty(_blackboard);
