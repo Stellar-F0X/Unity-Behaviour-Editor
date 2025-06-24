@@ -16,7 +16,6 @@ namespace BehaviourSystem.BT
         }
 
 
-
         protected override EStatus OnUpdate()
         {
             if (conditions != null && this.CheckCondition())

@@ -64,7 +64,7 @@ namespace BehaviourSystemEditor.BT
         
         private bool TryDrawBlackboardProperty(Blackboard data, SerializedProperty blackboardProp, Rect dropdownRect)
         {
-            if (data.properties.Count == 0)
+            if (data is null || data.properties is null || data.properties.Count == 0)
             {
                 GUIContent warningIcon = EditorGUIUtility.IconContent("console.warnicon");
                 EditorGUI.LabelField(_rect, new GUIContent("No blackboard properties found.", warningIcon.image));
@@ -80,24 +80,44 @@ namespace BehaviourSystemEditor.BT
                 return false;
             }
 
-            string[] dropdownOptions = new string[properties.Length];
-
+            //None 옵션을 포함한 dropdown 옵션 생성
+            string[] dropdownOptions = new string[properties.Length + 1];
+            
+            dropdownOptions[0] = "None";
+            
             for (int i = 0; i < properties.Length; i++)
             {
-                dropdownOptions[i] = properties[i].key;
+                dropdownOptions[i + 1] = properties[i].key;
             }
 
-            int selected = 0;
+            int selected = 0; //기본값은 None
 
             if (blackboardProp.boxedValue is IBlackboardProperty prop)
             {
-                selected = Array.IndexOf(dropdownOptions, prop.key);
+                int propIndex = Array.IndexOf(properties, prop);
+                
+                if (propIndex >= 0)
+                {
+                    selected = propIndex + 1; //None이 0번 인덱스이므로 +1
+                }
             }
 
             EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditTree);
             selected = Mathf.Clamp(selected, 0, dropdownOptions.Length - 1);
             selected = EditorGUI.Popup(dropdownRect, selected, dropdownOptions);
-            blackboardProp.boxedValue = properties[selected];
+            
+            //None이 선택된 경우 null로 설정, 그렇지 않으면 해당 property 설정
+            if (selected == 0)
+            {
+                blackboardProp.boxedValue = null;
+                EditorGUI.EndDisabledGroup();
+                return false; // null이므로 조건 설정 UI를 그리지 않음
+            }
+            else
+            {
+                blackboardProp.boxedValue = properties[selected - 1]; // None이 0번이므로 -1
+            }
+            
             EditorGUI.EndDisabledGroup();
             return true;
         }

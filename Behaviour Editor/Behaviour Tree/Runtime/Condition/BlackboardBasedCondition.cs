@@ -25,6 +25,12 @@ namespace BehaviourSystem.BT
 
         public bool Execute()
         {
+            if (property is null)
+            {
+                Debug.LogWarning("Blackboard property is not set for this condition.");
+                return false;
+            }
+            
             if ((property.comparableConditions & conditionType) == conditionType)
             {
                 return this.Compare((IComparable<IBlackboardProperty>)property, comparableValue);
