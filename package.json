@@ -1,17 +1,18 @@
 	{
-	  "name": "com.stellarf0X.behaviorsystem",
+	  "name": "com.stellarf0x.behaviorsystem",
 	  "version": "1.0.0",
 	  "displayName": "Behavior System",
-	  "description": "Unity에서 사용할 수 있는 행동 시스템들.",
-	  "unity": "6000.0.49",
+	  "description": "AI Behavior Editing System for Unity.",
+	  "unity": "6.0",
 	  "author": {
 	    "name": "Stellar-F0X",
 	    "url": "https://github.com/Stellar-F0X/Unity-Behaviour-System"
 	  },
 	  "keywords": [
         "behavior tree",
-        "ai",
+		"behaviour tree",
         "editor",
-	    "unity"
+	    "unity",
+        "ai"
 	  ]
 	}
