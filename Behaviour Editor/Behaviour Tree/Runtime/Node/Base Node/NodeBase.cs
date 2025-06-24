@@ -54,7 +54,7 @@ namespace BehaviourSystem.BT
         
 #if UNITY_EDITOR
         [SerializeField]
-        internal Vector2 position;
+        internal Vector2Int position;
 #endif
         
         public int callStackID

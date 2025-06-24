@@ -154,7 +154,7 @@ namespace BehaviourSystemEditor.BT
         public NodeView CreateNewNodeAndView(Type type, Vector2 mousePosition)
         {
             NodeBase node = _tree.nodeSet.CreateNode(type);
-            node.position = mousePosition;
+            node.position = Vector2Int.CeilToInt(mousePosition);
             return this.RecreateNodeViewOnLoad(node);
         }
 
