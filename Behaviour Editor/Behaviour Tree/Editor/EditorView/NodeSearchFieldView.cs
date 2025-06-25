@@ -64,11 +64,11 @@ namespace BehaviourSystemEditor.BT
                 NodeBase nodeBase = nodeView.targetNode;
                 bool found = false;
 
-                if (nodeBase.name.Contains(evt.newValue, StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrEmpty(nodeBase.name) == false && nodeBase.name.Contains(evt.newValue, StringComparison.OrdinalIgnoreCase))
                 {
                     found = true;
                 }
-                else if (nodeBase.tag.Contains(evt.newValue, StringComparison.OrdinalIgnoreCase))
+                else if (string.IsNullOrEmpty(nodeBase.tag) == false && nodeBase.tag.Contains(evt.newValue, StringComparison.OrdinalIgnoreCase))
                 {
                     found = true;
                 }
