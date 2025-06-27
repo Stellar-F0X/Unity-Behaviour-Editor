@@ -10,7 +10,7 @@ using UObject = UnityEngine.Object;
 
 namespace BehaviourSystemEditor.BT
 {
-    public class BehaviourTreeEditor : EditorWindow
+    public class BehaviourSystemEditor : EditorWindow
     {
         private static BehaviourTreeEditorSettings _settings;
 
@@ -24,7 +24,7 @@ namespace BehaviourSystemEditor.BT
 
         private InspectorView _inspectorView;
 
-        private BehaviourTreeView _treeView;
+        private BehaviourGraphView _treeView;
 
         private NodeSearchFieldView _nodeSearchField;
 
@@ -49,7 +49,7 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>현재 활성화된 Behaviour Tree 에디터 인스턴스를 가져옵니다.</summary>
-        public static BehaviourTreeEditor Instance
+        public static BehaviourSystemEditor Instance
         {
             get;
             private set;
@@ -73,7 +73,7 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>현재 Behaviour Tree 뷰를 가져옵니다.</summary>
-        public BehaviourTreeView View
+        public BehaviourGraphView View
         {
             get { return _treeView; }
         }
@@ -90,7 +90,7 @@ namespace BehaviourSystemEditor.BT
         [MenuItem("Tools/Behaviour Tree Editor")]
         public static void OpenWindow()
         {
-            BehaviourTreeEditor wnd = GetWindow<BehaviourTreeEditor>();
+            BehaviourSystemEditor wnd = GetWindow<BehaviourSystemEditor>();
             wnd.titleContent = new GUIContent("BT Editor");
             Instance = wnd;
         }
@@ -156,7 +156,7 @@ namespace BehaviourSystemEditor.BT
             Debug.Assert(Settings.behaviourTreeEditorXml is not null, "BehaviourTreeEditorXml is null.");
             rootVisualElement.styleSheets.Add(Settings.behaviourTreeStyle);
 
-            _treeView = rootVisualElement.Q<BehaviourTreeView>();
+            _treeView = rootVisualElement.Q<BehaviourGraphView>();
             _miniMapView = rootVisualElement.Q<MiniMapView>();
             _inspectorView = rootVisualElement.Q<InspectorView>();
             _nodeSearchField = rootVisualElement.Q<NodeSearchFieldView>();

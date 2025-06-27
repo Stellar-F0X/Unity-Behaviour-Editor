@@ -37,18 +37,18 @@ namespace BehaviourSystemEditor.BT
         /// <summary>블랙보드 에셋이 바인딩될 때 호출되는 콜백 메서드입니다.</summary>
         private void OnBindBlackboardAsset(ChangeEvent<Object> changeEvent)
         {
-            if (BehaviourTreeEditor.Instance?.Tree is null)
+            if (BehaviourSystemEditor.Instance?.Tree is null)
             {
                 return;
             }
 
             Blackboard newBlackboardAsset = changeEvent.newValue as Blackboard;
-            BehaviourTreeEditor.Instance.Tree.blackboard = newBlackboardAsset;
+            BehaviourSystemEditor.Instance.Tree.blackboard = newBlackboardAsset;
             this._blackboard = newBlackboardAsset;
 
-            if (changeEvent.newValue == null && BehaviourTreeEditor.Instance.Tree.graph.nodes is not null)
+            if (changeEvent.newValue == null && BehaviourSystemEditor.Instance.Tree.graph.nodes is not null)
             {
-                foreach (NodeBase node in BehaviourTreeEditor.Instance.Tree.graph.nodes)
+                foreach (NodeBase node in BehaviourSystemEditor.Instance.Tree.graph.nodes)
                 {
                     NodePropertyFieldBinder.ResetNodeProperties(node);
                 }
@@ -91,7 +91,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>Behaviour Tree가 변경될 때 블랙보드 뷰를 업데이트합니다.</summary>
         public void OnBehaviourTreeChanged(GraphAsset tree)
         {
-            if (tree is null || BehaviourTreeEditor.Instance is null)
+            if (tree is null || BehaviourSystemEditor.Instance is null)
             {
                 return;
             }
@@ -100,7 +100,7 @@ namespace BehaviourSystemEditor.BT
 
             this._blackboard = tree.blackboard;
             this._blackboardBindingField.value = tree.blackboard;
-            this._blackboardBindingField.enabledSelf = BehaviourTreeEditor.CanEditGraph;
+            this._blackboardBindingField.enabledSelf = BehaviourSystemEditor.CanEditGraph;
 
             this.RefreshBlackboardProperties();
         }
@@ -133,7 +133,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>블랙보드 프로퍼티 추가 메뉴 아이템을 추가합니다.</summary>
         private void AppendPropertyAddMenuItems()
         {
-            if (BehaviourTreeEditor.CanEditGraph)
+            if (BehaviourSystemEditor.CanEditGraph)
             {
                 TypeCache.TypeCollection collection = TypeCache.GetTypesDerivedFrom<IBlackboardProperty>();
 
@@ -189,7 +189,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>프로퍼티의 순서가 변경될 때 호출되는 콜백 메서드입니다.</summary>
         private void OnPropertyIndicesSwapped(int a, int b)
         {
-            if (BehaviourTreeEditor.CanEditGraph)
+            if (BehaviourSystemEditor.CanEditGraph)
             {
                 _serializedObject.Update();
                 _serializedObject.ApplyModifiedProperties();
@@ -215,7 +215,7 @@ namespace BehaviourSystemEditor.BT
         {
             Button buttonField = element.Q<Button>("delete-button");
 
-            buttonField.enabledSelf = BehaviourTreeEditor.CanEditGraph;
+            buttonField.enabledSelf = BehaviourSystemEditor.CanEditGraph;
 
             buttonField.RemoveAllCallbacksOfType<ClickEvent>();
             buttonField.RegisterRemovableCallback<ClickEvent>(_ => this.DeleteProperty(index));
@@ -294,7 +294,7 @@ namespace BehaviourSystemEditor.BT
                 });
 
                 keyField.SetValueWithoutNotify(property.key);
-                keyField.enabledSelf = BehaviourTreeEditor.CanEditGraph;
+                keyField.enabledSelf = BehaviourSystemEditor.CanEditGraph;
             }
         }
 

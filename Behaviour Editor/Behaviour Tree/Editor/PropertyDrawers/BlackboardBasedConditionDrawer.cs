@@ -23,9 +23,9 @@ namespace BehaviourSystemEditor.BT
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (BehaviourTreeEditor.Instance is not null)
+            if (BehaviourSystemEditor.Instance is not null)
             {
-                Blackboard blackboardData = BehaviourTreeEditor.Instance.Tree.blackboard;
+                Blackboard blackboardData = BehaviourSystemEditor.Instance.Tree.blackboard;
                 _rect = new Rect(position.x, position.y, position.width - 10, EditorGUIUtility.singleLineHeight);
 
                 float width = _rect.width / 3;
@@ -102,7 +102,7 @@ namespace BehaviourSystemEditor.BT
                 }
             }
 
-            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditGraph);
+            EditorGUI.BeginDisabledGroup(!BehaviourSystemEditor.CanEditGraph);
             selected = Mathf.Clamp(selected, 0, dropdownOptions.Length - 1);
             selected = EditorGUI.Popup(dropdownRect, selected, dropdownOptions);
             
@@ -150,7 +150,7 @@ namespace BehaviourSystemEditor.BT
 
             this.GetCompatibleConditionTypes(sourceType.comparableConditions, conditionTypes, conditionIndex);
             
-            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditGraph);
+            EditorGUI.BeginDisabledGroup(!BehaviourSystemEditor.CanEditGraph);
             int prev = Mathf.Max(conditionIndex.IndexOf(conditionType.enumValueFlag), 0);
             int index = EditorGUI.Popup(compareRect, prev, conditionTypes.ToArray(), _popupStyle);
             conditionType.enumValueFlag = conditionIndex[index];

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    internal class BehaviourCallStack
+    public class TreeInterruptor
     {
         /// <summary> 중단(Abort) 작업 정보를 담는 구조체 </summary>
         private struct AbortInfo
@@ -18,10 +18,10 @@ namespace BehaviourSystem.BT
             public readonly NodeBase targetNode; //null이면 전체 스택 중단
         }
 
-        public BehaviourCallStack(BehaviourTree tree)
+        public TreeInterruptor(Graph graph, int callStackSize)
         {
-            int count = tree.callStackSize + 1;
-            int excludingRootCount = tree.nodes.Count - 1;
+            int count = callStackSize + 1;
+            int excludingRootCount = graph.nodes.Count - 1;
 
             this._runtimeCallStack = new FixedList<Stack<NodeBase>>(count);
             this._abortQueue = new FixedQueue<AbortInfo>(excludingRootCount); //count excluding root node

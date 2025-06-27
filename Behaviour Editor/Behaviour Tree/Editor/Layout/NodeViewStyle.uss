@@ -162,3 +162,7 @@
 .behaviour-node-Root {
     background-color: rgb(0, 192, 90);
 }
+
+.behaviour-node-SubGraph {
+    background-color: rgb(212, 0, 160);
+}

@@ -10,9 +10,9 @@ namespace BehaviourSystem.BT
     public class BehaviourTree : Graph
     {
         /// <summary> 클론 작업 정보를 담는 구조체 </summary>
-        private struct CloneInfo
+        private struct TreeTraversal
         {
-            public CloneInfo(BehaviourNodeBase origin, BehaviourNodeBase clone, int depth, int stackID)
+            public TreeTraversal(BehaviourNodeBase origin, BehaviourNodeBase clone, int depth, int stackID)
             {
                 this.origin = origin;
                 this.clone = clone;
@@ -25,9 +25,8 @@ namespace BehaviourSystem.BT
             public readonly int depth;
             public readonly int stackID;
         }
-        
-        [field: NonSerialized]
-        public int callStackSize
+
+        public TreeInterruptor interrupter
         {
             get;
             private set;
@@ -37,27 +36,29 @@ namespace BehaviourSystem.BT
         public override Graph CloneGraph(Blackboard clonedBlackboard)
         {
             BehaviourTree clonedSet = CreateInstance<BehaviourTree>();
-            FixedQueue<CloneInfo> cloneQueue = new FixedQueue<CloneInfo>(this.nodes.Count);
-            
+            FixedQueue<TreeTraversal> cloneQueue = new FixedQueue<TreeTraversal>(this.nodes.Count);
+
             clonedSet.entry = Instantiate(this.entry) as RootNode;
-            
+
             BehaviourNodeBase originalEntry = (BehaviourNodeBase)this.entry;
-            BehaviourNodeBase clonedEntry   = (BehaviourNodeBase)clonedSet.entry;
-            
-            cloneQueue.Enqueue(new CloneInfo(originalEntry, clonedEntry, 0, 0));
+            BehaviourNodeBase clonedEntry = (BehaviourNodeBase)clonedSet.entry;
+
+            cloneQueue.Enqueue(new TreeTraversal(originalEntry, clonedEntry, 0, 0));
+
+            int callStackSize = 0;
 
             while (cloneQueue.count > 0)
             {
-                CloneInfo currentClone = cloneQueue.Dequeue();
-                this.ProcessClone(currentClone, cloneQueue, clonedSet);
+                TreeTraversal currentClone = cloneQueue.Dequeue();
+                this.ProcessClone(currentClone, cloneQueue, clonedSet, ref callStackSize);
                 NodePropertyFieldBinder.BindNodeProperties(currentClone.clone, clonedBlackboard);
             }
 
-            clonedSet.callStackSize = this.callStackSize;
+            interrupter = new TreeInterruptor(this, callStackSize);
             return clonedSet;
         }
 
-        
+
         public override EStatus UpdateGraph()
         {
             if (entry is BehaviourNodeBase behaviourNode)
@@ -69,17 +70,17 @@ namespace BehaviourSystem.BT
                 return EStatus.Failure;
             }
         }
-        
-        
+
+
         public override void ResetGraph()
         {
             
         }
-        
-        
+
+
         public override void StopGraph()
         {
-            
+            interrupter.AbortSubtree(entry.callStackID);
         }
 
 
@@ -93,55 +94,66 @@ namespace BehaviourSystem.BT
         /// <param name="stack">후처리 스택</param>
         /// <param name="runner">트리 러너</param>
         /// <param name="newSet">클론된 노드셋</param>s
-        private void ProcessClone(CloneInfo info, FixedQueue<CloneInfo> queue, BehaviourTree newSet)
+        private void ProcessClone(TreeTraversal info, FixedQueue<TreeTraversal> queue, BehaviourTree newSet, ref int callStack)
         {
             info.clone.depth = info.depth;
             info.clone.callStackID = info.stackID;
             info.clone.name = info.clone.name.Remove(info.clone.name.Length - 7); //명시되어있는 (Clone) 접미사 제거. 
 
             newSet.nodes.Add(info.clone);
-            
             int depthInTree = info.depth + 1;
 
             switch (info.origin.nodeType)
             {
-                case BehaviourNodeBase.ENodeType.Root: this.CloneNode((RootNode)info.origin, (RootNode)info.clone, depthInTree, info.stackID, queue); break;
+                case BehaviourNodeBase.ENodeType.Root:
+                {
+                    this.CloneNode((RootNode)info.origin, (RootNode)info.clone, depthInTree, info.stackID, queue); 
+                    break;
+                }
 
-                case BehaviourNodeBase.ENodeType.Decorator: this.CloneNode((DecoratorNode)info.origin, (DecoratorNode)info.clone, depthInTree, info.stackID, queue); break;
+                case BehaviourNodeBase.ENodeType.Decorator:
+                {
+                    this.CloneNode((DecoratorNode)info.origin, (DecoratorNode)info.clone, depthInTree, info.stackID, queue); 
+                    break;
+                }
 
-                case BehaviourNodeBase.ENodeType.Composite: this.CloneNode((CompositeNode)info.origin, (CompositeNode)info.clone, depthInTree, info.stackID, queue); break;
+                case BehaviourNodeBase.ENodeType.Composite:
+                {
+                    this.CloneNode((CompositeNode)info.origin, (CompositeNode)info.clone, depthInTree, info.stackID, ref callStack, queue); 
+                    break;
+                }
             }
         }
 
 
         /// <summary> 루트 노드의 자식 클론 처리 </summary>
-        private void CloneNode(RootNode origin, RootNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
+        private void CloneNode(RootNode origin, RootNode clone, int nextDepth, int stackID, FixedQueue<TreeTraversal> cloneQueue)
         {
             if (origin.child is not null)
             {
                 BehaviourNodeBase childClone = Instantiate(origin.child);
                 childClone.parent = clone;
                 clone.child = childClone;
-                cloneQueue.Enqueue(new CloneInfo(origin.child, childClone, nextDepth, stackID));
+                cloneQueue.Enqueue(new TreeTraversal(origin.child, childClone, nextDepth, stackID));
             }
         }
 
 
         /// <summary> 데코레이터 노드의 자식을 클론 처리 </summary>
-        private void CloneNode(DecoratorNode origin, DecoratorNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
+        private void CloneNode(DecoratorNode origin, DecoratorNode clone, int nextDepth, int stackID, FixedQueue<TreeTraversal> cloneQueue)
         {
             if (origin.child is not null)
             {
                 BehaviourNodeBase childClone = Instantiate(origin.child);
                 childClone.parent = clone;
                 clone.child = childClone;
-                cloneQueue.Enqueue(new CloneInfo(origin.child, childClone, nextDepth, stackID));
+                cloneQueue.Enqueue(new TreeTraversal(origin.child, childClone, nextDepth, stackID));
             }
         }
 
 
         /// <summary> 컴포지트 노드의 자식들을 클론 처리. Parallel 노드의 경우 새로운 CallStack ID 할당하여 CallStack 공간 배정 </summary>
-        private void CloneNode(CompositeNode origin, CompositeNode clone, int nextDepth, int stackID, FixedQueue<CloneInfo> cloneQueue)
+        private void CloneNode(CompositeNode origin, CompositeNode clone, int nextDepth, int stackID, ref int callStackSize, FixedQueue<TreeTraversal> cloneQueue)
         {
             if (origin.children is not null && origin.children.Count > 0)
             {
@@ -153,7 +165,7 @@ namespace BehaviourSystem.BT
                     BehaviourNodeBase childClone = Instantiate(origin.children[i]);
                     childClone.parent = clone;
                     clone.children[i] = childClone;
-                    cloneQueue.Enqueue(new CloneInfo(origin.children[i], childClone, nextDepth, newStackID));
+                    cloneQueue.Enqueue(new TreeTraversal(origin.children[i], childClone, nextDepth, newStackID));
                 }
             }
         }
@@ -196,12 +208,12 @@ namespace BehaviourSystem.BT
 
             switch (parent.nodeType)
             {
-                case BehaviourNodeBase.ENodeType.Root: 
-                    ((RootNode)parent).child = null; 
+                case BehaviourNodeBase.ENodeType.Root:
+                    ((RootNode)parent).child = null;
                     child.parent = null;
                     break;
 
-                case BehaviourNodeBase.ENodeType.Decorator: 
+                case BehaviourNodeBase.ENodeType.Decorator:
                     ((DecoratorNode)parent).child = null;
                     child.parent = null;
                     break;

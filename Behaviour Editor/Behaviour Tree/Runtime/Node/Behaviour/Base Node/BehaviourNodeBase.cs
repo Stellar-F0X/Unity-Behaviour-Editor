@@ -15,6 +15,8 @@ namespace BehaviourSystem.BT
         
         [SerializeField]
         private NodeBase _parent;
+
+        private BehaviourTree _tree;
         
         
         public abstract ENodeType nodeType
@@ -35,6 +37,13 @@ namespace BehaviourSystem.BT
             internal set { _parent = value; }
         }
         
+        public BehaviourTree tree
+        {
+            get { return _tree; }
+
+            internal set { _tree = value; }
+        }
+        
         
         public EStatus UpdateNode()
         {
@@ -43,7 +52,6 @@ namespace BehaviourSystem.BT
             if (callState == ENodeCallState.BeforeEnter)
             {
                 this.EnterNode();
-                this.onNodeEnter?.Invoke();
             }
 
             if (this.callState == ENodeCallState.Updating)
@@ -55,9 +63,9 @@ namespace BehaviourSystem.BT
                     return EStatus.Running;
                 }
 
-                if (this.runner.handler.GetCurrentNode(callStackID) != this)
+                if (this.tree.interrupter.GetCurrentNode(callStackID) != this)
                 {
-                    this.runner.handler.AbortSubtreeFrom(callStackID, this);
+                    this.tree.interrupter.AbortSubtreeFrom(callStackID, this);
                 }
 
                 this.callState = ENodeCallState.BeforeExit;
@@ -65,7 +73,6 @@ namespace BehaviourSystem.BT
 
             if (this.callState == ENodeCallState.BeforeExit)
             {
-                this.onNodeExit?.Invoke();
                 this.ExitNode();
             }
 
@@ -75,16 +82,18 @@ namespace BehaviourSystem.BT
 
         public override void EnterNode()
         {
-            this.runner.handler.PushInCallStack(callStackID, this);
+            this.tree.interrupter.PushInCallStack(callStackID, this);
             this.OnEnter();
+            this.onNodeEnter?.Invoke();
             this.callState = ENodeCallState.Updating;
         }
 
 
         public override void ExitNode()
         {
-            this.runner.handler.PopInCallStack(callStackID);
+            this.tree.interrupter.PopInCallStack(callStackID);
             this.OnExit();
+            this.onNodeExit?.Invoke();
             this.callState = ENodeCallState.BeforeEnter;
 
             // If a parent node fails during execution, this node's result is set to Failure.

@@ -10,7 +10,16 @@ namespace BehaviourSystem.BT
 
         public override Graph CloneGraph(Blackboard clonedBlackboard)
         {
-            return null;
+            FiniteStateMachine clonedSet = CreateInstance<FiniteStateMachine>();
+
+            for (int i = 0; i < nodes.Count; ++i)
+            {
+                clonedSet.nodes[i] = Instantiate(this.nodes[i]);
+                NodePropertyFieldBinder.BindNodeProperties(clonedSet.nodes[i], clonedBlackboard);
+            }
+            
+            clonedSet.currentState = clonedSet.nodes[0] as StateNodeBase; //EnterState
+            return clonedSet;
         }
 
 
@@ -28,10 +37,7 @@ namespace BehaviourSystem.BT
 
             if (currentState.CheckTransition(out UGUID nextStateUGUID))
             {
-                if (currentState is not null)
-                {
-                    currentState.ExitNode();
-                }
+                currentState?.ExitNode();
 
                 if (base.TryGetNodeByGUID(nextStateUGUID, out NodeBase node))
                 {
@@ -46,10 +52,19 @@ namespace BehaviourSystem.BT
         }
 
 
-        public override void ResetGraph() { }
+        public override void ResetGraph()
+        {
+            
+        }
 
 
-        public override void StopGraph() { }
+        public override void StopGraph()
+        {
+            if (currentState.callState == ENodeCallState.Updating)
+            {
+                currentState.ExitNode();
+            }
+        }
 
 
 #if UNITY_EDITOR

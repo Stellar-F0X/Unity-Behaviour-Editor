@@ -23,7 +23,7 @@ namespace BehaviourSystem.BT
         [SerializeField]
         private GraphAsset _runtimeGraph;
 
-        private BehaviourCallStack _callStackHandler;
+        private TreeInterruptor _callStackHandler;
 
 
         internal event Action onNodeFixedUpdate;
@@ -32,11 +32,6 @@ namespace BehaviourSystem.BT
         internal GraphAsset runtimeGraph
         {
             get { return _runtimeGraph; }
-        }
-
-        internal BehaviourCallStack handler
-        {
-            get { return _callStackHandler; }
         }
 
         public bool pause

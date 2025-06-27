@@ -117,7 +117,7 @@ namespace BehaviourSystem.BT
                 if (_isChildStopped[i] == false)
                 {
                     int id = children[i].callStackID;
-                    runner.handler.AbortSubtree(id);
+                    tree.interrupter.AbortSubtree(id);
                 }
                 else
                 {

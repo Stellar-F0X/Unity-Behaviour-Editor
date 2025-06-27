@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BehaviourSystem.BT.State
 {
@@ -6,6 +7,18 @@ namespace BehaviourSystem.BT.State
     {
         public List<Transition> transitions = new List<Transition>();
 
+        public float enterTime
+        {
+            get;
+            private set;
+        }
+
+        public float elapsedTime
+        {
+            get { return Time.time - enterTime; }
+        }
+        
+        
 
         public virtual void UpdateNode()
         {
@@ -31,7 +44,9 @@ namespace BehaviourSystem.BT.State
 
         public override void EnterNode()
         {
+            enterTime = Time.time;
             this.OnEnter();
+            this.onNodeEnter?.Invoke();
             this.callState = ENodeCallState.Updating;
         }
 
@@ -39,7 +54,9 @@ namespace BehaviourSystem.BT.State
         public override void ExitNode()
         {
             this.OnExit();
+            this.onNodeExit?.Invoke();
             this.callState = ENodeCallState.BeforeEnter;
+            enterTime = 0;
         }
 
 

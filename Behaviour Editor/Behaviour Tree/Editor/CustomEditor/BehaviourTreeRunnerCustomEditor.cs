@@ -9,12 +9,12 @@ namespace BehaviourSystemEditor.BT
     {
         public override void OnInspectorGUI()
         {
-            SerializedProperty treeAsset = serializedObject.FindProperty("_runtimeTree");
+            SerializedProperty treeAsset = serializedObject.FindProperty("_runtimeGraph");
             SerializedProperty useGizmos = serializedObject.FindProperty("useGizmos");
             SerializedProperty useFixedUpdate = serializedObject.FindProperty("useFixedUpdate");
             SerializedProperty tickUpdateMode = serializedObject.FindProperty("tickUpdateMode");
 
-            treeAsset.objectReferenceValue = EditorGUILayout.ObjectField("Tree Asset", treeAsset.objectReferenceValue, typeof(GraphAsset), false);
+            treeAsset.objectReferenceValue = EditorGUILayout.ObjectField("Graph Asset", treeAsset.objectReferenceValue, typeof(GraphAsset), false);
 
             tickUpdateMode.enumValueIndex = EditorGUILayout.Popup("Tick Update Mode", tickUpdateMode.enumValueIndex, tickUpdateMode.enumDisplayNames);
             useFixedUpdate.boolValue = EditorGUILayout.Toggle("Use Fixed Update", useFixedUpdate.boolValue);
@@ -37,7 +37,7 @@ namespace BehaviourSystemEditor.BT
 
                         if (GUILayout.Button("Open Behaviour Editor", GUILayout.Width(buttonWidth - 20f)))
                         {
-                            BehaviourTreeEditor.OpenWindow(convertedTreeAsset);
+                            BehaviourSystemEditor.OpenWindow(convertedTreeAsset);
                         }
 
                         if (GUILayout.Button("Open Blackboard Editor Settings", GUILayout.Width(buttonWidth - 20f)))

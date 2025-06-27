@@ -106,6 +106,12 @@ namespace BehaviourSystemEditor.BT
                     inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     break;
                 }
+                
+                case BehaviourNodeBase.ENodeType.SubGraph:
+                {
+                    inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
+                    break;
+                }
 
                 case BehaviourNodeBase.ENodeType.Composite:
                 {
@@ -113,7 +119,7 @@ namespace BehaviourSystemEditor.BT
                     outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
                     break;
                 }
-
+                
                 case BehaviourNodeBase.ENodeType.Decorator:
                 {
                     inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
@@ -169,7 +175,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            BehaviourTreeEditorSettings settings = BehaviourTreeEditor.Settings;
+            BehaviourTreeEditorSettings settings = BehaviourSystemEditor.Settings;
 
             if (this.UpdateNodeHighlightState(deltaTime, settings.nodeViewHighlightingDuration))
             {
@@ -231,9 +237,9 @@ namespace BehaviourSystemEditor.BT
         {
             switch (targetNode.status)
             {
-                case EStatus.Failure: _nodeBorder?.style.SetBorderColor(BehaviourTreeEditor.Settings.nodeFailureColor); break;
+                case EStatus.Failure: _nodeBorder?.style.SetBorderColor(BehaviourSystemEditor.Settings.nodeFailureColor); break;
 
-                case EStatus.Success: _nodeBorder?.style.SetBorderColor(BehaviourTreeEditor.Settings.nodeSuccessColor); break;
+                case EStatus.Success: _nodeBorder?.style.SetBorderColor(BehaviourSystemEditor.Settings.nodeSuccessColor); break;
             }
         }
 
@@ -247,7 +253,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            port.pickingMode = BehaviourTreeEditor.CanEditGraph ? PickingMode.Position : PickingMode.Ignore;
+            port.pickingMode = BehaviourSystemEditor.CanEditGraph ? PickingMode.Position : PickingMode.Ignore;
             port.style.flexDirection = direction;
             port.portName = portName;
             container.Add(port);

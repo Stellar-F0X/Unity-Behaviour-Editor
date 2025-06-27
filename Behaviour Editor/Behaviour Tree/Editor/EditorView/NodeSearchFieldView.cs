@@ -14,11 +14,11 @@ namespace BehaviourSystemEditor.BT
         private readonly List<NodeView> _itemSource = new List<NodeView>();
         private readonly ListView _nodeListView = new ListView();
 
-        private BehaviourTreeView _treeView;
+        private BehaviourGraphView _treeView;
         private InspectorView _inspectorView;
 
 
-        public void Setup(InspectorView inspectorView, BehaviourTreeView treeView)
+        public void Setup(InspectorView inspectorView, BehaviourGraphView treeView)
         {
             this.UnregisterValueChangedCallback(this.OnSearchingNodesCallback);
             this.RegisterValueChangedCallback(this.OnSearchingNodesCallback);

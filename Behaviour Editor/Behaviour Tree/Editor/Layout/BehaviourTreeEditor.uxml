@@ -26,9 +26,9 @@
                 <uie:ToolbarToggle label="Minimap" name="active-minimap" value="false" style="overflow: visible;" />
             </uie:Toolbar>
             <ui:Label tabindex="-1" text=" Tree View" parse-escape-sequences="true" display-tooltip-when-elided="true" name="right-view-label" class="window-label" />
-            <BehaviourSystemEditor.BT.BehaviourTreeView focusable="true" style="flex-grow: 1;">
+            <BehaviourSystemEditor.BT.BehaviourGraphView focusable="true" style="flex-grow: 1;">
                 <BehaviourSystemEditor.BT.MiniMapView view-data-key="6df03c20-78ec-4a7a-9f20-9d56dcdb0292" enabled="true" style="left: auto; right: auto; top: auto; bottom: auto; flex-grow: 0; min-width: initial; min-height: initial; background-color: rgba(30, 30, 30, 0.78); position: relative; width: 220px; height: 200px; align-items: auto; flex-wrap: wrap; border-left-color: rgb(222, 222, 222); border-right-color: rgb(222, 222, 222); border-top-color: rgb(222, 222, 222); border-bottom-color: rgb(222, 222, 222); visibility: hidden;" />
-            </BehaviourSystemEditor.BT.BehaviourTreeView>
+            </BehaviourSystemEditor.BT.BehaviourGraphView>
         </ui:VisualElement>
     </BehaviourSystemEditor.BT.SplitView>
 </ui:UXML>

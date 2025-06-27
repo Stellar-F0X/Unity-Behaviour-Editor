@@ -14,10 +14,10 @@ namespace BehaviourSystemEditor.BT
         private readonly Vector2 _nodeOffset = new Vector2(-75, -20);
         private event Action<NodeView> _nodeCreateCallback;
         
-        private BehaviourTreeView _treeView;
+        private BehaviourGraphView _treeView;
 
 
-        public void Initialize(BehaviourTreeView editorWindowView)
+        public void Initialize(BehaviourGraphView editorWindowView)
         {
             _treeView = editorWindowView;
         }
@@ -61,7 +61,7 @@ namespace BehaviourSystemEditor.BT
         
         private Vector2 CalculateMousePosition(SearchWindowContext context)
         {
-            BehaviourTreeEditor editor = BehaviourTreeEditor.Instance;
+            BehaviourSystemEditor editor = BehaviourSystemEditor.Instance;
             Vector2 targetVector = context.screenMousePosition - editor.position.position;
             Vector2 mousePosition = editor.rootVisualElement.ChangeCoordinatesTo(editor.rootVisualElement.parent, targetVector);
             return editor.View.contentViewContainer.WorldToLocal(mousePosition);

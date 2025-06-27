@@ -4,7 +4,7 @@ namespace BehaviourSystemEditor.BT
 {
     public static class CreationNodeScript
     {
-        [MenuItem("Assets/Create/Behaviour Tree/Scripting/Action Node")]
+        [MenuItem("Assets/Create/Behaviour System/Scripting/Action Node")]
         public static void CreateActionNodeMenuItem()
         {
             string path = EditorHelper.FindAssetPath("NewActionNode.cs t:TextAsset");
@@ -12,7 +12,7 @@ namespace BehaviourSystemEditor.BT
         }
         
         
-        [MenuItem("Assets/Create/Behaviour Tree/Scripting/Composite Node")]
+        [MenuItem("Assets/Create/Behaviour System/Scripting/Composite Node")]
         public static void CreateCompositeNodeMenuItem()
         {
             string path = EditorHelper.FindAssetPath("NewCompositeNode.cs t:TextAsset");
@@ -20,7 +20,7 @@ namespace BehaviourSystemEditor.BT
         }
         
         
-        [MenuItem("Assets/Create/Behaviour Tree/Scripting/Decorator Node")]
+        [MenuItem("Assets/Create/Behaviour System/Scripting/Decorator Node")]
         public static void CreateDecoratorNodeMenuItem()
         {
             string path = EditorHelper.FindAssetPath("NewDecoratorNode.cs t:TextAsset");

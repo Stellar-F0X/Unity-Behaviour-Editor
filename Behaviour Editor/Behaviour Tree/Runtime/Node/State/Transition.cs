@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BehaviourSystem.BT.State
+namespace BehaviourSystem.BT
 {
     [Serializable]
     public class Transition

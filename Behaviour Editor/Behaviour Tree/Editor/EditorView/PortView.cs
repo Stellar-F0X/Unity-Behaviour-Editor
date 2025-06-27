@@ -39,33 +39,33 @@ namespace BehaviourSystemEditor.BT
 
         public void OnDropOutsidePort(Edge edge, Vector2 position)
         {
-            if (BehaviourTreeEditor.Instance is null || BehaviourTreeEditor.Instance.View is null || BehaviourTreeEditor.CanEditGraph == false)
+            if (BehaviourSystemEditor.Instance is null || BehaviourSystemEditor.Instance.View is null || BehaviourSystemEditor.CanEditGraph == false)
             {
                 return;
             }
 
             if (edge.input is not null && edge.input.node is NodeView connectionDestination) //Create and link new parent node
             {
-                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, newParentNodeView =>
+                BehaviourSystemEditor.Instance.View.OpenContextualMenuWindow(position, newParentNodeView =>
                 {
                     NodeLinkHelper.TryDisconnectChildToParent(connectionDestination);
                     
                     if (NodeLinkHelper.TryConnectNodesByEdge(newParentNodeView, connectionDestination, out _))
                     {
-                        BehaviourTree tree = BehaviourTreeEditor.Instance.Tree.graph as BehaviourTree;
+                        BehaviourTree tree = BehaviourSystemEditor.Instance.Tree.graph as BehaviourTree;
                         tree?.AddChild(newParentNodeView.targetNode, connectionDestination.targetNode);
                     }
                 });
             }
             else if (edge.output is not null && edge.output.node is NodeView connectionSource) //Create and link new child node
             {
-                BehaviourTreeEditor.Instance.View.OpenContextualMenuWindow(position, newChildNodeView =>
+                BehaviourSystemEditor.Instance.View.OpenContextualMenuWindow(position, newChildNodeView =>
                 {
                     NodeLinkHelper.TryDisconnectParentToChild(connectionSource);
                     
                     if (NodeLinkHelper.TryConnectNodesByEdge(connectionSource, newChildNodeView, out _))
                     {
-                        BehaviourTree tree = BehaviourTreeEditor.Instance.Tree.graph as BehaviourTree;
+                        BehaviourTree tree = BehaviourSystemEditor.Instance.Tree.graph as BehaviourTree;
                         tree?.AddChild(connectionSource.targetNode, newChildNodeView.targetNode);
                     }
                 });
@@ -74,7 +74,7 @@ namespace BehaviourSystemEditor.BT
 
 
         //Referenced: https://github.com/thekiwicoder0/UnityBehaviourTreeEditor/blob/main/Editor/NodePort.cs
-        public void OnDrop(GraphView graphView, Edge edge)
+        public void OnDrop(UnityEditor.Experimental.GraphView.GraphView graphView, Edge edge)
         {
             List<GraphElement> edgesToDelete = ListPool<GraphElement>.Get();
 

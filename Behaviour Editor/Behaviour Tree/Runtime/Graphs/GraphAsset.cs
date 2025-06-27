@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    [CreateAssetMenu(fileName = "New Behaviour Tree", menuName = "Behaviour Tree/Behaviour Tree Asset")]
+    [CreateAssetMenu(fileName = "New Graph", menuName = "Behaviour System/Graph Asset")]
     public sealed class GraphAsset : ScriptableObject, IEquatable<GraphAsset>
     {
         [HideInInspector]
         public Graph graph;
-        
+
         [ReadOnly]
         public Blackboard blackboard;
 
@@ -16,7 +16,7 @@ namespace BehaviourSystem.BT
         [HideInInspector]
         public GraphGroup graphGroup;
 #endif
-        
+
         [field: SerializeField, ReadOnly]
         public UGUID guid
         {
@@ -27,7 +27,7 @@ namespace BehaviourSystem.BT
 
         internal static GraphAsset MakeRuntimeGraph(BehaviourSystemRunner systemRunner, GraphAsset targetGraph)
         {
-            Debug.Assert(systemRunner is not null && targetGraph is not null, "BehaviourActor or BehaviourTree is null.");
+            Debug.Assert(systemRunner is not null && targetGraph is not null, "BehaviourRunner or BehaviourTree is null.");
 
             GraphAsset runtimeGraph = Instantiate(targetGraph);
 
@@ -38,7 +38,7 @@ namespace BehaviourSystem.BT
 #endif
             runtimeGraph.blackboard = targetGraph.blackboard?.Clone();
             runtimeGraph.graph = targetGraph.graph.CloneGraph(runtimeGraph.blackboard);
-            
+
             foreach (NodeBase currentNode in runtimeGraph.graph.nodes)
             {
                 currentNode.runner = systemRunner;
@@ -51,7 +51,7 @@ namespace BehaviourSystem.BT
 
         public bool Equals(GraphAsset other)
         {
-            if (other is null || this.GetType() != other.GetType())
+            if (other is null || ReferenceEquals(this, other) == false)
             {
                 return false;
             }
@@ -65,14 +65,12 @@ namespace BehaviourSystem.BT
             {
                 return false;
             }
-            else
+
+            for (int i = 0; i < this.graph.nodes.Count; i++)
             {
-                for (int i = 0; i < this.graph.nodes.Count; i++)
+                if (this.graph.nodes[i].guid != other.graph.nodes[i].guid)
                 {
-                    if (this.graph.nodes[i].guid != other.graph.nodes[i].guid)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
 

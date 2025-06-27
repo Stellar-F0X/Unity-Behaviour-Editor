@@ -10,9 +10,9 @@ namespace BehaviourSystemEditor.BT
 {
     //TODO: BehaviourTreeView를 GraphView로 변경.
     [UxmlElement]
-    public partial class BehaviourTreeView : GraphView
+    public partial class BehaviourGraphView : GraphView
     {
-        public BehaviourTreeView()
+        public BehaviourGraphView()
         {
             base.Insert(0, new GridBackground());
 
@@ -25,7 +25,7 @@ namespace BehaviourSystemEditor.BT
                 minScale = 0.2f
             });
 
-            styleSheets.Add(BehaviourTreeEditor.Settings.behaviourTreeStyle);
+            styleSheets.Add(BehaviourSystemEditor.Settings.behaviourTreeStyle);
         }
 
         /// <summary>노드가 선택될 때 호출되는 이벤트입니다.</summary>
@@ -88,7 +88,7 @@ namespace BehaviourSystemEditor.BT
         {
             if (input is null)
             {
-                Debug.LogWarning($"{typeof(BehaviourTreeView)}: Input is null");
+                Debug.LogWarning($"{typeof(BehaviourGraphView)}: Input is null");
                 return null;
             }
 
@@ -112,7 +112,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>마우스 위치에서 컨텍스트 메뉴(노드 생성) 창을 엽니다.</summary>
         public void OpenContextualMenuWindow(Vector2 mousePosition, Action<NodeView> onNewNodeCreatedOnce = null)
         {
-            if (BehaviourTreeEditor.CanEditGraph == false)
+            if (BehaviourSystemEditor.CanEditGraph == false)
             {
                 return;
             }
@@ -167,7 +167,7 @@ namespace BehaviourSystemEditor.BT
             NodeGroupView groupView = new NodeGroupView(_tree.graphGroup, nodeGroupData);
 
             groupView.SetPosition(new Rect(position, Vector2.zero));
-            groupView.style.backgroundColor = BehaviourTreeEditor.Settings.nodeGroupColor;
+            groupView.style.backgroundColor = BehaviourSystemEditor.Settings.nodeGroupColor;
             groupView.title = title;
 
             base.AddElement(groupView);
@@ -184,7 +184,7 @@ namespace BehaviourSystemEditor.BT
             }
 
             float currentTime = Time.time;
-            float updateInterval = BehaviourTreeEditor.Settings.nodeViewUpdateInterval;
+            float updateInterval = BehaviourSystemEditor.Settings.nodeViewUpdateInterval;
 
             foreach (Node view in nodes)
             {
@@ -235,7 +235,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>선택된 요소들을 삭제할 때 호출되는 콜백 메서드입니다.</summary>
         private void OnDeleteSelectionElements(string operationName, AskUser user)
         {
-            if (BehaviourTreeEditor.CanEditGraph == false)
+            if (BehaviourSystemEditor.CanEditGraph == false)
             {
                 return;
             }
@@ -264,7 +264,7 @@ namespace BehaviourSystemEditor.BT
                 return null;
             }
 
-            NodeView nodeView = new NodeView(node, BehaviourTreeEditor.Settings.nodeViewXml);
+            NodeView nodeView = new NodeView(node, BehaviourSystemEditor.Settings.nodeViewXml);
             nodeView.OnNodeSelected += this.onNodeSelected;
 
             base.AddElement(nodeView); //nodes라는 GraphElement 컨테이너에 추가.

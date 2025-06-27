@@ -10,10 +10,10 @@ namespace BehaviourSystemEditor.BT
     {
         private bool _activated;
 
-        public void Setup(ToolbarToggle minimapActivateButton, BehaviourTreeView btView)
+        public void Setup(ToolbarToggle minimapActivateButton, BehaviourGraphView btView)
         {
             this.anchored = true;
-            this.style.backgroundColor = BehaviourTreeEditor.Settings.miniMapBackgroundColor;
+            this.style.backgroundColor = BehaviourSystemEditor.Settings.miniMapBackgroundColor;
 
             minimapActivateButton.UnregisterValueChangedCallback(this.ActiveMinimap);
             minimapActivateButton.RegisterValueChangedCallback(this.ActiveMinimap);

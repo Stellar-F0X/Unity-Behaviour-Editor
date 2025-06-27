@@ -14,7 +14,7 @@ namespace BehaviourSystemEditor.BT
             this._graphGroupData = dataSet;
 
             this.title = dataContainer.title;
-            this.style.backgroundColor = BehaviourTreeEditor.Settings.nodeGroupColor;
+            this.style.backgroundColor = BehaviourSystemEditor.Settings.nodeGroupColor;
         }
 
         private readonly GraphGroup _graphGroupData;
@@ -45,12 +45,12 @@ namespace BehaviourSystemEditor.BT
 
         protected override void OnElementsAdded(IEnumerable<GraphElement> elements)
         {
-            if (BehaviourTreeEditor.Instance is null || _data is null)
+            if (BehaviourSystemEditor.Instance is null || _data is null)
             {
                 return;
             }
 
-            if (BehaviourTreeEditor.CanEditGraph && BehaviourTreeEditor.IsLoadingTreeToView == false)
+            if (BehaviourSystemEditor.CanEditGraph && BehaviourSystemEditor.IsLoadingTreeToView == false)
             {
                 foreach (var element in elements)
                 {
@@ -65,12 +65,12 @@ namespace BehaviourSystemEditor.BT
 
         protected override void OnElementsRemoved(IEnumerable<GraphElement> elements)
         {
-            if (BehaviourTreeEditor.Instance is null || _data is null)
+            if (BehaviourSystemEditor.Instance is null || _data is null)
             {
                 return;
             }
 
-            if (BehaviourTreeEditor.CanEditGraph && BehaviourTreeEditor.IsLoadingTreeToView == false)
+            if (BehaviourSystemEditor.CanEditGraph && BehaviourSystemEditor.IsLoadingTreeToView == false)
             {
                 foreach (var element in elements)
                 {
