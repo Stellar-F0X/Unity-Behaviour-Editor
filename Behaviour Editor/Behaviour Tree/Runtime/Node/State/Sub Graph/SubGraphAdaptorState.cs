@@ -6,11 +6,16 @@ namespace BehaviourSystem.BT.SubGraph
     {
         public GraphAsset subGraph;
 
+        public override EStateNodeType stateNodeType
+        {
+            get { return EStateNodeType.User; }
+        }
         
         protected override void OnEnter()
         {
             subGraph?.graph.ResetGraph();
         }
+
 
         protected override void OnUpdate()
         {

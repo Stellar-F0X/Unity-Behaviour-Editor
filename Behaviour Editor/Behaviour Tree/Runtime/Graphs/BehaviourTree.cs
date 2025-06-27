@@ -105,19 +105,19 @@ namespace BehaviourSystem.BT
 
             switch (info.origin.nodeType)
             {
-                case BehaviourNodeBase.ENodeType.Root:
+                case BehaviourNodeBase.EBehaviourNodeType.Root:
                 {
                     this.CloneNode((RootNode)info.origin, (RootNode)info.clone, depthInTree, info.stackID, queue); 
                     break;
                 }
 
-                case BehaviourNodeBase.ENodeType.Decorator:
+                case BehaviourNodeBase.EBehaviourNodeType.Decorator:
                 {
                     this.CloneNode((DecoratorNode)info.origin, (DecoratorNode)info.clone, depthInTree, info.stackID, queue); 
                     break;
                 }
 
-                case BehaviourNodeBase.ENodeType.Composite:
+                case BehaviourNodeBase.EBehaviourNodeType.Composite:
                 {
                     this.CloneNode((CompositeNode)info.origin, (CompositeNode)info.clone, depthInTree, info.stackID, ref callStack, queue); 
                     break;
@@ -181,17 +181,17 @@ namespace BehaviourSystem.BT
 
             switch (parent.nodeType)
             {
-                case BehaviourNodeBase.ENodeType.Root:
+                case BehaviourNodeBase.EBehaviourNodeType.Root:
                     ((RootNode)parent).child = child;
                     child.parent = parent;
                     break;
 
-                case BehaviourNodeBase.ENodeType.Decorator:
+                case BehaviourNodeBase.EBehaviourNodeType.Decorator:
                     ((DecoratorNode)parent).child = child;
                     child.parent = parent;
                     break;
 
-                case BehaviourNodeBase.ENodeType.Composite:
+                case BehaviourNodeBase.EBehaviourNodeType.Composite:
                     ((CompositeNode)parent).children.Add(child);
                     child.parent = parent;
                     break;
@@ -208,17 +208,17 @@ namespace BehaviourSystem.BT
 
             switch (parent.nodeType)
             {
-                case BehaviourNodeBase.ENodeType.Root:
+                case BehaviourNodeBase.EBehaviourNodeType.Root:
                     ((RootNode)parent).child = null;
                     child.parent = null;
                     break;
 
-                case BehaviourNodeBase.ENodeType.Decorator:
+                case BehaviourNodeBase.EBehaviourNodeType.Decorator:
                     ((DecoratorNode)parent).child = null;
                     child.parent = null;
                     break;
 
-                case BehaviourNodeBase.ENodeType.Composite:
+                case BehaviourNodeBase.EBehaviourNodeType.Composite:
                     ((CompositeNode)parent).children.Remove(child);
                     child.parent = null;
                     break;

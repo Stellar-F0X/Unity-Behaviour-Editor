@@ -2,9 +2,11 @@
 {
     public abstract class SubGraphNode : BehaviourNodeBase
     {
-        public override ENodeType nodeType
+        public GraphAsset subGraph;
+        
+        public override EBehaviourNodeType nodeType
         {
-            get { return ENodeType.SubGraph; }
+            get { return EBehaviourNodeType.SubGraph; }
         }
     }
 }

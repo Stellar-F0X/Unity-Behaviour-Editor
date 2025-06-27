@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    [CreateAssetMenu(fileName = "New Graph", menuName = "Behaviour System/Graph Asset")]
-    public sealed class GraphAsset : ScriptableObject, IEquatable<GraphAsset>
+    public abstract class GraphAsset : ScriptableObject, IEquatable<GraphAsset>
     {
         [HideInInspector]
         public Graph graph;
@@ -22,6 +21,11 @@ namespace BehaviourSystem.BT
         {
             get;
             internal set;
+        }
+
+        public abstract EGraphType graphType
+        {
+            get;
         }
 
 

@@ -30,6 +30,8 @@ namespace BehaviourSystemEditor.BT
 
         private BlackboardPropertyListView _blackboardView;
 
+        private ToolbarBreadcrumbs _graphDirectoryPath;
+
 
         /// <summary>Behaviour Tree 에디터 설정 정보를 가져옵니다.</summary>
         public static BehaviourTreeEditorSettings Settings
@@ -85,6 +87,11 @@ namespace BehaviourSystemEditor.BT
             get { return _tree; }
         }
 
+        public ToolbarBreadcrumbs DirectoryPath
+        {
+            get { return _graphDirectoryPath; }
+        }
+
 
         /// <summary>Unity 메뉴에서 Behaviour Tree 에디터 창을 엽니다.</summary>
         [MenuItem("Tools/Behaviour Tree Editor")]
@@ -105,7 +112,7 @@ namespace BehaviourSystemEditor.BT
             }
             
             OpenWindow();
-            Instance.ChangeBehaviourTree(tree);
+            Instance.ChangeGraph(tree);
         }
 
         
@@ -151,16 +158,17 @@ namespace BehaviourSystemEditor.BT
             Instance = this;
 
             Debug.Assert(rootVisualElement is not null, "Root Visual Element is null.");
-            Settings.behaviourTreeEditorXml.CloneTree(rootVisualElement);
+            Settings.behaviourGraphEditorXml.CloneTree(rootVisualElement);
 
-            Debug.Assert(Settings.behaviourTreeEditorXml is not null, "BehaviourTreeEditorXml is null.");
-            rootVisualElement.styleSheets.Add(Settings.behaviourTreeStyle);
+            Debug.Assert(Settings.behaviourGraphEditorXml is not null, "BehaviourTreeEditorXml is null.");
+            rootVisualElement.styleSheets.Add(Settings.behaviourGraphStyle);
 
             _treeView = rootVisualElement.Q<BehaviourGraphView>();
             _miniMapView = rootVisualElement.Q<MiniMapView>();
             _inspectorView = rootVisualElement.Q<InspectorView>();
             _nodeSearchField = rootVisualElement.Q<NodeSearchFieldView>();
             _blackboardView = rootVisualElement.Q<BlackboardPropertyListView>();
+            _graphDirectoryPath = rootVisualElement.Q<ToolbarBreadcrumbs>("graph-directory-path");
 
             var elementAddButton = rootVisualElement.Q<ToolbarMenu>("element-add-button");
             var minimapActivateButton = rootVisualElement.Q<ToolbarToggle>("active-minimap");
@@ -278,7 +286,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     EditorApplication.update -= this.RuntimeUpdate;
                     bool clickedNewAsset = this.TryGetTreeAsset(out GraphAsset selectedTreeAsset);
-                    this.ChangeBehaviourTree(clickedNewAsset ? selectedTreeAsset : _editorOnlyTree);
+                    this.ChangeGraph(clickedNewAsset ? selectedTreeAsset : _editorOnlyTree);
                     return;
                 }
 
@@ -299,7 +307,7 @@ namespace BehaviourSystemEditor.BT
 
             if (foundTree && _tree != selectedTreeAsset)
             {
-                this.ChangeBehaviourTree(selectedTreeAsset);
+                this.ChangeGraph(selectedTreeAsset);
             }
         }
 
@@ -328,7 +336,7 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>에디터에서 편집할 Behaviour Tree를 변경합니다.</summary>
-        private void ChangeBehaviourTree(GraphAsset treeAsset)
+        public void ChangeGraph(GraphAsset treeAsset)
         {
             if (treeAsset is null)
             {

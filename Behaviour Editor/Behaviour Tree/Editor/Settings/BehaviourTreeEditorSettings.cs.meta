@@ -4,10 +4,12 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - behaviourTreeEditorXml: {fileID: 9197481963319205126, guid: e97556cb6f1cfe64da771ca095336409, type: 3}
-  - behaviourTreeStyle: {fileID: 7433441132597879392, guid: 9f7ef0b4ed1e21f4580d6f651abac776, type: 3}
-  - nodeViewXml: {fileID: 9197481963319205126, guid: c8a586cd667247c419ff74d87f2587b8, type: 3}
-  - nodeViewStyle: {fileID: 7433441132597879392, guid: 64c8fb2f8709a824cb398043c8843094, type: 3}
+  - behaviourGraphEditorXml: {fileID: 9197481963319205126, guid: e97556cb6f1cfe64da771ca095336409, type: 3}
+  - behaviourGraphStyle: {fileID: 7433441132597879392, guid: 9f7ef0b4ed1e21f4580d6f651abac776, type: 3}
+  - behaviourNodeViewXml: {fileID: 9197481963319205126, guid: 541193e97a9200f48afb0a976ac925c1, type: 3}
+  - behaviourNodeViewStyle: {fileID: 7433441132597879392, guid: 2c3e5f919fbc7c0468933b90f2ec4fd6, type: 3}
+  - stateNodeViewXml: {fileID: 9197481963319205126, guid: 6aa28b0b670b4d74a85c8b057dfda01b, type: 3}
+  - stateNodeViewStyle: {fileID: 7433441132597879392, guid: 23050fd4400d01a4db0fe6da0c675537, type: 3}
   - blackboardPropertyViewXml: {fileID: 9197481963319205126, guid: 541193e97a9200f48afb0a976ac925c1, type: 3}
   - blackboardPropertyViewStyle: {fileID: 7433441132597879392, guid: 2c3e5f919fbc7c0468933b90f2ec4fd6, type: 3}
   - editorSettingsXml: {fileID: 9197481963319205126, guid: 5c48b9bc236747847a51ebd4ef08230d, type: 3}

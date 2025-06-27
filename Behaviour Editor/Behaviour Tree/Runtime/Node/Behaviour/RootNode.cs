@@ -41,9 +41,9 @@ namespace BehaviourSystem.BT
         }
         
 
-        public override ENodeType nodeType
+        public override EBehaviourNodeType nodeType
         {
-            get { return ENodeType.Root; }
+            get { return EBehaviourNodeType.Root; }
         }
         
         public int childCount

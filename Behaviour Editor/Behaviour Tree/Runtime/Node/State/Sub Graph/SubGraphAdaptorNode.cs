@@ -2,9 +2,6 @@ namespace BehaviourSystem.BT
 {
     public class SubGraphAdaptorNode : SubGraphNode
     {
-        public GraphAsset subGraph;
-
-
         protected override void OnEnter()
         {
             subGraph?.graph.ResetGraph();

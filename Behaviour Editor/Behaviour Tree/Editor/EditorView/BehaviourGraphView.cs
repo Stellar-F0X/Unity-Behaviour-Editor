@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BehaviourSystem.BT;
+using BehaviourSystem.BT.State;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,6 +17,7 @@ namespace BehaviourSystemEditor.BT
         {
             base.Insert(0, new GridBackground());
 
+            this.AddManipulator(new DoubleClick());
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
@@ -25,17 +27,25 @@ namespace BehaviourSystemEditor.BT
                 minScale = 0.2f
             });
 
-            styleSheets.Add(BehaviourSystemEditor.Settings.behaviourTreeStyle);
+            styleSheets.Add(BehaviourSystemEditor.Settings.behaviourGraphStyle);
         }
 
         /// <summary>노드가 선택될 때 호출되는 이벤트입니다.</summary>
+        //TODO: NodeView의 OnSelected랑 무슨 차이인지 확인.
         public Action<NodeView> onNodeSelected;
 
         private float _nextUpdateTime;
         private float _lastUpdateTime;
 
-        private GraphAsset _tree;
+        private GraphAsset _graph;
+        private GraphViewProcessor _graphViewProcessor;
         private CreationWindow _creationWindow;
+
+
+        public GraphViewProcessor graphViewProcessor
+        {
+            get { return _graphViewProcessor; }
+        }
 
         
         /// <summary>에디터 뷰를 초기화하고 모든 그래프 요소를 제거합니다.</summary>
@@ -50,11 +60,18 @@ namespace BehaviourSystemEditor.BT
         /// 주어진 Behaviour Tree를 그래프 에디터 뷰에 표시합니다.
         /// 노드들과 연결을 생성하고 그룹 데이터를 복원합니다.
         /// </summary>
-        public void OnGraphEditorView(GraphAsset tree)
+        public void OnGraphEditorView(GraphAsset graphAsset)
         {
-            if (tree is not null)
+            if (graphAsset is not null)
             {
-                this._tree = tree;
+                this._graph = graphAsset;
+
+                switch (_graph.graphType)
+                {
+                    case EGraphType.BehaviourTree: _graphViewProcessor = new BehaviourTreeViewProcessor(); break;
+                    
+                    case EGraphType.StateMachine:  _graphViewProcessor = new FiniteStateMachineViewProcessor(); break;
+                }
 
                 graphViewChanged -= this.OnGraphViewChanged;
                 this.deleteSelection -= this.OnDeleteSelectionElements;
@@ -64,21 +81,20 @@ namespace BehaviourSystemEditor.BT
                 graphViewChanged += this.OnGraphViewChanged;
                 this.deleteSelection += this.OnDeleteSelectionElements;
 
-                for (int i = 0; i < tree.graph.nodes.Count; ++i)
+                //TODO: 이거 정상 작동 확인해보기
+                for (int i = 0; i < graphAsset.graph.nodes.Count; ++i)
                 {
                     //1. Undo로 생성이 취소된 노드를 여기서 처리.
                     //2. Graph에 만들어졌지만 클래스를 삭제당한 노드도 삭제.
-                    if (tree.graph.nodes[i] is null)
+                    if (graphAsset.graph.nodes[i] is null)
                     {
-                        tree.graph.nodes.RemoveAt(i--);
+                        graphAsset.graph.nodes.RemoveAt(i--);
                     }
                 }
+                
+                _graphViewProcessor.CreateAndConnectNodes(_graph);
 
-                //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
-                tree.graph.nodes.ForEach(n => this.RecreateNodeViewOnLoad(n));
-                tree.graph.nodes.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n));
-
-                tree.graphGroup?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
+                graphAsset.graphGroup?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
             }
         }
 
@@ -106,6 +122,17 @@ namespace BehaviourSystemEditor.BT
             }
 
             return this.GetNodeByGuid(node.guid.ToString()) as NodeView;
+        }
+
+
+        public NodeView FindNodeView(string guid)
+        {
+            if (string.IsNullOrEmpty(guid))
+            {
+                return null;
+            }
+            
+            return this.GetNodeByGuid(guid) as NodeView;
         }
 
         
@@ -154,17 +181,17 @@ namespace BehaviourSystemEditor.BT
         /// <summary>새로운 노드를 생성하고 해당하는 NodeView를 반환합니다.</summary>
         public NodeView CreateNewNodeAndView(Type type, Vector2 mousePosition)
         {
-            NodeBase node = _tree.graph.CreateNode(type);
+            NodeBase node = _graph.graph.CreateNode(type);
             node.position = Vector2Int.CeilToInt(mousePosition);
-            return this.RecreateNodeViewOnLoad(node);
+            return this._graphViewProcessor.RecreateNodeViewOnLoad(node);
         }
 
         
         /// <summary>새로운 노드 그룹 뷰를 생성하고 반환합니다.</summary>
         public NodeGroupView CreateNewNodeGroupView(string title, Vector2 position)
         {
-            GroupData nodeGroupData = _tree.graphGroup.CreateGroupData(title, position);
-            NodeGroupView groupView = new NodeGroupView(_tree.graphGroup, nodeGroupData);
+            GroupData nodeGroupData = _graph.graphGroup.CreateGroupData(title, position);
+            NodeGroupView groupView = new NodeGroupView(_graph.graphGroup, nodeGroupData);
 
             groupView.SetPosition(new Rect(position, Vector2.zero));
             groupView.style.backgroundColor = BehaviourSystemEditor.Settings.nodeGroupColor;
@@ -206,26 +233,23 @@ namespace BehaviourSystemEditor.BT
                 {
                     switch (element)
                     {
-                        case Edge edge: NodeLinkHelper.RemoveEdgeAndDisconnection(_tree.graph as BehaviourTree, edge); break;
-
-                        case NodeView nodeView: this._tree.graph.DeleteNode(nodeView.targetNode); break;
-
-                        case NodeGroupView groupView: this._tree.graphGroup.DeleteGroupData(groupView.data); break;
+                        case Edge edge: this.graphViewProcessor.DisconnectNodesByEdge(_graph, edge); break;
+                        case NodeView nodeView: this._graph.graph.DeleteNode(nodeView.targetNode); break;
+                        case NodeGroupView groupView: this._graph.graphGroup.DeleteGroupData(groupView.data); break;
                     }
                 }
             }
-            
 
             //노드가 생성되거나 이동된 경우, 노드의 위치를 업데이트하고 새롭게 생성된 간선을 연결한다.
             if (graphViewChange.edgesToCreate is not null)
             {
-                NodeLinkHelper.UpdateNodeDataFromVisualEdges(_tree.graph as BehaviourTree, graphViewChange.edgesToCreate);
+                _graphViewProcessor.ConnectNodesByEdges(_graph, graphViewChange.edgesToCreate);
             }
 
             //노드의 위치를 업데이트된 경우, BT는 앞의 자식을 먼저 순회하기 때문에 X좌표에 따른 순서를 정렬하여 갱신해준다. 
             if (graphViewChange.movedElements is not null)
             {
-                base.nodes.ForEach(n => (n as NodeView)?.SortChildren());
+                _graphViewProcessor.NotifyNodePositionChanged(graphViewChange.movedElements);
             }
 
             return graphViewChange;
@@ -240,42 +264,18 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            for (int i = 0; i < selection.Count; ++i)
-            {
-                if (selection[i] is NodeView view && view.targetNode.nodeType == BehaviourNodeBase.ENodeType.Root)
-                {
-                    view.selected = false;
-                    selection.RemoveAt(i);
-                    break;
-                }
-            }
+            _graphViewProcessor.OnDeleteSelectionElements(this.selection);
 
             //DeleteSelection는 내부적으로 Selection 배열을 이용해서 VisualElement들을 제거함.
             //따라서 삭제되면 안되는 요소들만 Selection 배열에서 제거한 뒤, 현재 선택된 요소들(Selection 배열)을 제거하면 됨.
             this.DeleteSelection();
-        }
-        
-
-        /// <summary>로딩 시 노드 데이터로부터 NodeView를 재생성합니다.</summary>
-        private NodeView RecreateNodeViewOnLoad(NodeBase node)
-        {
-            if (node is null)
-            {
-                return null;
-            }
-
-            NodeView nodeView = new NodeView(node, BehaviourSystemEditor.Settings.nodeViewXml);
-            nodeView.OnNodeSelected += this.onNodeSelected;
-
-            base.AddElement(nodeView); //nodes라는 GraphElement 컨테이너에 추가.
-            return nodeView;
         }
 
         
         /// <summary>로딩 시 그룹 데이터로부터 NodeGroupView를 재생성합니다.</summary>
         private void RecreateNodeGroupViewOnLoad(GroupData data)
         {
-            NodeGroupView nodeGroupView = new NodeGroupView(_tree.graphGroup, data);
+            NodeGroupView nodeGroupView = new NodeGroupView(_graph.graphGroup, data);
 
             nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
             nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));

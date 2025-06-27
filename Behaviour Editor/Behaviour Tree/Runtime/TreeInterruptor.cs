@@ -190,7 +190,7 @@ namespace BehaviourSystem.BT
         {
             if (node is BehaviourNodeBase behaviourNode)
             {
-                bool isCompositeNode = behaviourNode.nodeType == BehaviourNodeBase.ENodeType.Composite;
+                bool isCompositeNode = behaviourNode.nodeType == BehaviourNodeBase.EBehaviourNodeType.Composite;
                 
                 if (isCompositeNode && behaviourNode is ParallelNode parallelNode)
                 {

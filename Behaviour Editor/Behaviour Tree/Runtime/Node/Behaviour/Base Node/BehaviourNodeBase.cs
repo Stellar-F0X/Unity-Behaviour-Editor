@@ -4,7 +4,7 @@ namespace BehaviourSystem.BT
 {
     public abstract class BehaviourNodeBase : NodeBase
     {
-        public enum ENodeType : byte
+        public enum EBehaviourNodeType : byte
         {
             Root,
             Action,
@@ -19,7 +19,7 @@ namespace BehaviourSystem.BT
         private BehaviourTree _tree;
         
         
-        public abstract ENodeType nodeType
+        public abstract EBehaviourNodeType nodeType
         {
             get;
         }

@@ -8,16 +8,29 @@ namespace BehaviourSystemEditor.BT
     [CustomEditor(typeof(NodeBase), true)]
     public class NodeBaseCustomEditor : Editor
     {
+        private GUIStyle _headerLabelStyle;
+        
+
         public override void OnInspectorGUI()
         {
-            GUIStyle headerLabelStyle = new GUIStyle(EditorStyles.toolbar);
-            headerLabelStyle.alignment = TextAnchor.MiddleLeft;
-            headerLabelStyle.fontStyle = FontStyle.Bold;
-            headerLabelStyle.fontSize = 13;
+            this.ParentSerializedField();
 
+            this.ChildSerializedFields(serializedObject.FindProperty("_parent"));
+        }
+
+        
+        protected virtual void ParentSerializedField()
+        {
+            _headerLabelStyle = new GUIStyle(EditorStyles.toolbar)
+            {
+                alignment = TextAnchor.MiddleLeft,
+                fontStyle = FontStyle.Bold,
+                fontSize = 13,
+            };
+            
             using (new GUIColorScope(new Color32(255, 255, 255, 255), GUIColorScope.EGUIColorScope.Background))
             {
-                EditorGUILayout.LabelField("Information", headerLabelStyle);
+                EditorGUILayout.LabelField("Information", _headerLabelStyle);
             }
 
             EditorGUILayout.Space(2);
@@ -27,11 +40,10 @@ namespace BehaviourSystemEditor.BT
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"));
                 //EditorGUILayout.PropertyField(serializedObject.FindProperty("_guid"));
             }
-            
+
             SerializedProperty nameProp = serializedObject.FindProperty("m_Name");
             SerializedProperty tagProp = serializedObject.FindProperty("_tag");
             SerializedProperty desProp = serializedObject.FindProperty("_description");
-            SerializedProperty iterator = serializedObject.FindProperty("_parent");
 
             using (new EditorGUI.DisabledScope(!BehaviourSystemEditor.CanEditGraph))
             {
@@ -41,19 +53,24 @@ namespace BehaviourSystemEditor.BT
                 EditorGUILayout.LabelField("Description");
                 desProp.stringValue = EditorGUILayout.TextArea(desProp.stringValue, GUILayout.Height(EditorGUIUtility.singleLineHeight * 3));
             }
+        }
 
+
+        protected virtual void ChildSerializedFields(SerializedProperty iterator)
+        {
             EditorGUILayout.Space(10);
 
             if (iterator.NextVisible(false))
             {
                 using (new GUIColorScope(new Color32(255, 255, 255, 255), GUIColorScope.EGUIColorScope.Background))
                 {
-                    EditorGUILayout.LabelField(this.target.name, headerLabelStyle);
+                    EditorGUILayout.LabelField(this.target.name, _headerLabelStyle);
                 }
-                
+
                 EditorGUILayout.Space(2);
-                
-                do EditorGUILayout.PropertyField(iterator);
+
+                do
+                    EditorGUILayout.PropertyField(iterator, true);
                 while (iterator.NextVisible(false));
             }
 

@@ -5,9 +5,9 @@ namespace BehaviourSystem.BT
     [Serializable]
     public abstract class ActionNode : BehaviourNodeBase
     {
-        public override sealed ENodeType nodeType
+        public override sealed EBehaviourNodeType nodeType
         {
-            get { return ENodeType.Action; }
+            get { return EBehaviourNodeType.Action; }
         }
     }
 }

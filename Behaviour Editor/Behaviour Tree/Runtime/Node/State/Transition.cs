@@ -7,6 +7,13 @@ namespace BehaviourSystem.BT
     [Serializable]
     public class Transition
     {
+        public Transition(UGUID targetState)
+        {
+            nextStateNodeUGUID = targetState;
+            conditions.Add(new BlackboardBasedCondition());
+        }
+        
+        
         [HideInInspector]
         public UGUID nextStateNodeUGUID;
         

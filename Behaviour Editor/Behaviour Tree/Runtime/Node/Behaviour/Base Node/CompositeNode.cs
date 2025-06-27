@@ -13,9 +13,9 @@ namespace BehaviourSystem.BT
         protected int _currentChildIndex = 0;
 
 
-        public override sealed ENodeType nodeType
+        public override sealed EBehaviourNodeType nodeType
         {
-            get { return ENodeType.Composite; }
+            get { return EBehaviourNodeType.Composite; }
         }
 
         public int childCount

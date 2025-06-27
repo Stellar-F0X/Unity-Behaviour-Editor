@@ -68,6 +68,27 @@ namespace BehaviourSystem.BT
 
 
 #if UNITY_EDITOR
+
+        public void ConnectStates(StateNodeBase from, StateNodeBase to)
+        {
+            Undo.RecordObject(this, "Finite State Machine (Connect)");
+            
+            from.transitions.Add(new Transition(to.guid));
+            
+            EditorUtility.SetDirty(this);
+        }
+        
+
+        public void DisconnectStates(StateNodeBase from, StateNodeBase to)
+        {
+            Undo.RecordObject(this, "Finite State Machine (Disconnect)");
+            
+            from.transitions.RemoveAll(t => t.nextStateNodeUGUID == to.guid);
+
+            EditorUtility.SetDirty(this);
+        }
+        
+        
         public void AddState(StateNodeBase state)
         {
             Undo.RecordObject(this, "Finite State Machine (AddState)");

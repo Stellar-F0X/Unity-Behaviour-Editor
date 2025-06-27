@@ -1,0 +1,168 @@
+.node {
+    min-width: 150px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+#node-state {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    display: flex;
+}
+
+#node-border {
+    background-color: rgb(50, 50, 50);
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+#title-label {
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    align-self: stretch;
+    justify-content: center;
+    align-items: center;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    font-size: 14px;
+    height: auto;
+    position: relative;
+    -unity-font-style: bold;
+    transform-origin: center;
+    color: rgb(194, 194, 194);
+}
+
+#selection-border {
+    margin-top: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    margin-left: 2px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-left-color: rgb(255, 128, 0);
+    border-right-color: rgb(255, 128, 0);
+    border-top-color: rgb(255, 128, 0);
+    border-bottom-color: rgb(255, 128, 0);
+    overflow: hidden;
+    visibility: visible;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+:selected > #selection-border {
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    overflow: visible;
+}
+
+#divider {
+    height: 10px;
+}
+
+#input > .port {
+    min-width: 60%;
+    background-color: rgb(25, 25, 25);
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    align-self: center;
+    align-items: auto;
+    flex-wrap: nowrap;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-left-color: rgb(70, 70, 70);
+    border-right-color: rgb(70, 70, 70);
+    border-top-color: rgb(70, 70, 70);
+    border-bottom-color: rgb(70, 70, 70);
+}
+
+#output > .port {
+    min-width: 60%;
+    background-color: rgb(25, 25, 25);
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    align-self: center;
+    align-items: auto;
+    flex-wrap: wrap-reverse;
+    justify-content: flex-end;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-left-color: rgb(70, 70, 70);
+    border-right-color: rgb(70, 70, 70);
+    border-top-color: rgb(70, 70, 70);
+    border-bottom-color: rgb(70, 70, 70);
+}
+
+#input > .port > #connector {
+    align-self: center;
+    display: flex;
+    visibility: hidden;
+    flex-wrap: nowrap;
+    position: absolute;
+}
+
+#output > .port > #connector {
+    align-self: center;
+    display: flex;
+    visibility: hidden;
+    flex-wrap: nowrap;
+    left: auto;
+    right: auto;
+    position: absolute;
+}
+
+.behaviour-node-Action {
+    background-color: rgb(108, 0, 221);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-repeat: no-repeat no-repeat;
+}
+
+.behaviour-node-Composite {
+    background-color: rgb(255, 118, 0);
+}
+
+.behaviour-node-Decorator {
+    background-color: rgb(0, 119, 255);
+}
+
+.behaviour-node-Root {
+    background-color: rgb(0, 192, 90);
+}
+
+.behaviour-node-SubGraph {
+    background-color: rgb(212, 0, 153);
+}

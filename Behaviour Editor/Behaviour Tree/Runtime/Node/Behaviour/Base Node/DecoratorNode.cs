@@ -43,9 +43,9 @@ namespace BehaviourSystem.BT
         }
 
 
-        public override sealed ENodeType nodeType
+        public override sealed EBehaviourNodeType nodeType
         {
-            get { return ENodeType.Decorator; }
+            get { return EBehaviourNodeType.Decorator; }
         }
 
         public int childCount

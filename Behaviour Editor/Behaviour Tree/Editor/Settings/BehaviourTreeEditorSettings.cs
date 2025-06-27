@@ -25,10 +25,12 @@ namespace BehaviourSystemEditor.BT
 
         
         [Header("Layout References")]
-        [HideInInspector] public VisualTreeAsset behaviourTreeEditorXml;
-        [HideInInspector] public StyleSheet behaviourTreeStyle;
-        [HideInInspector] public VisualTreeAsset nodeViewXml;
-        [HideInInspector] public StyleSheet nodeViewStyle;
+        public VisualTreeAsset behaviourGraphEditorXml;
+        public StyleSheet behaviourGraphStyle;
+        public VisualTreeAsset behaviourNodeViewXml;
+        public StyleSheet behaviourNodeViewStyle;
+        public VisualTreeAsset stateNodeViewXml;
+        public StyleSheet stateNodeViewStyle;
         [HideInInspector] public VisualTreeAsset blackboardPropertyViewXml;
         [HideInInspector] public StyleSheet blackboardPropertyViewStyle;
         [HideInInspector] public VisualTreeAsset editorSettingsXml;
