@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BehaviourSystem.BT;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -38,7 +39,7 @@ namespace BehaviourSystemEditor.BT
 
         public void OnDropOutsidePort(Edge edge, Vector2 position)
         {
-            if (BehaviourTreeEditor.Instance is null || BehaviourTreeEditor.Instance.View is null || BehaviourTreeEditor.CanEditTree == false)
+            if (BehaviourTreeEditor.Instance is null || BehaviourTreeEditor.Instance.View is null || BehaviourTreeEditor.CanEditGraph == false)
             {
                 return;
             }
@@ -51,7 +52,8 @@ namespace BehaviourSystemEditor.BT
                     
                     if (NodeLinkHelper.TryConnectNodesByEdge(newParentNodeView, connectionDestination, out _))
                     {
-                        BehaviourTreeEditor.Instance.Tree.nodeSet.AddChild(newParentNodeView.targetNode, connectionDestination.targetNode);
+                        BehaviourTree tree = BehaviourTreeEditor.Instance.Tree.graph as BehaviourTree;
+                        tree?.AddChild(newParentNodeView.targetNode, connectionDestination.targetNode);
                     }
                 });
             }
@@ -63,7 +65,8 @@ namespace BehaviourSystemEditor.BT
                     
                     if (NodeLinkHelper.TryConnectNodesByEdge(connectionSource, newChildNodeView, out _))
                     {
-                        BehaviourTreeEditor.Instance.Tree.nodeSet.AddChild(connectionSource.targetNode, newChildNodeView.targetNode);
+                        BehaviourTree tree = BehaviourTreeEditor.Instance.Tree.graph as BehaviourTree;
+                        tree?.AddChild(connectionSource.targetNode, newChildNodeView.targetNode);
                     }
                 });
             }

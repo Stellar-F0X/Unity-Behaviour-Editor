@@ -11,15 +11,15 @@ namespace BehaviourSystemEditor.BT
         {
             foreach (string path in importedAssets)
             {
-                BehaviourTree asset = AssetDatabase.LoadAssetAtPath<BehaviourTree>(path);
+                GraphAsset asset = AssetDatabase.LoadAssetAtPath<GraphAsset>(path);
 
                 if (asset != null)
                 {
                     bool changed = false;
 
-                    if (asset.treeGuid.IsEmpty() || IsGuidDuplicated(asset))
+                    if (asset.guid.IsEmpty() || IsGuidDuplicated(asset))
                     {
-                        asset.treeGuid = UGUID.Create();
+                        asset.guid = UGUID.Create();
                         ChangeNodesOfTreeGuid(asset);
                         EditorUtility.SetDirty(asset);
                         changed = true;
@@ -38,24 +38,24 @@ namespace BehaviourSystemEditor.BT
 
 
 
-        private static void ChangeNodesOfTreeGuid(BehaviourTree asset)
+        private static void ChangeNodesOfTreeGuid(GraphAsset asset)
         {
-            if (asset.nodeSet == null || asset.nodeSet.nodeList.Count == 0)
+            if (asset.graph == null || asset.graph.nodes.Count == 0)
             {
                 return;
             }
 
-            foreach (var nodeBase in asset.nodeSet.nodeList)
+            foreach (var nodeBase in asset.graph.nodes)
             {
                 UGUID originalGuid = nodeBase.guid;
                 nodeBase.guid = UGUID.Create();
 
-                if (asset.groupDataSet.dataList.Count == 0)
+                if (asset.graphGroup.dataList.Count == 0)
                 {
                     continue;
                 }
 
-                foreach (GroupData groupData in asset.groupDataSet.dataList)
+                foreach (GroupData groupData in asset.graphGroup.dataList)
                 {
                     if (groupData.containedNodeCount > 0 && groupData.Contains(originalGuid))
                     {
@@ -68,20 +68,20 @@ namespace BehaviourSystemEditor.BT
 
 
 
-        private static bool TryInitializeNodeSetList(BehaviourTree asset)
+        private static bool TryInitializeNodeSetList(GraphAsset asset)
         {
-            if (asset.nodeSet != null)
+            if (asset.graph != null)
             {
                 return false;
             }
 
-            asset.nodeSet = ScriptableObject.CreateInstance<BehaviourNodeSet>();
-            asset.nodeSet.hideFlags = HideFlags.HideInHierarchy;
-            AssetDatabase.AddObjectToAsset(asset.nodeSet, asset);
+            asset.graph = ScriptableObject.CreateInstance<BehaviourTree>();
+            asset.graph.hideFlags = HideFlags.HideInHierarchy;
+            AssetDatabase.AddObjectToAsset(asset.graph, asset);
 
-            if (asset.nodeSet.rootNode == null)
+            if (asset.graph.entry == null)
             {
-                asset.nodeSet.rootNode = asset.nodeSet.CreateNode(typeof(RootNode));
+                asset.graph.entry = asset.graph.CreateNode(typeof(RootNode));
                 EditorUtility.SetDirty(asset);
             }
 
@@ -90,23 +90,23 @@ namespace BehaviourSystemEditor.BT
 
 
 
-        private static bool TryInitializeGroupDataSet(BehaviourTree asset)
+        private static bool TryInitializeGroupDataSet(GraphAsset asset)
         {
-            if (asset.groupDataSet != null)
+            if (asset.graphGroup != null)
             {
                 return false;
             }
             
-            asset.groupDataSet = ScriptableObject.CreateInstance<GroupDataSet>();
-            asset.groupDataSet.hideFlags = HideFlags.HideInHierarchy;
-            AssetDatabase.AddObjectToAsset(asset.groupDataSet, asset);
+            asset.graphGroup = ScriptableObject.CreateInstance<GraphGroup>();
+            asset.graphGroup.hideFlags = HideFlags.HideInHierarchy;
+            AssetDatabase.AddObjectToAsset(asset.graphGroup, asset);
             return false;
         }
 
 
-        private static bool IsGuidDuplicated(BehaviourTree currentAsset)
+        private static bool IsGuidDuplicated(GraphAsset currentAsset)
         {
-            if (currentAsset.treeGuid.IsEmpty())
+            if (currentAsset.guid.IsEmpty())
             {
                 return false;
             }
@@ -118,9 +118,9 @@ namespace BehaviourSystemEditor.BT
             foreach (string guid in guids)
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath(guid);
-                BehaviourTree asset = AssetDatabase.LoadAssetAtPath<BehaviourTree>(assetPath);
+                GraphAsset asset = AssetDatabase.LoadAssetAtPath<GraphAsset>(assetPath);
 
-                if (asset != null && asset.treeGuid == currentAsset.treeGuid)
+                if (asset != null && asset.guid == currentAsset.guid)
                 {
                     count++;
 

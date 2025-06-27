@@ -135,7 +135,7 @@ namespace BehaviourSystemEditor.BT
 
             using (new EditorGUI.PropertyScope(position, label, property))
             {
-                using (new EditorGUI.DisabledScope(!BehaviourTreeEditor.CanEditTree))
+                using (new EditorGUI.DisabledScope(!BehaviourTreeEditor.CanEditGraph))
                 {
                     EditorGUI.PrefixLabel(labelRect, label);
                     int newSelectedIndex = EditorGUI.Popup(fieldRect, selectedIndex, keyNames);

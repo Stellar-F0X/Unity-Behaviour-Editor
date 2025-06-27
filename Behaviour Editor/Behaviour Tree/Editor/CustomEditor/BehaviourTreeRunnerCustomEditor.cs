@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BehaviourSystemEditor.BT
 {
-    [CustomEditor(typeof(BehaviourTreeRunner))]
+    [CustomEditor(typeof(BehaviourSystemRunner))]
     public class BehaviourTreeRunnerCustomEditor : Editor
     {
         public override void OnInspectorGUI()
@@ -14,7 +14,7 @@ namespace BehaviourSystemEditor.BT
             SerializedProperty useFixedUpdate = serializedObject.FindProperty("useFixedUpdate");
             SerializedProperty tickUpdateMode = serializedObject.FindProperty("tickUpdateMode");
 
-            treeAsset.objectReferenceValue = EditorGUILayout.ObjectField("Tree Asset", treeAsset.objectReferenceValue, typeof(BehaviourTree), false);
+            treeAsset.objectReferenceValue = EditorGUILayout.ObjectField("Tree Asset", treeAsset.objectReferenceValue, typeof(GraphAsset), false);
 
             tickUpdateMode.enumValueIndex = EditorGUILayout.Popup("Tick Update Mode", tickUpdateMode.enumValueIndex, tickUpdateMode.enumDisplayNames);
             useFixedUpdate.boolValue = EditorGUILayout.Toggle("Use Fixed Update", useFixedUpdate.boolValue);
@@ -22,9 +22,9 @@ namespace BehaviourSystemEditor.BT
 
             serializedObject.ApplyModifiedProperties();
 
-            if (treeAsset.objectReferenceValue is BehaviourTree convertedTreeAsset)
+            if (treeAsset.objectReferenceValue is GraphAsset convertedTreeAsset)
             {
-                int nodeCount = convertedTreeAsset.nodeSet?.nodeList?.Count ?? 0;
+                int nodeCount = convertedTreeAsset.graph?.nodes?.Count ?? 0;
                 int propertyCount = convertedTreeAsset.blackboard?.properties?.Count ?? 0;
 
                 EditorGUILayout.HelpBox($"Total Behaviour Nodes: {nodeCount} \nBlackboard Variables: {propertyCount}", MessageType.Info);

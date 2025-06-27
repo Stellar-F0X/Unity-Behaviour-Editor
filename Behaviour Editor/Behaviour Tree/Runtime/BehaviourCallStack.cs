@@ -17,12 +17,12 @@ namespace BehaviourSystem.BT
             public readonly int callStackID;
             public readonly NodeBase targetNode; //null이면 전체 스택 중단
         }
-        
-        public BehaviourCallStack(BehaviourNodeSet nodeSet)
+
+        public BehaviourCallStack(BehaviourTree tree)
         {
-            int count = nodeSet.callStackSize + 1;
-            int excludingRootCount = nodeSet.nodeList.Count - 1;
-            
+            int count = tree.callStackSize + 1;
+            int excludingRootCount = tree.nodes.Count - 1;
+
             this._runtimeCallStack = new FixedList<Stack<NodeBase>>(count);
             this._abortQueue = new FixedQueue<AbortInfo>(excludingRootCount); //count excluding root node
 
@@ -34,7 +34,7 @@ namespace BehaviourSystem.BT
 
 
         private bool _isAbortSubtreeInProgress = false;
-        
+
         private FixedList<Stack<NodeBase>> _runtimeCallStack;
 
         private FixedQueue<AbortInfo> _abortQueue;
@@ -101,14 +101,14 @@ namespace BehaviourSystem.BT
                 _abortQueue.Enqueue(new AbortInfo(callStackID));
                 return;
             }
-            
+
             _isAbortSubtreeInProgress = true;
             _abortQueue.Enqueue(new AbortInfo(callStackID));
 
             this.ProcessAbortQueue(false);
             _isAbortSubtreeInProgress = false;
         }
-        
+
 
         /// <summary> 중단 큐를 처리하여 노드들을 정리 </summary>
         /// <param name="abortQueue">중단할 노드들의 큐</param>
@@ -173,7 +173,7 @@ namespace BehaviourSystem.BT
             {
                 return;
             }
-            
+
             this.ProcessNodeExit(_runtimeCallStack[currentID].Peek());
 
             if (_runtimeCallStack[currentID].Count > 0)
@@ -188,22 +188,24 @@ namespace BehaviourSystem.BT
         /// <summary> 노드 종료 처리 (병렬 노드의 경우 자식들도 중단) </summary>
         private void ProcessNodeExit(NodeBase node)
         {
-            if (node.nodeType == NodeBase.ENodeType.Composite && node is ParallelNode parallelNode)
+            if (node is BehaviourNodeBase behaviourNode)
             {
-                List<NodeBase> children = parallelNode.GetChildren();
-                int count = children.Count;
-
-                // 병렬 노드의 모든 자식들을 중단 큐에 추가
-                for (int i = 0; i < count; ++i)
+                bool isCompositeNode = behaviourNode.nodeType == BehaviourNodeBase.ENodeType.Composite;
+                
+                if (isCompositeNode && behaviourNode is ParallelNode parallelNode)
                 {
-                    _abortQueue.Enqueue(new AbortInfo(children[i].callStackID));
+                    // 병렬 노드의 모든 자식들을 중단 큐에 추가
+                    foreach (NodeBase child in parallelNode.GetChildren())
+                    {
+                        _abortQueue.Enqueue(new AbortInfo(child.callStackID));
+                    }
                 }
             }
 
             node.ExitNode();
         }
 
-        
+
         /// <summary> 호출 스택이 유효한지 확인  </summary>
         private bool IsValidCallStack(int callStackID)
         {

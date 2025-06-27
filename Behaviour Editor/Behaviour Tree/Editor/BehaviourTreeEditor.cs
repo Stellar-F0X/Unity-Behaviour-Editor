@@ -14,11 +14,11 @@ namespace BehaviourSystemEditor.BT
     {
         private static BehaviourTreeEditorSettings _settings;
 
-        private BehaviourTree _tree;
+        private GraphAsset _tree;
 
-        private BehaviourTree _editorOnlyTree;
+        private GraphAsset _editorOnlyTree;
 
-        private BehaviourTreeRunner _treeRunner;
+        private BehaviourSystemRunner _systemRunner;
 
         private MiniMapView _miniMapView;
 
@@ -57,7 +57,7 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>현재 트리를 편집할 수 있는지 여부를 나타냅니다.</summary>
-        public static bool CanEditTree
+        public static bool CanEditGraph
         {
             get;
             private set;
@@ -80,7 +80,7 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>현재 편집 중인 Behaviour Tree를 가져옵니다.</summary>
-        public BehaviourTree Tree
+        public GraphAsset Tree
         {
             get { return _tree; }
         }
@@ -96,7 +96,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void OpenWindow(BehaviourTree tree)
+        public static void OpenWindow(GraphAsset tree)
         {
             if (Instance != null && Instance._tree == tree)
             {
@@ -113,7 +113,7 @@ namespace BehaviourSystemEditor.BT
         [OnOpenAsset]
         private static bool OnOpenAsset(int instanceID, int line)
         {
-            if (Selection.activeObject is BehaviourTree)
+            if (Selection.activeObject is GraphAsset)
             {
                 OpenWindow();
                 return true;
@@ -127,7 +127,7 @@ namespace BehaviourSystemEditor.BT
         private void Initialize()
         {
             IsLoadingTreeToView = false;
-            CanEditTree = false;
+            CanEditGraph = false;
 
             this._inspectorView?.Clear();
             this._treeView?.ClearEditorView();
@@ -141,7 +141,7 @@ namespace BehaviourSystemEditor.BT
         private void ResetTreeObjects()
         {
             this._tree = null;
-            this._treeRunner = null;
+            this._systemRunner = null;
         }
 
         
@@ -244,7 +244,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            if (_treeRunner?.runtimeTree is null)
+            if (_systemRunner?.runtimeGraph is null)
             {
                 return;
             }
@@ -277,7 +277,7 @@ namespace BehaviourSystemEditor.BT
                 case PlayModeStateChange.EnteredEditMode:
                 {
                     EditorApplication.update -= this.RuntimeUpdate;
-                    bool clickedNewAsset = this.TryGetTreeAsset(out BehaviourTree selectedTreeAsset);
+                    bool clickedNewAsset = this.TryGetTreeAsset(out GraphAsset selectedTreeAsset);
                     this.ChangeBehaviourTree(clickedNewAsset ? selectedTreeAsset : _editorOnlyTree);
                     return;
                 }
@@ -295,7 +295,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>에디터에서 선택된 객체가 변경될 때 호출됩니다.</summary>
         private void OnSelectionChange()
         {
-            bool foundTree = this.TryGetTreeAsset(out BehaviourTree selectedTreeAsset);
+            bool foundTree = this.TryGetTreeAsset(out GraphAsset selectedTreeAsset);
 
             if (foundTree && _tree != selectedTreeAsset)
             {
@@ -305,20 +305,20 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>현재 선택된 객체에서 Behaviour Tree를 찾습니다.</summary>
-        private bool TryGetTreeAsset(out BehaviourTree tree)
+        private bool TryGetTreeAsset(out GraphAsset tree)
         {
             UObject selectedObject = Selection.activeObject;
 
-            if (selectedObject is BehaviourTree treeAsset)
+            if (selectedObject is GraphAsset treeAsset)
             {
                 tree = treeAsset;
                 return true;
             }
 
-            if (selectedObject is GameObject gobj && gobj.TryGetComponent(out BehaviourTreeRunner runner))
+            if (selectedObject is GameObject gobj && gobj.TryGetComponent(out BehaviourSystemRunner runner))
             {
-                tree = runner.runtimeTree;
-                _treeRunner = runner;
+                tree = runner.runtimeGraph;
+                _systemRunner = runner;
                 return tree is not null;
             }
 
@@ -328,22 +328,22 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>에디터에서 편집할 Behaviour Tree를 변경합니다.</summary>
-        private void ChangeBehaviourTree(BehaviourTree treeAsset)
+        private void ChangeBehaviourTree(GraphAsset treeAsset)
         {
             if (treeAsset is null)
             {
                 return;
             }
 
-            CanEditTree = !Application.isPlaying;
+            CanEditGraph = !Application.isPlaying;
             _tree = treeAsset;
 
-            if (CanEditTree)
+            if (CanEditGraph)
             {
                 _editorOnlyTree = treeAsset;
             }
 
-            bool isValidTreeRunner = _treeRunner is not null && _treeRunner.runtimeTree == _tree;
+            bool isValidTreeRunner = _systemRunner is not null && _systemRunner.runtimeGraph == _tree;
             bool openedEditorWindow = AssetDatabase.CanOpenAssetInEditor(_tree.GetInstanceID());
 
             if ((isValidTreeRunner && Application.isPlaying) || openedEditorWindow)

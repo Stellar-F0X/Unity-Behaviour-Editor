@@ -1,0 +1,92 @@
+using System;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+
+namespace BehaviourSystem.BT
+{
+    public abstract class Graph : ScriptableObject
+    {
+        [HideInInspector]
+        public NodeBase entry; //root node Or default node
+
+        [HideInInspector]
+        public List<NodeBase> nodes = new List<NodeBase>();
+        
+        
+        public abstract Graph CloneGraph(Blackboard clonedBlackboard);
+
+        
+        public abstract EStatus UpdateGraph();
+        
+        
+        public abstract void ResetGraph();
+
+
+        public abstract void StopGraph();
+
+
+        public bool TryGetNodeByGUID(UGUID uguid, out NodeBase node)
+        {
+            for (int i = 0; i < nodes.Count; ++i)
+            {
+                if (nodes[i].guid == uguid)
+                {
+                    node = nodes[i];
+                    return true;
+                }
+            }
+
+            node = null;
+            return false;
+        }
+        
+        
+#if UNITY_EDITOR
+        public NodeBase CreateNode(Type nodeType)
+        {
+            NodeBase node = NodeFactory.CreateNode(nodeType);
+
+            if (node is null)
+            {
+                throw new Exception("Node is null");
+            }
+
+            if (Application.isPlaying == false && Undo.isProcessing == false)
+            {
+                Undo.RecordObject(this, "Behaviour Tree (CreateNode)");
+            }
+
+            nodes.Add(node);
+
+            if (Application.isPlaying == false && Undo.isProcessing == false)
+            {
+                Undo.RegisterCreatedObjectUndo(node, "Behaviour Tree (CreateNode)");
+                AssetDatabase.AddObjectToAsset(node, this);
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
+            }
+
+            return node;
+        }
+
+        
+        public void DeleteNode(NodeBase node)
+        {
+            if (Application.isPlaying == false && Undo.isProcessing == false)
+            {
+                Undo.RecordObject(this, "Behaviour Tree (DeleteNode)");
+            }
+
+            nodes.Remove(node);
+
+            if (Application.isPlaying == false && Undo.isProcessing == false)
+            {
+                Undo.DestroyObjectImmediate(node);
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
+            }
+        }
+#endif
+    }
+}

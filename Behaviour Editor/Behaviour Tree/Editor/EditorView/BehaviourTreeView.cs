@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {
+    //TODO: BehaviourTreeView를 GraphView로 변경.
     [UxmlElement]
     public partial class BehaviourTreeView : GraphView
     {
@@ -33,7 +34,7 @@ namespace BehaviourSystemEditor.BT
         private float _nextUpdateTime;
         private float _lastUpdateTime;
 
-        private BehaviourTree _tree;
+        private GraphAsset _tree;
         private CreationWindow _creationWindow;
 
         
@@ -49,7 +50,7 @@ namespace BehaviourSystemEditor.BT
         /// 주어진 Behaviour Tree를 그래프 에디터 뷰에 표시합니다.
         /// 노드들과 연결을 생성하고 그룹 데이터를 복원합니다.
         /// </summary>
-        public void OnGraphEditorView(BehaviourTree tree)
+        public void OnGraphEditorView(GraphAsset tree)
         {
             if (tree is not null)
             {
@@ -63,21 +64,21 @@ namespace BehaviourSystemEditor.BT
                 graphViewChanged += this.OnGraphViewChanged;
                 this.deleteSelection += this.OnDeleteSelectionElements;
 
-                for (int i = 0; i < tree.nodeSet.nodeList.Count; ++i)
+                for (int i = 0; i < tree.graph.nodes.Count; ++i)
                 {
                     //1. Undo로 생성이 취소된 노드를 여기서 처리.
                     //2. Graph에 만들어졌지만 클래스를 삭제당한 노드도 삭제.
-                    if (tree.nodeSet.nodeList[i] is null)
+                    if (tree.graph.nodes[i] is null)
                     {
-                        tree.nodeSet.nodeList.RemoveAt(i--);
+                        tree.graph.nodes.RemoveAt(i--);
                     }
                 }
 
                 //트리 구조라서 미리 모두 생성해둬야 자식과 부모를 연결 할 수 있음.
-                tree.nodeSet.nodeList.ForEach(n => this.RecreateNodeViewOnLoad(n));
-                tree.nodeSet.nodeList.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n));
+                tree.graph.nodes.ForEach(n => this.RecreateNodeViewOnLoad(n));
+                tree.graph.nodes.ForEach(n => NodeLinkHelper.CreateVisualEdgesFromNodeData(this, n));
 
-                tree.groupDataSet?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
+                tree.graphGroup?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
             }
         }
 
@@ -111,7 +112,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>마우스 위치에서 컨텍스트 메뉴(노드 생성) 창을 엽니다.</summary>
         public void OpenContextualMenuWindow(Vector2 mousePosition, Action<NodeView> onNewNodeCreatedOnce = null)
         {
-            if (BehaviourTreeEditor.CanEditTree == false)
+            if (BehaviourTreeEditor.CanEditGraph == false)
             {
                 return;
             }
@@ -153,7 +154,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>새로운 노드를 생성하고 해당하는 NodeView를 반환합니다.</summary>
         public NodeView CreateNewNodeAndView(Type type, Vector2 mousePosition)
         {
-            NodeBase node = _tree.nodeSet.CreateNode(type);
+            NodeBase node = _tree.graph.CreateNode(type);
             node.position = Vector2Int.CeilToInt(mousePosition);
             return this.RecreateNodeViewOnLoad(node);
         }
@@ -162,8 +163,8 @@ namespace BehaviourSystemEditor.BT
         /// <summary>새로운 노드 그룹 뷰를 생성하고 반환합니다.</summary>
         public NodeGroupView CreateNewNodeGroupView(string title, Vector2 position)
         {
-            GroupData nodeGroupData = _tree.groupDataSet.CreateGroupData(title, position);
-            NodeGroupView groupView = new NodeGroupView(_tree.groupDataSet, nodeGroupData);
+            GroupData nodeGroupData = _tree.graphGroup.CreateGroupData(title, position);
+            NodeGroupView groupView = new NodeGroupView(_tree.graphGroup, nodeGroupData);
 
             groupView.SetPosition(new Rect(position, Vector2.zero));
             groupView.style.backgroundColor = BehaviourTreeEditor.Settings.nodeGroupColor;
@@ -205,11 +206,11 @@ namespace BehaviourSystemEditor.BT
                 {
                     switch (element)
                     {
-                        case Edge edge: NodeLinkHelper.RemoveEdgeAndDisconnection(_tree.nodeSet, edge); break;
+                        case Edge edge: NodeLinkHelper.RemoveEdgeAndDisconnection(_tree.graph as BehaviourTree, edge); break;
 
-                        case NodeView nodeView: this._tree.nodeSet.DeleteNode(nodeView.targetNode); break;
+                        case NodeView nodeView: this._tree.graph.DeleteNode(nodeView.targetNode); break;
 
-                        case NodeGroupView groupView: this._tree.groupDataSet.DeleteGroupData(groupView.data); break;
+                        case NodeGroupView groupView: this._tree.graphGroup.DeleteGroupData(groupView.data); break;
                     }
                 }
             }
@@ -218,7 +219,7 @@ namespace BehaviourSystemEditor.BT
             //노드가 생성되거나 이동된 경우, 노드의 위치를 업데이트하고 새롭게 생성된 간선을 연결한다.
             if (graphViewChange.edgesToCreate is not null)
             {
-                NodeLinkHelper.UpdateNodeDataFromVisualEdges(_tree.nodeSet, graphViewChange.edgesToCreate);
+                NodeLinkHelper.UpdateNodeDataFromVisualEdges(_tree.graph as BehaviourTree, graphViewChange.edgesToCreate);
             }
 
             //노드의 위치를 업데이트된 경우, BT는 앞의 자식을 먼저 순회하기 때문에 X좌표에 따른 순서를 정렬하여 갱신해준다. 
@@ -234,14 +235,14 @@ namespace BehaviourSystemEditor.BT
         /// <summary>선택된 요소들을 삭제할 때 호출되는 콜백 메서드입니다.</summary>
         private void OnDeleteSelectionElements(string operationName, AskUser user)
         {
-            if (BehaviourTreeEditor.CanEditTree == false)
+            if (BehaviourTreeEditor.CanEditGraph == false)
             {
                 return;
             }
 
             for (int i = 0; i < selection.Count; ++i)
             {
-                if (selection[i] is NodeView view && view.targetNode.nodeType == NodeBase.ENodeType.Root)
+                if (selection[i] is NodeView view && view.targetNode.nodeType == BehaviourNodeBase.ENodeType.Root)
                 {
                     view.selected = false;
                     selection.RemoveAt(i);
@@ -274,7 +275,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>로딩 시 그룹 데이터로부터 NodeGroupView를 재생성합니다.</summary>
         private void RecreateNodeGroupViewOnLoad(GroupData data)
         {
-            NodeGroupView nodeGroupView = new NodeGroupView(_tree.groupDataSet, data);
+            NodeGroupView nodeGroupView = new NodeGroupView(_tree.graphGroup, data);
 
             nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
             nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));

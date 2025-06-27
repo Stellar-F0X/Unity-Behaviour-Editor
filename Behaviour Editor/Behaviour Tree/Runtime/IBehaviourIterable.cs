@@ -6,6 +6,6 @@ namespace BehaviourSystem.BT
     {
         public int childCount { get; }
         
-        public List<NodeBase> GetChildren();
+        public IEnumerable<NodeBase> GetChildren();
     }
 }

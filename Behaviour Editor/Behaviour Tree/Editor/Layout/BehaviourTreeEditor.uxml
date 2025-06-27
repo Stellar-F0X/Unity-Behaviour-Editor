@@ -21,6 +21,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="right-panel" style="flex-grow: 1; flex-shrink: 1; min-width: 10%; max-width: none;">
             <uie:Toolbar name="right-toolbar" style="justify-content: space-between;">
+                <uie:ToolbarBreadcrumbs style="flex-grow: 1; min-width: 150px; background-color: rgba(135, 135, 135, 0.14); margin-right: 2px; margin-left: 3px;" />
                 <BehaviourSystemEditor.BT.NodeSearchFieldView style="-unity-background-image-tint-color: rgb(13, 13, 13);" />
                 <uie:ToolbarToggle label="Minimap" name="active-minimap" value="false" style="overflow: visible;" />
             </uie:Toolbar>

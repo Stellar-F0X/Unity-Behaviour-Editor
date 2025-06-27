@@ -8,16 +8,16 @@ namespace BehaviourSystemEditor.BT
 {
     public class NodeGroupView : Group
     {
-        public NodeGroupView(GroupDataSet dataSet, GroupData dataContainer) : base()
+        public NodeGroupView(GraphGroup dataSet, GroupData dataContainer) : base()
         {
             this._data = dataContainer;
-            this._groupDataDataSet = dataSet;
+            this._graphGroupData = dataSet;
 
             this.title = dataContainer.title;
             this.style.backgroundColor = BehaviourTreeEditor.Settings.nodeGroupColor;
         }
 
-        private readonly GroupDataSet _groupDataDataSet;
+        private readonly GraphGroup _graphGroupData;
         private readonly GroupData _data;
 
 
@@ -32,7 +32,7 @@ namespace BehaviourSystemEditor.BT
             Undo.RecordObject(_data, "Behaviour Tree (NodeGroupViewNameChanged)");
             base.OnGroupRenamed(oldName, newName);
             _data.title = newName;
-            EditorUtility.SetDirty(_groupDataDataSet);
+            EditorUtility.SetDirty(_graphGroupData);
         }
 
 
@@ -50,7 +50,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.IsLoadingTreeToView == false)
+            if (BehaviourTreeEditor.CanEditGraph && BehaviourTreeEditor.IsLoadingTreeToView == false)
             {
                 foreach (var element in elements)
                 {
@@ -70,7 +70,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            if (BehaviourTreeEditor.CanEditTree && BehaviourTreeEditor.IsLoadingTreeToView == false)
+            if (BehaviourTreeEditor.CanEditGraph && BehaviourTreeEditor.IsLoadingTreeToView == false)
             {
                 foreach (var element in elements)
                 {

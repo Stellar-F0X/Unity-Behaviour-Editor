@@ -19,13 +19,10 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            int count = iterable.childCount;
-            List<NodeBase> children = iterable.GetChildren();
-
-            for (int i = 0; i < count; ++i)
+            foreach (NodeBase child in iterable.GetChildren())
             {
                 NodeView parentView = treeView.FindNodeView(parentNodeBase);
-                NodeView childView = treeView.FindNodeView(children[i]);
+                NodeView childView = treeView.FindNodeView(child);
 
                 if (TryConnectNodesByEdge(parentView, childView, out Edge newEdge))
                 {
@@ -42,7 +39,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void UpdateNodeDataFromVisualEdges(BehaviourNodeSet nodeSet, List<Edge> edges)
+        public static void UpdateNodeDataFromVisualEdges(BehaviourTree tree, List<Edge> edges)
         {
             if (edges is null || edges.Count == 0)
             {
@@ -60,12 +57,12 @@ namespace BehaviourSystemEditor.BT
                 }
 
                 childView.parentConnectionEdge = edge;
-                nodeSet.AddChild(parentView.targetNode, childView.targetNode);
+                tree.AddChild(parentView.targetNode, childView.targetNode);
             }
         }
 
 
-        public static void RemoveEdgeAndDisconnection(BehaviourNodeSet nodeSet, Edge edge)
+        public static void RemoveEdgeAndDisconnection(BehaviourTree tree, Edge edge)
         {
             NodeView parentView = edge.output.node as NodeView;
             NodeView childView = edge.input.node as NodeView;
@@ -75,7 +72,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            nodeSet.RemoveChild(parentView.targetNode, childView.targetNode);
+            tree.RemoveChild(parentView.targetNode, childView.targetNode);
             edge.RemoveFromHierarchy();
         }
 
@@ -90,7 +87,8 @@ namespace BehaviourSystemEditor.BT
 
             if (childNodeView.parentConnectionEdge?.output.node is NodeView view)
             {
-                BehaviourTreeEditor.Instance.Tree.nodeSet.RemoveChild(view.targetNode, childNodeView.targetNode);
+                BehaviourTree tree = BehaviourTreeEditor.Instance.Tree.graph as BehaviourTree;
+                tree?.RemoveChild(view.targetNode, childNodeView.targetNode);
                 view.outputPort.Disconnect(childNodeView.parentConnectionEdge);
                 
                 List<GraphElement> edges = ListPool<GraphElement>.Get();
@@ -109,12 +107,14 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            bool isSingleChildNode = parentNodeView.targetNode.nodeType is NodeBase.ENodeType.Decorator or NodeBase.ENodeType.Root;
+            bool isSingleChildNode = parentNodeView.targetNode.nodeType is BehaviourNodeBase.ENodeType.Decorator or BehaviourNodeBase.ENodeType.Root;
             
             //부모 노드에서 Edge 연결을 시작할 경우로, 부모 노드가 하나의 자식만 가질 수 있으며, 이미 자식으로 연결된 노드가 있다면 그 노드와의 연결을 해제한다.
             if (isSingleChildNode && parentNodeView.outputPort.connections.First()?.input.node is NodeView existingChildView)
             {
-                BehaviourTreeEditor.Instance.Tree.nodeSet.RemoveChild(parentNodeView.targetNode, existingChildView.targetNode);
+                BehaviourTree tree = BehaviourTreeEditor.Instance.Tree.graph as BehaviourTree;
+                tree?.RemoveChild(parentNodeView.targetNode, existingChildView.targetNode);
+                
                 parentNodeView.outputPort.Disconnect(existingChildView.parentConnectionEdge);
                 
                 List<GraphElement> edges = ListPool<GraphElement>.Get();

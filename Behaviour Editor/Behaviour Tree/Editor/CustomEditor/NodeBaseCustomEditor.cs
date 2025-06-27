@@ -33,7 +33,7 @@ namespace BehaviourSystemEditor.BT
             SerializedProperty desProp = serializedObject.FindProperty("_description");
             SerializedProperty iterator = serializedObject.FindProperty("position");
 
-            using (new EditorGUI.DisabledScope(!BehaviourTreeEditor.CanEditTree))
+            using (new EditorGUI.DisabledScope(!BehaviourTreeEditor.CanEditGraph))
             {
                 nameProp.stringValue = EditorGUILayout.TextField("Name", nameProp.stringValue);
                 tagProp.stringValue = EditorGUILayout.TextField("Tag", tagProp.stringValue);

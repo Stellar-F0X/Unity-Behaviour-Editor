@@ -102,7 +102,7 @@ namespace BehaviourSystemEditor.BT
                 }
             }
 
-            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditTree);
+            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditGraph);
             selected = Mathf.Clamp(selected, 0, dropdownOptions.Length - 1);
             selected = EditorGUI.Popup(dropdownRect, selected, dropdownOptions);
             
@@ -150,7 +150,7 @@ namespace BehaviourSystemEditor.BT
 
             this.GetCompatibleConditionTypes(sourceType.comparableConditions, conditionTypes, conditionIndex);
             
-            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditTree);
+            EditorGUI.BeginDisabledGroup(!BehaviourTreeEditor.CanEditGraph);
             int prev = Mathf.Max(conditionIndex.IndexOf(conditionType.enumValueFlag), 0);
             int index = EditorGUI.Popup(compareRect, prev, conditionTypes.ToArray(), _popupStyle);
             conditionType.enumValueFlag = conditionIndex[index];

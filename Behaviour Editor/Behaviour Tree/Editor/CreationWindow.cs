@@ -36,7 +36,7 @@ namespace BehaviourSystemEditor.BT
             searchTree.Add(new SearchTreeGroupEntry(new GUIContent("Create Node"), 0));
 
             searchTree.AddRange(this.NodeCreationSearchTreeEntry<ActionNode>("Action", t => this.CreateNode(t, context)));
-            searchTree.AddRange(this.NodeCreationSearchTreeEntry<SubsetNode>("Subset", t => this.CreateNode(t, context)));
+            searchTree.AddRange(this.NodeCreationSearchTreeEntry<SubGraphNode>("Subset", t => this.CreateNode(t, context)));
             searchTree.AddRange(this.NodeCreationSearchTreeEntry<CompositeNode>("Composite", t => this.CreateNode(t, context)));
             searchTree.AddRange(this.NodeCreationSearchTreeEntry<DecoratorNode>("Decorator", t => this.CreateNode(t, context)));
 
