@@ -59,11 +59,11 @@ namespace BehaviourSystemEditor.BT
         }
         
 
-        public override void CreateAndConnectNodes(GraphAsset graphAsset)
+        public override void CreateAndConnectNodes(GraphAsset graphAsset, BehaviourGraphView graphView)
         {
             for (int i = 0; i < graphAsset.graph.nodes.Count; ++i)
             {
-                this.RecreateNodeViewOnLoad(graphAsset.graph.nodes[i]);
+                graphView.AddNewNodeView(this.RecreateNodeViewOnLoad(graphAsset.graph.nodes[i]));
             }
 
             for (int i = 0; i < graphAsset.graph.nodes.Count; ++i)
@@ -87,25 +87,24 @@ namespace BehaviourSystemEditor.BT
         }
 
 
+        protected override CreationWindowBase CreateGraphNodeCreationWindow()
+        {
+            return ScriptableObject.CreateInstance<StateCreationWindow>();
+        }
+
+
         public override void OnDeleteSelectionElements(List<ISelectable> selection)
         {
             for (int i = 0; i < selection.Count; ++i)
             {
-                if (selection[i] is NodeView view)
+                if (selection[i] is NodeView view && view.targetNode is StateNodeBase targetNode)
                 {
-                    StateNodeBase.EStateNodeType type = ((StateNodeBase)view.targetNode).stateNodeType;
-
-                    bool filterable = false;
-
-                    filterable |= type == StateNodeBase.EStateNodeType.Any;
-                    filterable |= type == StateNodeBase.EStateNodeType.Enter;
-                    filterable |= type == StateNodeBase.EStateNodeType.Exit;
-
-                    if (filterable)
+                    StateNodeBase.EStateNodeType type = targetNode.stateNodeType;
+                    
+                    if (type != StateNodeBase.EStateNodeType.User)
                     {
                         view.selected = false;
-                        selection.RemoveAt(i);
-                        break;
+                        selection.RemoveAt(i--);
                     }
                 }
             }
@@ -170,10 +169,6 @@ namespace BehaviourSystemEditor.BT
             NodeView nodeView = new StateNodeView(node, BehaviourSystemEditor.Settings.stateNodeViewXml);
 
             Debug.Assert(nodeView is not null, $"{nameof(BehaviourGraphView)}: NodeView is null");
-
-            nodeView.OnNodeSelected += this.graphView.onNodeSelected;
-
-            this.graphView.AddElement(nodeView); //nodes라는 GraphElement 컨테이너에 추가.
             return nodeView;
         }
 

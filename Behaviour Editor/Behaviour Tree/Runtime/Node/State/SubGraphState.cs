@@ -1,21 +1,14 @@
-using BehaviourSystem.BT.State;
-
-namespace BehaviourSystem.BT.SubGraph
+namespace BehaviourSystem.BT.State
 {
-    public class SubGraphAdaptorState : StateNodeBase
+    public class SubGraphState : CustomStateNode
     {
         public GraphAsset subGraph;
-
-        public override EStateNodeType stateNodeType
-        {
-            get { return EStateNodeType.User; }
-        }
+        
         
         protected override void OnEnter()
         {
             subGraph?.graph.ResetGraph();
         }
-
 
         protected override void OnUpdate()
         {

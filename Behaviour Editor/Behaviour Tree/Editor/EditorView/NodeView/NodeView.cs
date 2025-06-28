@@ -59,7 +59,7 @@ namespace BehaviourSystemEditor.BT
                 }
                 else
                 {
-                    _nodeBorder.style.SetBorderColor(Color.gray * 0.3f);
+                    this.SetBorderColor(style, Color.gray * 0.3f);
                 }
             }
             else
@@ -81,6 +81,22 @@ namespace BehaviourSystemEditor.BT
         public override void OnUnselected()
         {
             OnNodeUnselected?.Invoke(this);
+        }
+        
+        
+        public void SetBorderColor(IStyle elementStyle, Color color)
+        {
+            elementStyle.borderTopColor = color;
+            elementStyle.borderBottomColor = color;
+            elementStyle.borderLeftColor = color;
+            elementStyle.borderRightColor = color;
+        }
+        
+        
+        public void SetEdgeColor(EdgeControl control, Color color)
+        {
+            control.inputColor = color;
+            control.outputColor = color;
         }
 
 
@@ -131,9 +147,9 @@ namespace BehaviourSystemEditor.BT
             {
                 float progress = _highlightDuration / settings.nodeViewHighlightingDuration;
 
-                _nodeBorder?.style.SetBorderColor(settings.nodeStatusLinearColor.Evaluate(progress));
+                this.SetBorderColor(style, settings.nodeStatusLinearColor.Evaluate(progress));
 
-                parentConnectionEdge?.edgeControl.SetEdgeColor(settings.edgeStatusLinearColor.Evaluate(progress));
+                this.SetEdgeColor(this.parentConnectionEdge.edgeControl, settings.edgeStatusLinearColor.Evaluate(progress));
             }
         }
 
@@ -183,10 +199,8 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        protected virtual void SetBorderColorByStatus()
-        {
-            _nodeBorder?.style.SetBorderColor(Color.gray * 0.3f);
-        }
+        protected virtual void SetBorderColorByStatus() { }
+        
 #endregion
 
         //NodeView에 포트를 생성합니다.

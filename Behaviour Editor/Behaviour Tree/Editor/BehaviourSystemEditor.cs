@@ -269,9 +269,11 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
+            IsLoadingTreeToView = true;
             _treeView?.OnGraphEditorView(_tree);
             _inspectorView?.ClearInspectorView();
             _blackboardView?.RefreshItemsWhenUndoPerformed();
+            IsLoadingTreeToView = false;
 
             AssetDatabase.SaveAssets();
         }
@@ -336,19 +338,19 @@ namespace BehaviourSystemEditor.BT
 
         
         /// <summary>에디터에서 편집할 Behaviour Tree를 변경합니다.</summary>
-        public void ChangeGraph(GraphAsset treeAsset)
+        public void ChangeGraph(GraphAsset graphAsset)
         {
-            if (treeAsset is null)
+            if (graphAsset is null)
             {
                 return;
             }
 
             CanEditGraph = !Application.isPlaying;
-            _tree = treeAsset;
+            _tree = graphAsset;
 
             if (CanEditGraph)
             {
-                _editorOnlyTree = treeAsset;
+                _editorOnlyTree = graphAsset;
             }
 
             bool isValidTreeRunner = _systemRunner is not null && _systemRunner.runtimeGraph == _tree;

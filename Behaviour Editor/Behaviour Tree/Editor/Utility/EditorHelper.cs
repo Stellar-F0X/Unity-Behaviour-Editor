@@ -91,22 +91,6 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static void SetBorderColor(this IStyle style, Color color)
-        {
-            style.borderTopColor = color;
-            style.borderBottomColor = color;
-            style.borderLeftColor = color;
-            style.borderRightColor = color;
-        }
-
-
-        public static void SetEdgeColor(this EdgeControl control, Color color)
-        {
-            control.inputColor = color;
-            control.outputColor = color;
-        }
-
-
         public static void RegisterRemovableCallback<T>(this VisualElement element, EventCallback<T> callback) where T : EventBase<T>, new()
         {
             if (element.userData is null)

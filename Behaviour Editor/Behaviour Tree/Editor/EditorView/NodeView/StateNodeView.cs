@@ -29,21 +29,29 @@ namespace BehaviourSystemEditor.BT
             switch (((StateNodeBase)targetNode).stateNodeType)
             {
                 case StateNodeBase.EStateNodeType.Enter:
+                {
                     outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
                     break;
+                }
                 
                 case StateNodeBase.EStateNodeType.Exit:
-                    inputPort =  this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
+                {
+                    inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
                     break;
+                }
                 
                 case StateNodeBase.EStateNodeType.Any:
-                    outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
-                    break;
-                
-                case StateNodeBase.EStateNodeType.User: 
-                    inputPort =  this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
+                {
                     outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
                     break;
+                }
+                
+                case StateNodeBase.EStateNodeType.User:
+                {
+                    inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
+                    outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
+                    break;
+                }
             }
             
             this.SetupPort(inputPort, string.Empty, FlexDirection.Column, base.inputContainer);

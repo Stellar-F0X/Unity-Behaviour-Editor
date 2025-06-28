@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
 {
-    //TODO: BehaviourTreeView를 GraphView로 변경.
     [UxmlElement]
     public partial class BehaviourGraphView : GraphView
     {
@@ -17,29 +16,23 @@ namespace BehaviourSystemEditor.BT
         {
             base.Insert(0, new GridBackground());
 
-            this.AddManipulator(new DoubleClick());
+            this.AddManipulator(new DoubleClick(0.3f));
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
-            this.AddManipulator(new ContentZoomer()
-            {
-                maxScale = 2f,
-                minScale = 0.2f
-            });
+            this.AddManipulator(new GraphZoomer(2f, 0.2f));
 
             styleSheets.Add(BehaviourSystemEditor.Settings.behaviourGraphStyle);
         }
 
         /// <summary>노드가 선택될 때 호출되는 이벤트입니다.</summary>
-        //TODO: NodeView의 OnSelected랑 무슨 차이인지 확인.
         public Action<NodeView> onNodeSelected;
 
         private float _nextUpdateTime;
         private float _lastUpdateTime;
 
-        private GraphAsset _graph;
+        private GraphAsset _graphAsset;
         private GraphViewProcessor _graphViewProcessor;
-        private CreationWindow _creationWindow;
 
 
         public GraphViewProcessor graphViewProcessor
@@ -47,58 +40,45 @@ namespace BehaviourSystemEditor.BT
             get { return _graphViewProcessor; }
         }
 
-        
+
         /// <summary>에디터 뷰를 초기화하고 모든 그래프 요소를 제거합니다.</summary>
         public void ClearEditorView()
         {
-            graphViewChanged -= this.OnGraphViewChanged;
-            base.DeleteElements(graphElements);
+            base.graphViewChanged -= this.OnGraphViewChanged;
+            this.deleteSelection -= this.OnDeleteSelectionElements;
+
+            base.DeleteElements(base.graphElements);
         }
 
-        
+
         /// <summary>
         /// 주어진 Behaviour Tree를 그래프 에디터 뷰에 표시합니다.
         /// 노드들과 연결을 생성하고 그룹 데이터를 복원합니다.
         /// </summary>
-        public void OnGraphEditorView(GraphAsset graphAsset)
+        public void OnGraphEditorView(GraphAsset changedGraphAsset)
         {
-            if (graphAsset is not null)
+            if (changedGraphAsset is not null)
             {
-                this._graph = graphAsset;
+                this._graphAsset = changedGraphAsset;
 
-                switch (_graph.graphType)
+                switch (_graphAsset.graphType)
                 {
                     case EGraphType.BehaviourTree: _graphViewProcessor = new BehaviourTreeViewProcessor(); break;
-                    
-                    case EGraphType.StateMachine:  _graphViewProcessor = new FiniteStateMachineViewProcessor(); break;
+
+                    case EGraphType.StateMachine: _graphViewProcessor = new FiniteStateMachineViewProcessor(); break;
                 }
 
-                graphViewChanged -= this.OnGraphViewChanged;
-                this.deleteSelection -= this.OnDeleteSelectionElements;
+                this.ClearEditorView();
 
-                base.DeleteElements(base.graphElements);
-
-                graphViewChanged += this.OnGraphViewChanged;
+                base.graphViewChanged += this.OnGraphViewChanged;
                 this.deleteSelection += this.OnDeleteSelectionElements;
-
-                //TODO: 이거 정상 작동 확인해보기
-                for (int i = 0; i < graphAsset.graph.nodes.Count; ++i)
-                {
-                    //1. Undo로 생성이 취소된 노드를 여기서 처리.
-                    //2. Graph에 만들어졌지만 클래스를 삭제당한 노드도 삭제.
-                    if (graphAsset.graph.nodes[i] is null)
-                    {
-                        graphAsset.graph.nodes.RemoveAt(i--);
-                    }
-                }
                 
-                _graphViewProcessor.CreateAndConnectNodes(_graph);
-
-                graphAsset.graphGroup?.dataList.ForEach(groupData => this.RecreateNodeGroupViewOnLoad(groupData));
+                this._graphViewProcessor.CreateAndConnectNodes(this._graphAsset, this);
+                this._graphAsset.graphGroup.dataList.ForEach(this.RecreateNodeGroupViewOnLoad);
             }
         }
 
-        
+
         /// <summary>입력 포트와 연결 가능한 호환되는 포트들의 목록을 반환합니다.</summary>
         public override List<Port> GetCompatiblePorts(Port input, NodeAdapter nodeAdapter)
         {
@@ -112,7 +92,7 @@ namespace BehaviourSystemEditor.BT
             return ports.Where(output => input.direction != output.direction && input.node != output.node).ToList();
         }
 
-        
+
         /// <summary>주어진 노드에 해당하는 NodeView를 찾아 반환합니다.</summary>
         public NodeView FindNodeView(NodeBase node)
         {
@@ -131,74 +111,8 @@ namespace BehaviourSystemEditor.BT
             {
                 return null;
             }
-            
+
             return this.GetNodeByGuid(guid) as NodeView;
-        }
-
-        
-        /// <summary>마우스 위치에서 컨텍스트 메뉴(노드 생성) 창을 엽니다.</summary>
-        public void OpenContextualMenuWindow(Vector2 mousePosition, Action<NodeView> onNewNodeCreatedOnce = null)
-        {
-            if (BehaviourSystemEditor.CanEditGraph == false)
-            {
-                return;
-            }
-
-            if (_creationWindow is null)
-            {
-                _creationWindow = ScriptableObject.CreateInstance<CreationWindow>();
-                _creationWindow.Initialize(this);
-            }
-
-            _creationWindow.RegisterNodeCreationCallbackOnce(onNewNodeCreatedOnce);
-
-            Vector2 screenPoint = GUIUtility.GUIToScreenPoint(mousePosition);
-            SearchWindowContext context = new SearchWindowContext(screenPoint, 200, 240);
-
-            SearchWindow.Open(context, _creationWindow);
-        }
-        
-
-        /// <summary>우클릭 시 컨텍스트 메뉴를 구성합니다.</summary>
-        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
-        {
-            this.OpenContextualMenuWindow(evt.mousePosition);
-        }
-        
-
-        /// <summary>지정된 노드를 선택합니다.</summary>
-        public void SelectNode(NodeView nodeView)
-        {
-            base.ClearSelection();
-
-            if (nodeView != null)
-            {
-                base.AddToSelection(nodeView);
-            }
-        }
-        
-
-        /// <summary>새로운 노드를 생성하고 해당하는 NodeView를 반환합니다.</summary>
-        public NodeView CreateNewNodeAndView(Type type, Vector2 mousePosition)
-        {
-            NodeBase node = _graph.graph.CreateNode(type);
-            node.position = Vector2Int.CeilToInt(mousePosition);
-            return this._graphViewProcessor.RecreateNodeViewOnLoad(node);
-        }
-
-        
-        /// <summary>새로운 노드 그룹 뷰를 생성하고 반환합니다.</summary>
-        public NodeGroupView CreateNewNodeGroupView(string title, Vector2 position)
-        {
-            GroupData nodeGroupData = _graph.graphGroup.CreateGroupData(title, position);
-            NodeGroupView groupView = new NodeGroupView(_graph.graphGroup, nodeGroupData);
-
-            groupView.SetPosition(new Rect(position, Vector2.zero));
-            groupView.style.backgroundColor = BehaviourSystemEditor.Settings.nodeGroupColor;
-            groupView.title = title;
-
-            base.AddElement(groupView);
-            return groupView;
         }
         
 
@@ -221,8 +135,50 @@ namespace BehaviourSystemEditor.BT
             _lastUpdateTime = currentTime;
             _nextUpdateTime = currentTime + updateInterval;
         }
+
+        
+#region Mouse Related Events
+        /// <summary> 마우스 위치에서 컨텍스트 메뉴(노드 생성) 창을 엽니다. </summary>
+        public void OpenContextualMenuWindow(Vector2 mousePosition, Action<NodeView> onNewNodeCreatedOnce = null)
+        {
+            if (BehaviourSystemEditor.CanEditGraph == false)
+            {
+                return;
+            }
+
+            CreationWindowBase creationWindow = _graphViewProcessor.GetGraphNodeCreationWindow();
+
+            creationWindow.RegisterNodeCreationCallbackOnce(onNewNodeCreatedOnce);
+
+            Vector2 screenPoint = GUIUtility.GUIToScreenPoint(mousePosition);
+            SearchWindowContext context = new SearchWindowContext(screenPoint, 200, 240);
+
+            SearchWindow.Open(context, creationWindow);
+        }
+
+
+        /// <summary> 우클릭 시 컨텍스트 메뉴를 구성합니다. </summary>
+        public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+        {
+            this.OpenContextualMenuWindow(evt.mousePosition);
+        }
+
+
+        /// <summary>지정된 노드를 선택합니다.</summary>
+        public void SelectNode(NodeView nodeView)
+        {
+            if (nodeView is null || nodeView.targetNode == null)
+            {
+                return;
+            }
+
+            base.ClearSelection();
+            base.AddToSelection(nodeView);
+        }
+#endregion
         
 
+#region Delete Of Modify Graph Elements
         /// <summary>그래프 뷰가 변경될 때 호출되는 콜백 메서드입니다.</summary>
         private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange)
         {
@@ -233,9 +189,11 @@ namespace BehaviourSystemEditor.BT
                 {
                     switch (element)
                     {
-                        case Edge edge: this.graphViewProcessor.DisconnectNodesByEdge(_graph, edge); break;
-                        case NodeView nodeView: this._graph.graph.DeleteNode(nodeView.targetNode); break;
-                        case NodeGroupView groupView: this._graph.graphGroup.DeleteGroupData(groupView.data); break;
+                        case Edge edge: this.graphViewProcessor.DisconnectNodesByEdge(_graphAsset, edge); break;
+
+                        case NodeView nodeView: this._graphAsset.graph.DeleteNode(nodeView.targetNode); break;
+
+                        case NodeGroupView groupView: this._graphAsset.graphGroup.DeleteGroupData(groupView.data); break;
                     }
                 }
             }
@@ -243,18 +201,18 @@ namespace BehaviourSystemEditor.BT
             //노드가 생성되거나 이동된 경우, 노드의 위치를 업데이트하고 새롭게 생성된 간선을 연결한다.
             if (graphViewChange.edgesToCreate is not null)
             {
-                _graphViewProcessor.ConnectNodesByEdges(_graph, graphViewChange.edgesToCreate);
+                _graphViewProcessor.ConnectNodesByEdges(_graphAsset, graphViewChange.edgesToCreate);
             }
 
             //노드의 위치를 업데이트된 경우, BT는 앞의 자식을 먼저 순회하기 때문에 X좌표에 따른 순서를 정렬하여 갱신해준다. 
             if (graphViewChange.movedElements is not null)
             {
-                _graphViewProcessor.NotifyNodePositionChanged(graphViewChange.movedElements);
+                _graphViewProcessor.NotifyNodePositionChanged(graphViewChange.movedElements, this);
             }
 
             return graphViewChange;
         }
-        
+
 
         /// <summary>선택된 요소들을 삭제할 때 호출되는 콜백 메서드입니다.</summary>
         private void OnDeleteSelectionElements(string operationName, AskUser user)
@@ -270,17 +228,63 @@ namespace BehaviourSystemEditor.BT
             //따라서 삭제되면 안되는 요소들만 Selection 배열에서 제거한 뒤, 현재 선택된 요소들(Selection 배열)을 제거하면 됨.
             this.DeleteSelection();
         }
-
+#endregion
         
+
+#region Create Graph Elements
         /// <summary>로딩 시 그룹 데이터로부터 NodeGroupView를 재생성합니다.</summary>
         private void RecreateNodeGroupViewOnLoad(GroupData data)
         {
-            NodeGroupView nodeGroupView = new NodeGroupView(_graph.graphGroup, data);
+            NodeGroupView nodeGroupView = new NodeGroupView(_graphAsset.graphGroup, data);
 
             nodeGroupView.AddElements(nodes.Where(n => n is NodeView v && data.Contains(v.targetNode.guid)));
+
             nodeGroupView.SetPosition(new Rect(data.position, Vector2.zero));
 
             base.AddElement(nodeGroupView);
         }
+        
+        
+        /// <summary>새로운 노드를 생성하고 해당하는 NodeView를 반환합니다.</summary>
+        public NodeView CreateNewNodeAndView(Type type, Vector2 mousePosition)
+        {
+            NodeBase node = _graphAsset.graph.CreateNode(type);
+            node.position = Vector2Int.CeilToInt(mousePosition);
+            
+            NodeView nodeView = this._graphViewProcessor.RecreateNodeViewOnLoad(node);
+            this.AddNewNodeView(nodeView);
+            return nodeView;
+        }
+
+
+        public void AddNewNodeView(NodeView nodeView)
+        {
+            if (nodeView.targetNode is null)
+            {
+                Debug.LogError("targetNode of nodeView is null");
+                return;
+            }
+            
+            nodeView.OnNodeSelected -= this.onNodeSelected;
+            nodeView.OnNodeSelected += this.onNodeSelected;
+            
+            this.AddElement(nodeView);
+        }
+
+
+        /// <summary>새로운 노드 그룹 뷰를 생성하고 반환합니다.</summary>
+        public NodeGroupView CreateNewNodeGroupView(string title, Vector2 position)
+        {
+            GroupData nodeGroupData = _graphAsset.graphGroup.CreateGroupData(title, position);
+            NodeGroupView groupView = new NodeGroupView(_graphAsset.graphGroup, nodeGroupData);
+
+            groupView.SetPosition(new Rect(position, Vector2.zero));
+            groupView.style.backgroundColor = BehaviourSystemEditor.Settings.nodeGroupColor;
+            groupView.title = title;
+
+            base.AddElement(groupView);
+            return groupView;
+        }
+#endregion
     }
 }

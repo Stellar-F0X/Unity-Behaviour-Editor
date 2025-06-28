@@ -25,11 +25,11 @@ namespace BehaviourSystemEditor.BT
         }
 
         
-        public override void CreateAndConnectNodes(GraphAsset graphAsset)
+        public override void CreateAndConnectNodes(GraphAsset graphAsset, BehaviourGraphView graphView)
         {
             for (int i = 0; i < graphAsset.graph.nodes.Count; ++i)
             {
-                this.RecreateNodeViewOnLoad(graphAsset.graph.nodes[i]);
+                graphView.AddNewNodeView(this.RecreateNodeViewOnLoad(graphAsset.graph.nodes[i]));
             }
 
             for (int i = 0; i < graphAsset.graph.nodes.Count; ++i)
@@ -82,7 +82,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public override void NotifyNodePositionChanged(List<GraphElement> elements)
+        public override void NotifyNodePositionChanged(List<GraphElement> elements, BehaviourGraphView graphView)
         {
             if (elements is null || elements.Count == 0)
             {
@@ -108,12 +108,9 @@ namespace BehaviourSystemEditor.BT
             }
 
             NodeView nodeView = new BehaviourNodeView(node, BehaviourSystemEditor.Settings.behaviourNodeViewXml);
-
+            
             Debug.Assert(nodeView is not null, $"{nameof(BehaviourGraphView)}: NodeView is null");
-
-            nodeView.OnNodeSelected += this.graphView.onNodeSelected;
-
-            this.graphView.AddElement(nodeView); //nodes라는 GraphElement 컨테이너에 추가.
+            
             return nodeView;
         }
 
@@ -184,6 +181,12 @@ namespace BehaviourSystemEditor.BT
 
                 tree.AddChild((BehaviourNodeBase)parentView.targetNode, (BehaviourNodeBase)childView.targetNode);
             }
+        }
+        
+        
+        protected override CreationWindowBase CreateGraphNodeCreationWindow()
+        {
+            return ScriptableObject.CreateInstance<BehaviorCreationWindow>();
         }
 
 

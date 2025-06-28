@@ -53,12 +53,6 @@ namespace BehaviourSystemEditor.BT
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.SubGraph:
-                {
-                    inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
-                    break;
-                }
-
                 case BehaviourNodeBase.EBehaviourNodeType.Composite:
                 {
                     inputPort =  this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
@@ -77,16 +71,15 @@ namespace BehaviourSystemEditor.BT
             this.SetupPort(inputPort, string.Empty, FlexDirection.Column, base.inputContainer);
             this.SetupPort(outputPort, string.Empty, FlexDirection.ColumnReverse, base.outputContainer);
         }
-        
 
 
         protected override void SetBorderColorByStatus()
         {
             switch (((BehaviourNodeBase)targetNode).status)
             {
-                case EStatus.Failure: _nodeBorder?.style.SetBorderColor(BehaviourSystemEditor.Settings.nodeFailureColor); break;
+                case EStatus.Failure: base.SetBorderColor(style, BehaviourSystemEditor.Settings.nodeFailureColor); break;
 
-                case EStatus.Success: _nodeBorder?.style.SetBorderColor(BehaviourSystemEditor.Settings.nodeSuccessColor); break;
+                case EStatus.Success: base.SetBorderColor(style, BehaviourSystemEditor.Settings.nodeSuccessColor); break;
             }
         }
     }

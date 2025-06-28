@@ -162,3 +162,7 @@
 .state-node-User {
     background-color: rgb(128, 128, 128);
 }
+
+.state-node-SubGraph {
+    background-color: rgb(255, 126, 0);
+}

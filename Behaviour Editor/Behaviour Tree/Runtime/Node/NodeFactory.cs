@@ -22,7 +22,7 @@ namespace BehaviourSystem.BT
         }
         
         
-        public static NodeBase CreateNode(Type nodeType)
+        public static NodeBase CreateNode(Type nodeType, Vector2Int position = default)
         {
             if (typeof(NodeBase).IsAssignableFrom(nodeType) == false)
             {
@@ -39,6 +39,7 @@ namespace BehaviourSystem.BT
             newNode.guid = UGUID.Create();
             newNode.hideFlags = HideFlags.HideInHierarchy;
             newNode.name = ApplySpacing(nodeType.Name);
+            newNode.position = position;
             return newNode;
         }
     }

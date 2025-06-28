@@ -43,9 +43,9 @@ namespace BehaviourSystem.BT
         
         
 #if UNITY_EDITOR
-        public NodeBase CreateNode(Type nodeType)
+        public NodeBase CreateNode(Type nodeType, Vector2Int position = default)
         {
-            NodeBase node = NodeFactory.CreateNode(nodeType);
+            NodeBase node = NodeFactory.CreateNode(nodeType, position);
 
             if (node is null)
             {

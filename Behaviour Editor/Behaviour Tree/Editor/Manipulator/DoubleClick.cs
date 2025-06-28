@@ -1,4 +1,5 @@
 using BehaviourSystem.BT;
+using BehaviourSystem.BT.State;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,9 +9,14 @@ namespace BehaviourSystemEditor.BT
     //Referenced: https://github.com/thekiwicoder0/UnityBehaviourTreeEditor/blob/main/Editor/DoubleClickNode.cs
     public class DoubleClick : MouseManipulator
     {
+        public DoubleClick(float doubleClickDuration)
+        {
+            _doubleClickDuration = doubleClickDuration;
+        }
+
         private double _measurementStartTime = EditorApplication.timeSinceStartup;
 
-        private double _doubleClickDuration = 0.3;
+        private double _doubleClickDuration;
 
 
         protected override void RegisterCallbacksOnTarget()
@@ -58,20 +64,24 @@ namespace BehaviourSystemEditor.BT
 
         private void OnDoubleClick(MouseDownEvent evt, NodeView clickedElement)
         {
-            if (clickedElement.targetNode is SubGraphNode subtreeNode)
+            GraphAsset graphAsset = null;
+
+            switch (clickedElement.targetNode)
             {
-                var treeToFocus = subtreeNode.subGraph;
+                case SubGraphNode subGraphNode: graphAsset = subGraphNode.subGraph; break;
 
-                if (treeToFocus != null)
-                {
-                    BehaviourSystemEditor.Instance.DirectoryPath.PushItem(treeToFocus.name, () =>
-                    {
-                        BehaviourSystemEditor.Instance.ChangeGraph(treeToFocus);
-                        //BehaviourSystemEditor.Instance.DirectoryPath.PopItem();
-                    });
+                case SubGraphState subGraphState: graphAsset = subGraphState.subGraph; break;
+            }
 
-                    BehaviourSystemEditor.Instance.ChangeGraph(treeToFocus);
-                }
+            if (graphAsset != null)
+            {
+                //BehaviourSystemEditor.Instance.DirectoryPath.PushItem(treeToFocus.name, () =>
+                //{
+                //    BehaviourSystemEditor.Instance.ChangeGraph(treeToFocus);
+                //    //BehaviourSystemEditor.Instance.DirectoryPath.PopItem();
+                //});
+
+                BehaviourSystemEditor.Instance.ChangeGraph(graphAsset);
             }
         }
     }
