@@ -1,16 +1,15 @@
-﻿using System;
 using UnityEngine;
 
-namespace BehaviourSystem.BT
+namespace BehaviourSystem.BT.State
 {
-    public abstract class SubGraphNode : BehaviourNodeBase, ISubGraphNode
+    public abstract class SubGraphState : StateNodeBase, ISubGraphNode
     {
         [HideInInspector]
         public GraphAsset subGraph;
 
-        public override EBehaviourNodeType nodeType
+        public override EStateNodeType stateNodeType
         {
-            get { return EBehaviourNodeType.SubGraph; }
+            get { return EStateNodeType.SubGraph; }
         }
 
         GraphAsset ISubGraphNode.subGraphAsset
@@ -31,9 +30,9 @@ namespace BehaviourSystem.BT
             subGraph.graph.ResetGraph();
         }
 
-        protected override EStatus OnUpdate()
+        protected override void OnUpdate()
         {
-            return subGraph.graph.UpdateGraph();
+            subGraph.graph.UpdateGraph();
         }
 
         protected override void OnExit()

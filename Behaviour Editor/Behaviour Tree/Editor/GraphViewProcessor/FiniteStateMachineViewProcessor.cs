@@ -54,7 +54,7 @@ namespace BehaviourSystemEditor.BT
                 inputNodeView.parentConnectionEdge = linkedEdge;
             }
     
-            BehaviourSystemEditor.Instance.View.AddElement(linkedEdge);
+            BehaviorEditor.Instance.view.AddElement(linkedEdge);
             return true;
         }
         
@@ -76,7 +76,7 @@ namespace BehaviourSystemEditor.BT
                 foreach (Transition child in parentNodeBase.transitions)
                 {
                     NodeView sourceView = graphView.FindNodeView(parentNodeBase);
-                    NodeView targetView = graphView.FindNodeView(child.nextStateNodeUGUID.ToString());
+                    NodeView targetView = graphView.FindNodeView(child.nextStateNodeUguid.ToString());
 
                     if (TryConnectNodesByEdge(sourceView, targetView, out Edge newEdge))
                     {
@@ -100,8 +100,14 @@ namespace BehaviourSystemEditor.BT
                 if (selection[i] is NodeView view && view.targetNode is StateNodeBase targetNode)
                 {
                     StateNodeBase.EStateNodeType type = targetNode.stateNodeType;
+
+                    bool exclude = false;
                     
-                    if (type != StateNodeBase.EStateNodeType.User)
+                    exclude |= type == StateNodeBase.EStateNodeType.Any;
+                    exclude |= type == StateNodeBase.EStateNodeType.Enter;
+                    exclude |= type == StateNodeBase.EStateNodeType.Exit;
+                    
+                    if (exclude)
                     {
                         view.selected = false;
                         selection.RemoveAt(i--);
@@ -166,7 +172,7 @@ namespace BehaviourSystemEditor.BT
                 return null;
             }
 
-            NodeView nodeView = new StateNodeView(node, BehaviourSystemEditor.Settings.stateNodeViewXml);
+            NodeView nodeView = new StateNodeView(node, BehaviorEditor.settings.stateNodeViewXml);
 
             Debug.Assert(nodeView is not null, $"{nameof(BehaviourGraphView)}: NodeView is null");
             return nodeView;

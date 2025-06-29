@@ -1,19 +1,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
+using System;
 using UnityEditor;
 #endif
 
 namespace BehaviourSystem.BT
 {
 #if UNITY_EDITOR
-    public class GraphGroup : ScriptableObject
+    public class GraphGroup : ScriptableObject, IDisposable
     {
         [SerializeField]
         private List<GroupData> _groupDataList = new List<GroupData>();
 
 
-        public IReadOnlyList<GroupData> dataList
+        public List<GroupData> dataList
         {
             get { return _groupDataList; }
         }
@@ -79,6 +80,13 @@ namespace BehaviourSystem.BT
                 EditorUtility.SetDirty(this);
                 AssetDatabase.SaveAssets();
             }
+        }
+
+        
+        public void Dispose()
+        {
+            _groupDataList.Clear();
+            _groupDataList = null;
         }
     }
 #endif

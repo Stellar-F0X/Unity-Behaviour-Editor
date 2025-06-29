@@ -18,12 +18,12 @@ namespace BehaviourSystemEditor.BT
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (BehaviourSystemEditor.Instance is null)
+            if (BehaviorEditor.Instance is null)
             {
                 return;
             }
 
-            Blackboard blackboard = BehaviourSystemEditor.Instance.Tree.blackboard;
+            Blackboard blackboard = BehaviorEditor.Instance.graph.blackboard;
 
             bool exception = blackboard is null || blackboard.properties is null || blackboard.properties.Count == 0;
 
@@ -135,7 +135,7 @@ namespace BehaviourSystemEditor.BT
 
             using (new EditorGUI.PropertyScope(position, label, property))
             {
-                using (new EditorGUI.DisabledScope(!BehaviourSystemEditor.CanEditGraph))
+                using (new EditorGUI.DisabledScope(!BehaviorEditor.canEditGraph))
                 {
                     EditorGUI.PrefixLabel(labelRect, label);
                     int newSelectedIndex = EditorGUI.Popup(fieldRect, selectedIndex, keyNames);

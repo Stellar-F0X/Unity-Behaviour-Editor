@@ -10,11 +10,11 @@ using UObject = UnityEngine.Object;
 
 namespace BehaviourSystemEditor.BT
 {
-    public class BehaviourSystemEditor : EditorWindow
+    public class BehaviorEditor : EditorWindow
     {
         private static BehaviourTreeEditorSettings _settings;
 
-        private GraphAsset _tree;
+        private GraphAsset _graph;
 
         private GraphAsset _editorOnlyTree;
 
@@ -30,11 +30,11 @@ namespace BehaviourSystemEditor.BT
 
         private BlackboardPropertyListView _blackboardView;
 
-        private ToolbarBreadcrumbs _graphDirectoryPath;
+        private GraphBreadcrumbs _graphBreadcrumbs;
 
 
         /// <summary>Behaviour Tree 에디터 설정 정보를 가져옵니다.</summary>
-        public static BehaviourTreeEditorSettings Settings
+        public static BehaviourTreeEditorSettings settings
         {
             get
             {
@@ -49,47 +49,42 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
-        
+
         /// <summary>현재 활성화된 Behaviour Tree 에디터 인스턴스를 가져옵니다.</summary>
-        public static BehaviourSystemEditor Instance
+        public static BehaviorEditor Instance
         {
             get;
             private set;
         }
 
-        
+
         /// <summary>현재 트리를 편집할 수 있는지 여부를 나타냅니다.</summary>
-        public static bool CanEditGraph
+        public static bool canEditGraph
         {
             get;
             private set;
         }
 
-        
+
         /// <summary>Behaviour Tree 에셋을 Editor View에 로딩 중인지 여부를 나타냅니다.</summary>
-        public static bool IsLoadingTreeToView
+        public static bool isLoadingTreeToView
         {
             get;
             private set;
         }
 
-        
+
         /// <summary>현재 Behaviour Tree 뷰를 가져옵니다.</summary>
-        public BehaviourGraphView View
+        public BehaviourGraphView view
         {
             get { return _treeView; }
         }
 
-        
-        /// <summary>현재 편집 중인 Behaviour Tree를 가져옵니다.</summary>
-        public GraphAsset Tree
-        {
-            get { return _tree; }
-        }
 
-        public ToolbarBreadcrumbs DirectoryPath
+        /// <summary>현재 편집 중인 Behaviour Tree를 가져옵니다.</summary>
+        public GraphAsset graph
         {
-            get { return _graphDirectoryPath; }
+            get { return _graph; }
         }
 
 
@@ -97,7 +92,7 @@ namespace BehaviourSystemEditor.BT
         [MenuItem("Tools/Behaviour Tree Editor")]
         public static void OpenWindow()
         {
-            BehaviourSystemEditor wnd = GetWindow<BehaviourSystemEditor>();
+            BehaviorEditor wnd = GetWindow<BehaviorEditor>();
             wnd.titleContent = new GUIContent("BT Editor");
             Instance = wnd;
         }
@@ -105,17 +100,17 @@ namespace BehaviourSystemEditor.BT
 
         public static void OpenWindow(GraphAsset tree)
         {
-            if (Instance != null && Instance._tree == tree)
+            if (Instance != null && Instance._graph == tree)
             {
                 Instance.Focus();
                 return;
             }
-            
+
             OpenWindow();
             Instance.ChangeGraph(tree);
         }
 
-        
+
         /// <summary>Behaviour Tree 에셋을 더블클릭했을 때 에디터를 엽니다.</summary>
         [OnOpenAsset]
         private static bool OnOpenAsset(int instanceID, int line)
@@ -129,12 +124,12 @@ namespace BehaviourSystemEditor.BT
             return false;
         }
 
-        
+
         /// <summary>에디터를 초기 상태로 초기화합니다.</summary>
         private void Initialize()
         {
-            IsLoadingTreeToView = false;
-            CanEditGraph = false;
+            isLoadingTreeToView = false;
+            canEditGraph = false;
 
             this._inspectorView?.Clear();
             this._treeView?.ClearEditorView();
@@ -143,32 +138,32 @@ namespace BehaviourSystemEditor.BT
             this.ResetTreeObjects();
         }
 
-        
+
         /// <summary>트리 관련 객체들을 초기화합니다.</summary>
         private void ResetTreeObjects()
         {
-            this._tree = null;
+            this._graph = null;
             this._systemRunner = null;
         }
 
-        
+
         /// <summary>에디터 UI를 생성하고 초기화합니다.</summary>
         private void CreateGUI()
         {
             Instance = this;
 
             Debug.Assert(rootVisualElement is not null, "Root Visual Element is null.");
-            Settings.behaviourGraphEditorXml.CloneTree(rootVisualElement);
+            settings.behaviourGraphEditorXml.CloneTree(rootVisualElement);
 
-            Debug.Assert(Settings.behaviourGraphEditorXml is not null, "BehaviourTreeEditorXml is null.");
-            rootVisualElement.styleSheets.Add(Settings.behaviourGraphStyle);
+            Debug.Assert(settings.behaviourGraphEditorXml is not null, "BehaviourTreeEditorXml is null.");
+            rootVisualElement.styleSheets.Add(settings.behaviourGraphStyle);
 
             _treeView = rootVisualElement.Q<BehaviourGraphView>();
             _miniMapView = rootVisualElement.Q<MiniMapView>();
             _inspectorView = rootVisualElement.Q<InspectorView>();
             _nodeSearchField = rootVisualElement.Q<NodeSearchFieldView>();
             _blackboardView = rootVisualElement.Q<BlackboardPropertyListView>();
-            _graphDirectoryPath = rootVisualElement.Q<ToolbarBreadcrumbs>("graph-directory-path");
+            _graphBreadcrumbs = rootVisualElement.Q<GraphBreadcrumbs>();
 
             var elementAddButton = rootVisualElement.Q<ToolbarMenu>("element-add-button");
             var minimapActivateButton = rootVisualElement.Q<ToolbarToggle>("active-minimap");
@@ -184,7 +179,7 @@ namespace BehaviourSystemEditor.BT
             this.OnSelectionChange();
         }
 
-        
+
         /// <summary>에디터가 활성화될 때 이벤트를 등록합니다.</summary>
         private void OnEnable()
         {
@@ -207,7 +202,7 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
-        
+
         /// <summary>에디터가 비활성화될 때 이벤트를 해제합니다.</summary>
         private void OnDisable()
         {
@@ -221,11 +216,11 @@ namespace BehaviourSystemEditor.BT
             AssemblyReloadEvents.afterAssemblyReload -= this.ResetTreeObjects;
         }
 
-        
+
         /// <summary>새로운 Behaviour Tree Asset이 추가되거나 제거될 때 호출됩니다.</summary>
         private void OnProjectChange()
         {
-            if (_tree is not null && AssetDatabase.Contains(_tree) == false)
+            if (_graph is not null && AssetDatabase.Contains(_graph) == false)
             {
                 this.Initialize();
             }
@@ -236,14 +231,14 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
-        
+
         /// <summary>씬이 닫힐 때 에디터를 초기화합니다.</summary>
         private void OnSceneClosed(Scene _)
         {
             this.Initialize();
         }
 
-        
+
         /// <summary>플레이 모드에서 노드 뷰를 업데이트합니다.</summary>
         private void RuntimeUpdate()
         {
@@ -260,7 +255,7 @@ namespace BehaviourSystemEditor.BT
             _treeView?.UpdateNodeView();
         }
 
-        
+
         /// <summary>언두/리두 작업이 수행될 때 에디터를 업데이트합니다.</summary>
         private void BehaviourEditorUndoPerformed()
         {
@@ -269,16 +264,16 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            IsLoadingTreeToView = true;
-            _treeView?.OnGraphEditorView(_tree);
+            isLoadingTreeToView = true;
+            _treeView?.OnGraphEditorView(_graph);
             _inspectorView?.ClearInspectorView();
             _blackboardView?.RefreshItemsWhenUndoPerformed();
-            IsLoadingTreeToView = false;
+            isLoadingTreeToView = false;
 
             AssetDatabase.SaveAssets();
         }
 
-        
+
         /// <summary>플레이 모드 상태가 변경될 때 호출됩니다.</summary>
         private void OnPlayNodeStateChanged(PlayModeStateChange state)
         {
@@ -301,19 +296,19 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
-        
+
         /// <summary>에디터에서 선택된 객체가 변경될 때 호출됩니다.</summary>
         private void OnSelectionChange()
         {
             bool foundTree = this.TryGetTreeAsset(out GraphAsset selectedTreeAsset);
 
-            if (foundTree && _tree != selectedTreeAsset)
+            if (foundTree && _graph != selectedTreeAsset)
             {
                 this.ChangeGraph(selectedTreeAsset);
             }
         }
 
-        
+
         /// <summary>현재 선택된 객체에서 Behaviour Tree를 찾습니다.</summary>
         private bool TryGetTreeAsset(out GraphAsset tree)
         {
@@ -336,36 +331,55 @@ namespace BehaviourSystemEditor.BT
             return false;
         }
 
-        
+
         /// <summary>에디터에서 편집할 Behaviour Tree를 변경합니다.</summary>
-        public void ChangeGraph(GraphAsset graphAsset)
+        public void ChangeGraph(GraphAsset graphAsset, bool isSubGraph = false)
         {
             if (graphAsset is null)
             {
                 return;
             }
 
-            CanEditGraph = !Application.isPlaying;
-            _tree = graphAsset;
+            _graph = graphAsset;
+            
+            canEditGraph = !Application.isPlaying;
 
-            if (CanEditGraph)
+            if (canEditGraph)
             {
                 _editorOnlyTree = graphAsset;
             }
 
-            bool isValidTreeRunner = _systemRunner is not null && _systemRunner.runtimeGraph == _tree;
-            bool openedEditorWindow = AssetDatabase.CanOpenAssetInEditor(_tree.GetInstanceID());
-
-            if ((isValidTreeRunner && Application.isPlaying) || openedEditorWindow)
+            if (isSubGraph == false)
             {
-                IsLoadingTreeToView = true;
+                _graphBreadcrumbs.Clear();
+            }
 
-                _treeView?.OnGraphEditorView(_tree);
+            _graphBreadcrumbs.PushItem(graphAsset, () =>
+            {
+                _graphBreadcrumbs.PopToClickItems(graphAsset.guid);
+                this.OpenGraph(graphAsset);
+            });
+
+            this.OpenGraph(_graph);
+        }
+        
+        
+        private void OpenGraph(GraphAsset graphAsset)
+        {
+            bool isValidGraphRunner = _systemRunner is not null && _systemRunner.runtimeGraph == graphAsset;
+
+            bool openedEditorWindow = AssetDatabase.CanOpenAssetInEditor(graphAsset.GetInstanceID());
+
+            if ((isValidGraphRunner && Application.isPlaying) || openedEditorWindow)
+            {
+                isLoadingTreeToView = true;
+
+                _treeView?.OnGraphEditorView(graphAsset);
                 _inspectorView?.ClearInspectorView();
                 _blackboardView?.ClearBlackboardView();
-                _blackboardView?.OnBehaviourTreeChanged(_tree);
+                _blackboardView?.OnBehaviourTreeChanged(graphAsset);
 
-                IsLoadingTreeToView = false;
+                isLoadingTreeToView = false;
             }
         }
     }

@@ -7,7 +7,7 @@ namespace BehaviourSystemEditor.BT
     {
         protected override void CreateAndLinkFromOriginalToNewNode(NodeView sourceNodeView, NodeView targetNodeView, Vector2 position)
         {
-            var processor = BehaviourSystemEditor.Instance.View.graphViewProcessor;
+            var processor = BehaviorEditor.Instance.view.graphViewProcessor;
             
             processor.TryDisconnectParentToChild(sourceNodeView);
         }
@@ -15,7 +15,7 @@ namespace BehaviourSystemEditor.BT
         
         protected override void CreateAndLinkFromNewToOriginalNode(NodeView sourceNodeView, NodeView targetNodeView, Vector2 position)
         {
-            var processor = BehaviourSystemEditor.Instance.View.graphViewProcessor;
+            var processor = BehaviorEditor.Instance.view.graphViewProcessor;
             
             processor.TryDisconnectChildToParent(targetNodeView);
         }

@@ -39,7 +39,7 @@ namespace BehaviourSystem.BT
             {
                 currentState?.ExitNode();
 
-                if (base.TryGetNodeByGUID(nextStateUGUID, out NodeBase node))
+                if (base.TryGetNodeByGuid(nextStateUGUID, out NodeBase node))
                 {
                     StateNodeBase stateNode = node as StateNodeBase;
                     currentState = stateNode;
@@ -83,7 +83,7 @@ namespace BehaviourSystem.BT
         {
             Undo.RecordObject(this, "Finite State Machine (Disconnect)");
             
-            from.transitions.RemoveAll(t => t.nextStateNodeUGUID == to.guid);
+            from.transitions.RemoveAll(t => t.nextStateNodeUguid == to.guid);
 
             EditorUtility.SetDirty(this);
         }

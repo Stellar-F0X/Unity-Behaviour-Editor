@@ -20,7 +20,7 @@ namespace BehaviourSystemEditor.BT
         
         public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
         {
-            return new PortView(EGraphType.StateMachine, direction, capacity);
+            return new PortView(EGraphType.FSM, direction, capacity);
         }
         
 
@@ -35,6 +35,12 @@ namespace BehaviourSystemEditor.BT
                 }
                 
                 case StateNodeBase.EStateNodeType.Exit:
+                {
+                    inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
+                    break;
+                }
+
+                case StateNodeBase.EStateNodeType.SubGraph:
                 {
                     inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
                     break;

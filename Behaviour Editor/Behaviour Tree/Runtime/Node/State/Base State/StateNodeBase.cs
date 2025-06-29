@@ -11,6 +11,7 @@ namespace BehaviourSystem.BT.State
             Enter, // 진입 상태 (직접 생성 불가)
             Any,   // Any 상태 (직접 생성 불가)
             User,  // 유저가 직접 생성 가능한 일반 상태
+            SubGraph,
             Exit   // 종료 상태 (직접 생성 불가)
         };
 
@@ -47,7 +48,7 @@ namespace BehaviourSystem.BT.State
             {
                 if (transitions[i].CheckConditions())
                 {
-                    nextStateNodeUGUID = transitions[i].nextStateNodeUGUID;
+                    nextStateNodeUGUID = transitions[i].nextStateNodeUguid;
                     return true;
                 }
             }

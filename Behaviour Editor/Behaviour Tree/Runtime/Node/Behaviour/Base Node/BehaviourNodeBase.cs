@@ -9,7 +9,8 @@ namespace BehaviourSystem.BT
             Root,
             Action,
             Composite,
-            Decorator
+            Decorator,
+            SubGraph
         };
         
         [SerializeField]

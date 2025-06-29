@@ -75,13 +75,7 @@ namespace BehaviourSystemEditor.BT
 
             if (graphAsset != null)
             {
-                //BehaviourSystemEditor.Instance.DirectoryPath.PushItem(treeToFocus.name, () =>
-                //{
-                //    BehaviourSystemEditor.Instance.ChangeGraph(treeToFocus);
-                //    //BehaviourSystemEditor.Instance.DirectoryPath.PopItem();
-                //});
-
-                BehaviourSystemEditor.Instance.ChangeGraph(graphAsset);
+                BehaviorEditor.Instance.ChangeGraph(graphAsset, true);
             }
         }
     }

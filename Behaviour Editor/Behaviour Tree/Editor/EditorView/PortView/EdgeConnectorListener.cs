@@ -21,21 +21,21 @@ namespace BehaviourSystemEditor.BT
         {
             edge.isGhostEdge = false;
             
-            if (BehaviourSystemEditor.Instance?.View is null || BehaviourSystemEditor.CanEditGraph == false)
+            if (BehaviorEditor.Instance?.view is null || BehaviorEditor.canEditGraph == false)
             {
                 return;
             }
 
             if (edge.input is not null && edge.input.node is NodeView connectionDestination) //Create and link new parent node
             {
-                BehaviourSystemEditor.Instance.View.OpenContextualMenuWindow(position, newParentNodeView => 
+                BehaviorEditor.Instance.view.OpenContextualMenuWindow(position, newParentNodeView => 
                 {
                     this.CreateAndLinkFromNewToOriginalNode(newParentNodeView, connectionDestination, position);
                 });
             }
             else if (edge.output is not null && edge.output.node is NodeView connectionSource) //Create and link new child node
             {
-                BehaviourSystemEditor.Instance.View.OpenContextualMenuWindow(position, newChildNodeView =>
+                BehaviorEditor.Instance.view.OpenContextualMenuWindow(position, newChildNodeView =>
                 {
                     this.CreateAndLinkFromOriginalToNewNode(connectionSource, newChildNodeView, position);
                 });

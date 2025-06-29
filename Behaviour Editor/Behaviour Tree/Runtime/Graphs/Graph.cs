@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public abstract class Graph : ScriptableObject
+    public abstract class Graph : ScriptableObject, IDisposable
     {
         [HideInInspector]
         public NodeBase entry; //root node Or default node
@@ -26,7 +26,7 @@ namespace BehaviourSystem.BT
         public abstract void StopGraph();
 
 
-        public bool TryGetNodeByGUID(UGUID uguid, out NodeBase node)
+        public bool TryGetNodeByGuid(UGUID uguid, out NodeBase node)
         {
             for (int i = 0; i < nodes.Count; ++i)
             {
@@ -39,6 +39,14 @@ namespace BehaviourSystem.BT
 
             node = null;
             return false;
+        }
+        
+        
+        public void Dispose()
+        {
+            nodes.Clear();
+            nodes = null;
+            entry = null;
         }
         
         

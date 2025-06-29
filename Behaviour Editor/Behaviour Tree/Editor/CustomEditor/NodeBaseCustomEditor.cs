@@ -45,7 +45,7 @@ namespace BehaviourSystemEditor.BT
             SerializedProperty tagProp = serializedObject.FindProperty("_tag");
             SerializedProperty desProp = serializedObject.FindProperty("_description");
 
-            using (new EditorGUI.DisabledScope(!BehaviourSystemEditor.CanEditGraph))
+            using (new EditorGUI.DisabledScope(!BehaviorEditor.canEditGraph))
             {
                 nameProp.stringValue = EditorGUILayout.TextField("Name", nameProp.stringValue);
                 tagProp.stringValue = EditorGUILayout.TextField("Tag", tagProp.stringValue);

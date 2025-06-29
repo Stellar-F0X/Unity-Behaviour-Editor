@@ -8,11 +8,11 @@ namespace BehaviourSystemEditor.BT
     {
         protected override void CreateAndLinkFromOriginalToNewNode(NodeView sourceNodeView, NodeView targetNodeView, Vector2 position)
         {
-            var processor = BehaviourSystemEditor.Instance.View.graphViewProcessor;
+            var processor = BehaviorEditor.Instance.view.graphViewProcessor;
 
             processor.TryDisconnectParentToChild(sourceNodeView);
 
-            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviourSystemEditor.Instance.Tree.graph is BehaviourTree tree)
+            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviorEditor.Instance.graph.graph is BehaviourTree tree)
             {
                 tree.AddChild((BehaviourNodeBase)sourceNodeView.targetNode, (BehaviourNodeBase)targetNodeView.targetNode);
             }
@@ -21,11 +21,11 @@ namespace BehaviourSystemEditor.BT
 
         protected override void CreateAndLinkFromNewToOriginalNode(NodeView sourceNodeView, NodeView targetNodeView, Vector2 position)
         {
-            var processor = BehaviourSystemEditor.Instance.View.graphViewProcessor;
+            var processor = BehaviorEditor.Instance.view.graphViewProcessor;
 
             processor.TryDisconnectChildToParent(targetNodeView);
 
-            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviourSystemEditor.Instance.Tree.graph is BehaviourTree tree)
+            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviorEditor.Instance.graph.graph is BehaviourTree tree)
             {
                 tree.AddChild((BehaviourNodeBase)sourceNodeView.targetNode, (BehaviourNodeBase)targetNodeView.targetNode);
             }

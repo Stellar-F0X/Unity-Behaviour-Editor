@@ -22,7 +22,7 @@ namespace BehaviourSystemEditor.BT
             this.AddManipulator(new RectangleSelector());
             this.AddManipulator(new GraphZoomer(2f, 0.2f));
 
-            styleSheets.Add(BehaviourSystemEditor.Settings.behaviourGraphStyle);
+            styleSheets.Add(BehaviorEditor.settings.behaviourGraphStyle);
         }
 
         /// <summary>노드가 선택될 때 호출되는 이벤트입니다.</summary>
@@ -63,9 +63,9 @@ namespace BehaviourSystemEditor.BT
 
                 switch (_graphAsset.graphType)
                 {
-                    case EGraphType.BehaviourTree: _graphViewProcessor = new BehaviourTreeViewProcessor(); break;
+                    case EGraphType.BT: _graphViewProcessor = new BehaviourTreeViewProcessor(); break;
 
-                    case EGraphType.StateMachine: _graphViewProcessor = new FiniteStateMachineViewProcessor(); break;
+                    case EGraphType.FSM: _graphViewProcessor = new FiniteStateMachineViewProcessor(); break;
                 }
 
                 this.ClearEditorView();
@@ -74,7 +74,7 @@ namespace BehaviourSystemEditor.BT
                 this.deleteSelection += this.OnDeleteSelectionElements;
                 
                 this._graphViewProcessor.CreateAndConnectNodes(this._graphAsset, this);
-                this._graphAsset.graphGroup.dataList.ForEach(this.RecreateNodeGroupViewOnLoad);
+                this._graphAsset.graphGroup?.dataList.ForEach(this.RecreateNodeGroupViewOnLoad);
             }
         }
 
@@ -125,7 +125,7 @@ namespace BehaviourSystemEditor.BT
             }
 
             float currentTime = Time.time;
-            float updateInterval = BehaviourSystemEditor.Settings.nodeViewUpdateInterval;
+            float updateInterval = BehaviorEditor.settings.nodeViewUpdateInterval;
 
             foreach (Node view in nodes)
             {
@@ -141,7 +141,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary> 마우스 위치에서 컨텍스트 메뉴(노드 생성) 창을 엽니다. </summary>
         public void OpenContextualMenuWindow(Vector2 mousePosition, Action<NodeView> onNewNodeCreatedOnce = null)
         {
-            if (BehaviourSystemEditor.CanEditGraph == false)
+            if (BehaviorEditor.canEditGraph == false)
             {
                 return;
             }
@@ -191,7 +191,7 @@ namespace BehaviourSystemEditor.BT
                     {
                         case Edge edge: this.graphViewProcessor.DisconnectNodesByEdge(_graphAsset, edge); break;
 
-                        case NodeView nodeView: this._graphAsset.graph.DeleteNode(nodeView.targetNode); break;
+                        case NodeView nodeView: this.graphViewProcessor.DeleteNodeFromGraph(_graphAsset, nodeView.targetNode); break;
 
                         case NodeGroupView groupView: this._graphAsset.graphGroup.DeleteGroupData(groupView.data); break;
                     }
@@ -217,7 +217,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>선택된 요소들을 삭제할 때 호출되는 콜백 메서드입니다.</summary>
         private void OnDeleteSelectionElements(string operationName, AskUser user)
         {
-            if (BehaviourSystemEditor.CanEditGraph == false)
+            if (BehaviorEditor.canEditGraph == false)
             {
                 return;
             }
@@ -279,7 +279,7 @@ namespace BehaviourSystemEditor.BT
             NodeGroupView groupView = new NodeGroupView(_graphAsset.graphGroup, nodeGroupData);
 
             groupView.SetPosition(new Rect(position, Vector2.zero));
-            groupView.style.backgroundColor = BehaviourSystemEditor.Settings.nodeGroupColor;
+            groupView.style.backgroundColor = BehaviorEditor.settings.nodeGroupColor;
             groupView.title = title;
 
             base.AddElement(groupView);

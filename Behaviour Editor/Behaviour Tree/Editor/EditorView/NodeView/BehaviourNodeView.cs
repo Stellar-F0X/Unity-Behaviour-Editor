@@ -33,7 +33,7 @@ namespace BehaviourSystemEditor.BT
 
         public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
         {
-            return new PortView(EGraphType.BehaviourTree, direction, capacity);
+            return new PortView(EGraphType.BT, direction, capacity);
         }
 
 
@@ -48,6 +48,12 @@ namespace BehaviourSystemEditor.BT
                 }
 
                 case BehaviourNodeBase.EBehaviourNodeType.Action:
+                {
+                    inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
+                    break;
+                }
+
+                case BehaviourNodeBase.EBehaviourNodeType.SubGraph:
                 {
                     inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     break;
@@ -77,9 +83,9 @@ namespace BehaviourSystemEditor.BT
         {
             switch (((BehaviourNodeBase)targetNode).status)
             {
-                case EStatus.Failure: base.SetBorderColor(style, BehaviourSystemEditor.Settings.nodeFailureColor); break;
+                case EStatus.Failure: base.SetBorderColor(style, BehaviorEditor.settings.nodeFailureColor); break;
 
-                case EStatus.Success: base.SetBorderColor(style, BehaviourSystemEditor.Settings.nodeSuccessColor); break;
+                case EStatus.Success: base.SetBorderColor(style, BehaviorEditor.settings.nodeSuccessColor); break;
             }
         }
     }

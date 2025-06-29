@@ -5,7 +5,7 @@ using UnityEngine.Pool;
 
 namespace BehaviourSystem.BT
 {
-    [CreateAssetMenu(fileName = "New Blackboard", menuName = "Behaviour System/Blackboard Asset")]
+    [CreateAssetMenu(fileName = "New Blackboard", menuName = "Behaviour System/Blackboard Asset", order = 3)]
     public class Blackboard : ScriptableObject
     {
         [SerializeReference, HideInInspector]

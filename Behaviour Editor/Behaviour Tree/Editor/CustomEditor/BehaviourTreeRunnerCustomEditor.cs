@@ -37,7 +37,7 @@ namespace BehaviourSystemEditor.BT
 
                         if (GUILayout.Button("Open Behaviour Editor", GUILayout.Width(buttonWidth - 20f)))
                         {
-                            BehaviourSystemEditor.OpenWindow(convertedTreeAsset);
+                            BehaviorEditor.OpenWindow(convertedTreeAsset);
                         }
 
                         if (GUILayout.Button("Open Blackboard Editor Settings", GUILayout.Width(buttonWidth - 20f)))

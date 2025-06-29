@@ -11,7 +11,7 @@ namespace BehaviourSystemEditor.BT
     {
         public TransitionEdge()
         {
-            isGhostEdge = !BehaviourSystemEditor.IsLoadingTreeToView;
+            isGhostEdge = !BehaviorEditor.isLoadingTreeToView;
 
             generateVisualContent += this.DrawArrow;
         }

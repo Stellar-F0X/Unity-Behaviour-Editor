@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BehaviourSystem.BT;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -20,7 +21,7 @@ namespace BehaviourSystemEditor.BT
 
             linkedEdge = connectionSource.outputPort.ConnectTo(connectionTarget.inputPort);
             connectionTarget.parentConnectionEdge = linkedEdge;
-            BehaviourSystemEditor.Instance.View.AddElement(linkedEdge);
+            BehaviorEditor.Instance.view.AddElement(linkedEdge);
             return true;
         }
 
@@ -107,7 +108,7 @@ namespace BehaviourSystemEditor.BT
                 return null;
             }
 
-            NodeView nodeView = new BehaviourNodeView(node, BehaviourSystemEditor.Settings.behaviourNodeViewXml);
+            NodeView nodeView = new BehaviourNodeView(node, BehaviorEditor.settings.behaviourNodeViewXml);
             
             Debug.Assert(nodeView is not null, $"{nameof(BehaviourGraphView)}: NodeView is null");
             
@@ -125,17 +126,18 @@ namespace BehaviourSystemEditor.BT
 
             if (childNodeView.parentConnectionEdge?.output.node is NodeView view)
             {
-                BehaviourTree tree = BehaviourSystemEditor.Instance.Tree.graph as BehaviourTree;
+                BehaviourTree tree = BehaviorEditor.Instance.graph.graph as BehaviourTree;
                 tree?.RemoveChild((BehaviourNodeBase)view.targetNode, (BehaviourNodeBase)childNodeView.targetNode);
                 view.outputPort.Disconnect(childNodeView.parentConnectionEdge);
 
                 List<GraphElement> edges = ListPool<GraphElement>.Get();
                 edges.Add(childNodeView.parentConnectionEdge);
-                BehaviourSystemEditor.Instance.View.DeleteElements(edges);
+                BehaviorEditor.Instance.view.DeleteElements(edges);
                 ListPool<GraphElement>.Release(edges);
             }
         }
 
+        
         public override void DisconnectNodesByEdge(GraphAsset graphAsset, Edge edge)
         {
             BehaviourTree tree = graphAsset.graph as BehaviourTree;
@@ -208,14 +210,14 @@ namespace BehaviourSystemEditor.BT
             //부모 노드에서 Edge 연결을 시작할 경우로, 부모 노드가 하나의 자식만 가질 수 있으며, 이미 자식으로 연결된 노드가 있다면 그 노드와의 연결을 해제한다.
             if (isSingleChildNode && parentNodeView.outputPort.connections.First()?.input.node is NodeView existingChildView)
             {
-                BehaviourTree tree = BehaviourSystemEditor.Instance.Tree.graph as BehaviourTree;
+                BehaviourTree tree = BehaviorEditor.Instance.graph.graph as BehaviourTree;
                 tree?.RemoveChild((BehaviourNodeBase)parentNodeView.targetNode, (BehaviourNodeBase)existingChildView.targetNode);
 
                 parentNodeView.outputPort.Disconnect(existingChildView.parentConnectionEdge);
 
                 List<GraphElement> edges = ListPool<GraphElement>.Get();
                 edges.Add(existingChildView.parentConnectionEdge);
-                BehaviourSystemEditor.Instance.View.DeleteElements(edges);
+                BehaviorEditor.Instance.view.DeleteElements(edges);
                 ListPool<GraphElement>.Release(edges);
             }
         }

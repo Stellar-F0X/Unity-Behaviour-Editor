@@ -17,8 +17,12 @@ namespace BehaviourSystem.BT
             {
                 nodeName = nodeName.Replace("Node", string.Empty);
             }
+            else if (nodeName.EndsWith("State"))
+            {
+                nodeName = nodeName.Replace("State", string.Empty);
+            }
 
-            return Regex.Replace(nodeName, "(?<!^)([A-Z])", " $1");
+            return Regex.Replace(nodeName, "(?<=[a-z])(?=[A-Z])", " ");
         }
         
         

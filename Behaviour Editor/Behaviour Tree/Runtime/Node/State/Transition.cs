@@ -9,13 +9,13 @@ namespace BehaviourSystem.BT
     {
         public Transition(UGUID targetState)
         {
-            nextStateNodeUGUID = targetState;
+            nextStateNodeUguid = targetState;
             conditions.Add(new BlackboardBasedCondition());
         }
         
         
         [HideInInspector]
-        public UGUID nextStateNodeUGUID;
+        public UGUID nextStateNodeUguid;
         
         public List<BlackboardBasedCondition> conditions = new List<BlackboardBasedCondition>();
 

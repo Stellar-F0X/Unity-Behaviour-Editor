@@ -14,9 +14,9 @@ namespace BehaviourSystemEditor.BT
         {
             switch (graphType)
             {
-                case EGraphType.BehaviourTree: base.m_EdgeConnector = new EdgeConnector<Edge>(new BehaviorNodeEdgeConnectorListener()); break;
+                case EGraphType.BT: base.m_EdgeConnector = new EdgeConnector<Edge>(new BehaviorNodeEdgeConnectorListener()); break;
 
-                case EGraphType.StateMachine: base.m_EdgeConnector = new EdgeConnector<TransitionEdge>(new StateNodeEdgeConnectorListener()); break;
+                case EGraphType.FSM: base.m_EdgeConnector = new EdgeConnector<TransitionEdge>(new StateNodeEdgeConnectorListener()); break;
                 
                 default: throw new ArgumentOutOfRangeException(nameof(graphType), graphType, null);
             }

@@ -66,8 +66,15 @@ namespace BehaviourSystemEditor.BT
             {
                 //NodeBase CustomEditor에서 그려지는 NodeBase의 Name Field를 수정시, 에디터에서 값 변경을 확인 후, 알림이 전달.
                 //등록된 TrackPropertyValue에 등록된 람다가 호출되고 변경된 이름이 property.stringValue로 전돨되며 NodeView의 Title도 변경됨.
-                SerializedProperty nameProperty = new SerializedObject(targetNode).FindProperty("m_Name");
-                this.TrackPropertyValue(nameProperty, p => this.title = p.stringValue);
+                this.TrackPropertyValue(new SerializedObject(targetNode).FindProperty("m_Name"), p =>
+                {
+                    if (targetNode is ISubGraphNode subGraphNode)
+                    {
+                        subGraphNode.subGraphAsset.name = p.stringValue;
+                    }
+                    
+                    this.title = p.stringValue;
+                });
             }
         }
 
@@ -120,7 +127,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            port.pickingMode = BehaviourSystemEditor.CanEditGraph ? PickingMode.Position : PickingMode.Ignore;
+            port.pickingMode = BehaviorEditor.canEditGraph ? PickingMode.Position : PickingMode.Ignore;
             port.style.flexDirection = direction;
             port.portName = portName;
             container.Add(port);
@@ -141,7 +148,7 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            BehaviourTreeEditorSettings settings = BehaviourSystemEditor.Settings;
+            BehaviourTreeEditorSettings settings = BehaviorEditor.settings;
 
             if (this.UpdateNodeHighlightState(deltaTime, settings.nodeViewHighlightingDuration))
             {

@@ -23,6 +23,17 @@ namespace BehaviourSystemEditor.BT
         }
         
         
+        public void DeleteNodeFromGraph(GraphAsset graphAsset, NodeBase targetNode)
+        {
+            if (targetNode is ISubGraphNode subGraphNode)
+            {
+                subGraphNode.subGraphAsset.RemoveSubGraphAsset();
+            }
+            
+            graphAsset.graph.DeleteNode(targetNode);
+        }
+        
+        
         public virtual void NotifyNodePositionChanged(List<GraphElement> elements, BehaviourGraphView graphView) { }
         
         public abstract bool TryConnectNodesByEdge(NodeView connectionSource, NodeView connectionTarget, out Edge linkedEdge);

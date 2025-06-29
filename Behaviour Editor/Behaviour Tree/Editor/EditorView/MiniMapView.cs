@@ -13,7 +13,7 @@ namespace BehaviourSystemEditor.BT
         public void Setup(ToolbarToggle minimapActivateButton, BehaviourGraphView btView)
         {
             this.anchored = true;
-            this.style.backgroundColor = BehaviourSystemEditor.Settings.miniMapBackgroundColor;
+            this.style.backgroundColor = BehaviorEditor.settings.miniMapBackgroundColor;
 
             minimapActivateButton.UnregisterValueChangedCallback(this.ActiveMinimap);
             minimapActivateButton.RegisterValueChangedCallback(this.ActiveMinimap);
