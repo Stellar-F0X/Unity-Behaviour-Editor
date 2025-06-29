@@ -1,17 +1,17 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Unity-Behaviour-System/Behaviour%20Editor/Behaviour%20Tree/Editor/Layout/BehaviourTreeEditorStyle.uss?fileID=7433441132597879392&amp;guid=9f7ef0b4ed1e21f4580d6f651abac776&amp;type=3#BehaviourTreeEditorStyle" />
     <BehaviourSystemEditor.BT.SplitView fixed-pane-initial-dimension="280">
-        <ui:VisualElement name="left-panel" style="flex-grow: 1; flex-direction: column; width: auto; flex-shrink: 1; min-width: 280px; display: flex; min-height: auto; max-width: none; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-left-color: rgb(25, 25, 25); border-right-color: rgb(25, 25, 25); border-top-color: rgb(25, 25, 25); border-bottom-color: rgb(25, 25, 25); visibility: visible; overflow: visible; flex-wrap: nowrap;">
+        <ui:VisualElement name="left-panel" style="flex-grow: 1; flex-direction: column; width: 280px; flex-shrink: 1; min-width: 280px; display: flex; min-height: auto; max-width: none; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-left-color: rgb(25, 25, 25); border-right-color: rgb(25, 25, 25); border-top-color: rgb(25, 25, 25); border-bottom-color: rgb(25, 25, 25); visibility: visible; overflow: visible; flex-wrap: nowrap;">
             <BehaviourSystemEditor.BT.SplitView orientation="Vertical" fixed-pane-initial-dimension="300" name="sub-splitView" style="flex-direction: column; background-color: rgb(61, 61, 61);">
-                <ui:VisualElement name="inspector" style="flex-grow: 1; flex-shrink: 1; min-height: 14px;">
-                    <ui:Label tabindex="-1" text=" Inspector" parse-escape-sequences="true" display-tooltip-when-elided="true" name="left-view-label" class="window-label" style="flex-shrink: 1; flex-grow: 0; min-height: 15px;" />
+                <ui:VisualElement name="inspector" style="flex-grow: 1; flex-shrink: 1; min-height: 20px;">
+                    <ui:Label tabindex="-1" text=" Inspector" parse-escape-sequences="true" display-tooltip-when-elided="true" name="left-view-label" picking-mode="Ignore" class="window-label" style="flex-shrink: 1; flex-grow: 0; height: 20px; align-items: center; -unity-text-align: middle-left;" />
                     <ui:ScrollView style="flex-grow: 1;">
                         <BehaviourSystemEditor.BT.InspectorView style="margin-top: 5px; margin-bottom: 0; margin-right: 2px; margin-left: 2px; height: auto; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
                     </ui:ScrollView>
                 </ui:VisualElement>
                 <ui:VisualElement name="blackboard" style="flex-grow: 1; flex-shrink: 1; background-color: rgb(61, 61, 61); top: auto; height: auto; min-height: 34px; position: relative; overflow: hidden;">
                     <ui:VisualElement name="blackboard-toolbar" style="flex-grow: 0; flex-direction: row; min-width: auto; background-color: rgb(42, 42, 42); min-height: 14px;">
-                        <ui:Label tabindex="-1" text=" Blackboard" parse-escape-sequences="true" display-tooltip-when-elided="true" name="left-view-label" class="window-label" style="flex-grow: 1;" />
+                        <ui:Label tabindex="-1" text=" Blackboard" parse-escape-sequences="true" display-tooltip-when-elided="true" name="left-view-label" class="window-label" style="flex-grow: 1; -unity-text-align: middle-left; height: 20px;" />
                         <uie:ToolbarMenu name="element-add-button" style="padding-right: 4px; margin-left: 0; border-left-width: 1px; border-right-width: 0; border-bottom-width: 1px; border-top-width: 1px; border-bottom-left-radius: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; min-height: 0;" />
                     </ui:VisualElement>
                     <uie:ObjectField allow-scene-objects="false" name="blackboard-field" type="BehaviourSystem.BT.Blackboard, BehaviourSystem-BT" label="Asset" tooltip="Blackboard Asset" style="margin-top: 2px; margin-bottom: 2px; -unity-font-style: bold; min-height: 0; flex-shrink: 1; flex-direction: row; align-items: auto; flex-grow: 0; flex-wrap: wrap;" />
@@ -19,13 +19,12 @@
                 </ui:VisualElement>
             </BehaviourSystemEditor.BT.SplitView>
         </ui:VisualElement>
-        <ui:VisualElement name="right-panel" style="flex-grow: 1; flex-shrink: 1; min-width: 10%; max-width: none;">
-            <uie:Toolbar name="right-toolbar" style="justify-content: space-between; height: auto; min-height: 15px; flex-shrink: 1; max-height: 15px;">
-                <BehaviourSystemEditor.BT.GraphBreadcrumbs style="flex-grow: 1; background-color: rgba(42, 42, 42, 0.16);" />
-                <BehaviourSystemEditor.BT.NodeSearchFieldView style="-unity-background-image-tint-color: rgb(13, 13, 13);" />
-                <uie:ToolbarToggle label="Minimap" name="active-minimap" value="false" style="overflow: visible; flex-shrink: 1;" />
+        <ui:VisualElement name="right-panel" style="flex-grow: 1; flex-shrink: 1; min-width: 10%; max-width: none; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); margin-left: 0;">
+            <uie:Toolbar name="right-toolbar" style="justify-content: flex-start; height: 20px; min-height: auto; flex-shrink: 1; max-height: none; flex-grow: 0; align-items: center; align-content: auto; border-top-width: 1px; border-right-width: 0; border-bottom-width: 1px; border-left-width: 0; flex-wrap: nowrap; align-self: auto; min-width: 0; flex-basis: auto; flex-direction: row;">
+                <BehaviourSystemEditor.BT.GraphBreadcrumbs style="flex-grow: 1; min-height: 95%; min-width: 0; align-items: stretch;" />
+                <BehaviourSystemEditor.BT.NodeSearchFieldView style="-unity-background-image-tint-color: rgb(13, 13, 13); height: 80%; margin-right: 4px;" />
+                <uie:ToolbarToggle label="Minimap" name="active-minimap" value="false" style="overflow: visible; flex-shrink: 1; align-self: flex-start; justify-content: flex-start; align-items: auto;" />
             </uie:Toolbar>
-            <ui:Label tabindex="-1" text=" Tree View" parse-escape-sequences="true" display-tooltip-when-elided="true" name="right-view-label" class="window-label" />
             <BehaviourSystemEditor.BT.BehaviourGraphView focusable="true" style="flex-grow: 1;">
                 <BehaviourSystemEditor.BT.MiniMapView view-data-key="6df03c20-78ec-4a7a-9f20-9d56dcdb0292" enabled="true" style="left: auto; right: auto; top: auto; bottom: auto; flex-grow: 0; min-width: initial; min-height: initial; background-color: rgba(30, 30, 30, 0.78); position: relative; width: 220px; height: 200px; align-items: auto; flex-wrap: wrap; border-left-color: rgb(222, 222, 222); border-right-color: rgb(222, 222, 222); border-top-color: rgb(222, 222, 222); border-bottom-color: rgb(222, 222, 222); visibility: hidden;" />
             </BehaviourSystemEditor.BT.BehaviourGraphView>

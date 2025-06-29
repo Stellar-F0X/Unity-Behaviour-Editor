@@ -32,7 +32,7 @@ namespace BehaviourSystemEditor.BT
         public event Action<NodeView> OnNodeUnselected;
 
         public readonly NodeBase targetNode;
-        
+
         protected readonly VisualElement _elementGroup;
         protected readonly VisualElement _nodeBorder;
         protected readonly TextElement _nodeTypeLabel;
@@ -66,13 +66,15 @@ namespace BehaviourSystemEditor.BT
             {
                 //NodeBase CustomEditor에서 그려지는 NodeBase의 Name Field를 수정시, 에디터에서 값 변경을 확인 후, 알림이 전달.
                 //등록된 TrackPropertyValue에 등록된 람다가 호출되고 변경된 이름이 property.stringValue로 전돨되며 NodeView의 Title도 변경됨.
-                this.TrackPropertyValue(new SerializedObject(targetNode).FindProperty("m_Name"), p =>
+                SerializedProperty nameProp = new SerializedObject(targetNode).FindProperty("m_Name");
+                
+                this.TrackPropertyValue(nameProp, delegate(SerializedProperty p)
                 {
                     if (targetNode is ISubGraphNode subGraphNode)
                     {
                         subGraphNode.subGraphAsset.name = p.stringValue;
                     }
-                    
+
                     this.title = p.stringValue;
                 });
             }
@@ -89,8 +91,8 @@ namespace BehaviourSystemEditor.BT
         {
             OnNodeUnselected?.Invoke(this);
         }
-        
-        
+
+
         public void SetBorderColor(IStyle elementStyle, Color color)
         {
             elementStyle.borderTopColor = color;
@@ -98,8 +100,8 @@ namespace BehaviourSystemEditor.BT
             elementStyle.borderLeftColor = color;
             elementStyle.borderRightColor = color;
         }
-        
-        
+
+
         public void SetEdgeColor(EdgeControl control, Color color)
         {
             control.inputColor = color;
@@ -118,8 +120,8 @@ namespace BehaviourSystemEditor.BT
 
             EditorUtility.SetDirty(targetNode);
         }
-        
-        
+
+
         protected void SetupPort(Port port, string portName, FlexDirection direction, VisualElement container)
         {
             if (port is null)
@@ -132,9 +134,10 @@ namespace BehaviourSystemEditor.BT
             port.portName = portName;
             container.Add(port);
         }
-        
+
 
 #region Highlighting Logic
+
         public void UpdateView(float deltaTime)
         {
             if (Application.isPlaying == false)
@@ -207,7 +210,7 @@ namespace BehaviourSystemEditor.BT
 
 
         protected virtual void SetBorderColorByStatus() { }
-        
+
 #endregion
 
         //NodeView에 포트를 생성합니다.

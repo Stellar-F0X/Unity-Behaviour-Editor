@@ -76,7 +76,7 @@ namespace BehaviourSystemEditor.BT
                 foreach (Transition child in parentNodeBase.transitions)
                 {
                     NodeView sourceView = graphView.FindNodeView(parentNodeBase);
-                    NodeView targetView = graphView.FindNodeView(child.nextStateNodeUguid.ToString());
+                    NodeView targetView = graphView.FindNodeView(child.nextStateNodeGuid.ToString());
 
                     if (TryConnectNodesByEdge(sourceView, targetView, out Edge newEdge))
                     {

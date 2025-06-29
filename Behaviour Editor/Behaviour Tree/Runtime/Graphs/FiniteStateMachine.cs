@@ -83,7 +83,7 @@ namespace BehaviourSystem.BT
         {
             Undo.RecordObject(this, "Finite State Machine (Disconnect)");
             
-            from.transitions.RemoveAll(t => t.nextStateNodeUguid == to.guid);
+            from.transitions.RemoveAll(t => t.nextStateNodeGuid == to.guid);
 
             EditorUtility.SetDirty(this);
         }

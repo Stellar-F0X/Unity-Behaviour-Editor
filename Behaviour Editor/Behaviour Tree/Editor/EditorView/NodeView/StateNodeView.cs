@@ -43,6 +43,7 @@ namespace BehaviourSystemEditor.BT
                 case StateNodeBase.EStateNodeType.SubGraph:
                 {
                     inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
+                    outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
                     break;
                 }
                 

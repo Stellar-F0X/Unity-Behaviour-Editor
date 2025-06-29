@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BehaviourSystem.BT;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace BehaviourSystemEditor.BT
@@ -10,6 +11,15 @@ namespace BehaviourSystemEditor.BT
     [UxmlElement]
     public partial class GraphBreadcrumbs : ToolbarBreadcrumbs
     {
+        public GraphBreadcrumbs() : base()
+        {
+            base.UnregisterCallback<GeometryChangedEvent>(this.GeometryChanged);
+            base.RegisterCallback<GeometryChangedEvent>(this.GeometryChanged);
+        }
+
+        private const float _TEXT_SIZE_OFFSET = 15f;
+
+
         public void PushItem(GraphAsset asset, Action onItemClicked)
         {
             base.PushItem(asset.name, onItemClicked);
@@ -30,12 +40,34 @@ namespace BehaviourSystemEditor.BT
                     {
                         this.PopItem();
                     }
-                    
+
                     return;
                 }
-                else
+
+                targetIndex++;
+            }
+        }
+
+
+        private void GeometryChanged(GeometryChangedEvent evt)
+        {
+            foreach (VisualElement child in this.Children())
+            {
+                if (child is ToolbarButton button)
                 {
-                    targetIndex++;
+                    Vector2 textSize = button.MeasureTextSize(button.text, 0, MeasureMode.Undefined, 0, MeasureMode.Undefined);
+                    float buttonWidth = button.resolvedStyle.width;
+                    
+                    if (buttonWidth < textSize.x + _TEXT_SIZE_OFFSET)
+                    {
+                        button.visible = false;
+                        button.SetEnabled(false);
+                    }
+                    else
+                    {
+                        button.visible = true;
+                        button.SetEnabled(true);
+                    }
                 }
             }
         }

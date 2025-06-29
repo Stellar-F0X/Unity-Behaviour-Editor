@@ -5,23 +5,31 @@ using UnityEngine;
 namespace BehaviourSystem.BT
 {
     [Serializable]
-    public class Transition
+    public struct Transition
     {
-        public Transition(UGUID targetState)
+        public Transition(UGUID targetState, bool isUnconditional = false)
         {
-            nextStateNodeUguid = targetState;
-            conditions.Add(new BlackboardBasedCondition());
+            this.isUnconditional = isUnconditional; 
+            this.nextStateNodeGuid = targetState;
+            
+            this.conditions = new List<BlackboardBasedCondition>();
+            this.conditions.Add(new BlackboardBasedCondition());
         }
-        
+
+        public bool isUnconditional;
         
         [HideInInspector]
-        public UGUID nextStateNodeUguid;
-        
-        public List<BlackboardBasedCondition> conditions = new List<BlackboardBasedCondition>();
+        public UGUID nextStateNodeGuid;
+        public List<BlackboardBasedCondition> conditions;
 
 
         public bool CheckConditions()
         {
+            if (isUnconditional)
+            {
+                return true;
+            }
+            
             for (int i = 0; i < conditions.Count; ++i)
             {
                 if (conditions[i].Execute())

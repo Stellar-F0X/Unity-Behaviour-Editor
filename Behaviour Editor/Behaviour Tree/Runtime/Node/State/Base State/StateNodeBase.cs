@@ -48,7 +48,7 @@ namespace BehaviourSystem.BT.State
             {
                 if (transitions[i].CheckConditions())
                 {
-                    nextStateNodeUGUID = transitions[i].nextStateNodeUguid;
+                    nextStateNodeUGUID = transitions[i].nextStateNodeGuid;
                     return true;
                 }
             }
