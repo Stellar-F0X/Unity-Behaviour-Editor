@@ -9,17 +9,19 @@ namespace BehaviourSystemEditor.BT
     public class NodeBaseCustomEditor : Editor
     {
         private GUIStyle _headerLabelStyle;
-        
+
 
         public override void OnInspectorGUI()
         {
-            this.ParentSerializedField();
+            this.DrawBasedSerializedField();
 
-            this.ChildSerializedFields(serializedObject.FindProperty("_parent"));
+            this.DrawHeader(10f, 2f);
+
+            this.DrawPropertiesRange(serializedObject.FindProperty("_parent"));
         }
 
-        
-        protected virtual void ParentSerializedField()
+
+        protected virtual void DrawBasedSerializedField()
         {
             _headerLabelStyle = new GUIStyle(EditorStyles.toolbar)
             {
@@ -27,7 +29,7 @@ namespace BehaviourSystemEditor.BT
                 fontStyle = FontStyle.Bold,
                 fontSize = 13,
             };
-            
+
             using (new GUIColorScope(new Color32(255, 255, 255, 255), GUIColorScope.EGUIColorScope.Background))
             {
                 EditorGUILayout.LabelField("Information", _headerLabelStyle);
@@ -56,23 +58,42 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        protected virtual void ChildSerializedFields(SerializedProperty iterator)
+        protected virtual void DrawHeader(float startSpacing = 0f, float endSpacing = 0f)
         {
-            EditorGUILayout.Space(10);
-
-            if (iterator.NextVisible(false))
+            if (Mathf.Approximately(startSpacing, 0f) == false)
             {
-                using (new GUIColorScope(new Color32(255, 255, 255, 255), GUIColorScope.EGUIColorScope.Background))
+                EditorGUILayout.Space(startSpacing);
+            }
+
+            using (new GUIColorScope(new Color32(255, 255, 255, 255), GUIColorScope.EGUIColorScope.Background))
+            {
+                EditorGUILayout.LabelField(this.target.name, _headerLabelStyle);
+            }
+
+            if (Mathf.Approximately(endSpacing, 0f) == false)
+            {
+                EditorGUILayout.Space(endSpacing);
+            }
+        }
+
+        protected virtual void DrawPropertiesRange(SerializedProperty start, SerializedProperty stop = null, bool includeChildren = true, bool startInclusive = true)
+        {
+            bool started = false;
+            
+            do
+            {
+                if (stop != null && SerializedProperty.EqualContents(start, stop))
                 {
-                    EditorGUILayout.LabelField(this.target.name, _headerLabelStyle);
+                    break;
                 }
 
-                EditorGUILayout.Space(2);
-
-                do
-                    EditorGUILayout.PropertyField(iterator, true);
-                while (iterator.NextVisible(false));
+                if (started || startInclusive)
+                {
+                    EditorGUILayout.PropertyField(start, includeChildren);
+                    started = true;
+                }
             }
+            while (start.NextVisible(false));
 
             serializedObject.ApplyModifiedProperties();
         }

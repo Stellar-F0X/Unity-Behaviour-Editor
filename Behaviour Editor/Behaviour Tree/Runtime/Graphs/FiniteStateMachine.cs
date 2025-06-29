@@ -71,6 +71,15 @@ namespace BehaviourSystem.BT
 
         public void ConnectStates(StateNodeBase from, StateNodeBase to)
         {
+            //Check already contained
+            for (int i = 0; i < from.transitions.Count; ++i)
+            {
+                if (from.transitions[i].nextStateNodeGuid == to.guid)
+                {
+                    return;
+                }
+            }
+            
             Undo.RecordObject(this, "Finite State Machine (Connect)");
             
             from.transitions.Add(new Transition(to.guid));
@@ -82,8 +91,15 @@ namespace BehaviourSystem.BT
         public void DisconnectStates(StateNodeBase from, StateNodeBase to)
         {
             Undo.RecordObject(this, "Finite State Machine (Disconnect)");
-            
-            from.transitions.RemoveAll(t => t.nextStateNodeGuid == to.guid);
+
+            for (int i = from.transitions.Count - 1; i >= 0; --i)
+            {
+                if (from.transitions[i].nextStateNodeGuid == to.guid)
+                {
+                    from.transitions.RemoveAt(i);
+                    break;
+                }
+            }
 
             EditorUtility.SetDirty(this);
         }

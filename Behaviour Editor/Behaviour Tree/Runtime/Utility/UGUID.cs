@@ -157,7 +157,7 @@ namespace BehaviourSystem.BT
         {
             using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.TextField(label, ((UGUID)property.boxedValue).ToString());
+                EditorGUI.TextField(position, label, ((UGUID)property.boxedValue).ToString());
             }
         }
 
