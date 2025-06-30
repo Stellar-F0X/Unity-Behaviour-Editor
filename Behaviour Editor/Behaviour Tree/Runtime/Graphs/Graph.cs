@@ -5,16 +5,13 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public abstract class Graph : ScriptableObject, IDisposable
+    public abstract class Graph : ScriptableObject, IEquatable<Graph>
     {
         [HideInInspector]
         public NodeBase entry; //root node Or default node
 
         [HideInInspector]
         public List<NodeBase> nodes = new List<NodeBase>();
-        
-        
-        public abstract Graph CloneGraph(Blackboard clonedBlackboard);
 
         
         public abstract EStatus UpdateGraph();
@@ -42,11 +39,19 @@ namespace BehaviourSystem.BT
         }
         
         
-        public void Dispose()
+        public bool Equals(Graph other)
         {
-            nodes.Clear();
-            nodes = null;
-            entry = null;
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (this.nodes != other.nodes)
+            {
+                return false;
+            }
+
+            return ReferenceEquals(this, other);
         }
         
         

@@ -9,8 +9,8 @@ using UnityEngine.Profiling;
 
 namespace BehaviourSystem.BT
 {
-    [DefaultExecutionOrder(-1), AddComponentMenu("Behaviour System/Behaviour Tree Runner")]
-    public class BehaviourSystemRunner : MonoBehaviour
+    [DefaultExecutionOrder(-1), AddComponentMenu("Behavior System/Behavior System Runner")]
+    public class BehaviorSystemRunner : MonoBehaviour
     {
         private readonly Dictionary<string, IBlackboardProperty> _properties = new Dictionary<string, IBlackboardProperty>();
 
@@ -22,9 +22,6 @@ namespace BehaviourSystem.BT
 
         [SerializeField]
         private GraphAsset _runtimeGraph;
-
-        private TreeInterruptor _callStackHandler;
-
 
         internal event Action onNodeFixedUpdate;
         internal event Action onNodeGizmosUpdate;
@@ -50,7 +47,7 @@ namespace BehaviourSystem.BT
                 return;
             }
 
-            this._runtimeGraph = GraphAsset.MakeRuntimeGraph(this, _runtimeGraph);
+            this._runtimeGraph = GraphFactory.CloneGraph(this, _runtimeGraph);
             
             //TODO: 콜스택 로직을 Graph로 옮길거면 이것도 수정해야 됨. 
             

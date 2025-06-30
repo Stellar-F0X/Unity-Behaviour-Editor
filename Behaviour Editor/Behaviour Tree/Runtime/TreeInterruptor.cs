@@ -39,6 +39,19 @@ namespace BehaviourSystem.BT
 
         private FixedQueue<AbortInfo> _abortQueue;
 
+        
+
+        /// <summary>
+        /// 콜스택과 중지 대기열을 초기화합니다.
+        /// </summary>
+        public void ClearCallStack()
+        {
+            _isAbortSubtreeInProgress = false;
+            
+            _runtimeCallStack.Clear();
+            _abortQueue.Clear();
+        }
+
 
         /// <summary> 지정된 호출 스택의 현재 실행 중인 노드를 반환 </summary>
         /// <param name="callStackID">호출 스택 ID</param>

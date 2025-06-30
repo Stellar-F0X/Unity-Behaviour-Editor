@@ -71,7 +71,7 @@ namespace BehaviourSystem.BT
             internal set { _guid = value; }
         }
         
-        public BehaviourSystemRunner runner
+        public BehaviorSystemRunner runner
         {
             get;
             internal set;

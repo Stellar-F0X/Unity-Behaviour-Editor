@@ -34,6 +34,19 @@ namespace BehaviourSystem.BT
         }
         
         
+        public static void CreateGraphGroup(GraphAsset graphAsset)
+        {
+            if (graphAsset.graphGroup != null)
+            {
+                return;
+            }
+
+            graphAsset.graphGroup = ScriptableObject.CreateInstance<GraphGroup>();
+            graphAsset.graphGroup.hideFlags = HideFlags.HideInHierarchy;
+            AssetDatabase.AddObjectToAsset(graphAsset.graphGroup, graphAsset);
+        }
+        
+        
         public GroupData CreateGroupData(string title, Vector2 position)
         {
             GroupData newGroupData = CreateInstance<GroupData>();

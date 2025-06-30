@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEngine;
@@ -14,14 +15,19 @@ namespace BehaviourSystemEditor.BT
         public override void OnInspectorGUI()
         {
             this.DrawBasedSerializedField();
+            SerializedProperty startProp = serializedObject.FindProperty("_parent");
 
-            this.DrawHeader(10f, 2f);
-
-            this.DrawPropertiesRange(serializedObject.FindProperty("_parent"), startInclusive: false);
+            if (this.HasRemainingPropertiesAfter(startProp))
+            {
+                this.DrawHeader(this.target.name, 10f, 2f);
+                this.DrawPropertiesRange(startProp, startInclusive: false);
+            }
+            
+            serializedObject.ApplyModifiedProperties();
         }
 
 
-        protected virtual void DrawBasedSerializedField()
+        protected virtual SerializedProperty DrawBasedSerializedField()
         {
             _headerLabelStyle = new GUIStyle(EditorStyles.toolbar)
             {
@@ -30,12 +36,7 @@ namespace BehaviourSystemEditor.BT
                 fontSize = 13,
             };
 
-            using (new GUIColorScope(new Color32(255, 255, 255, 255), GUIColorScope.EGUIColorScope.Background))
-            {
-                EditorGUILayout.LabelField("Information", _headerLabelStyle);
-            }
-
-            EditorGUILayout.Space(2);
+            this.DrawHeader("Information", endSpacing: 2);
 
             using (new EditorGUI.DisabledScope(true))
             {
@@ -55,10 +56,12 @@ namespace BehaviourSystemEditor.BT
                 EditorGUILayout.LabelField("Description");
                 desProp.stringValue = EditorGUILayout.TextArea(desProp.stringValue, GUILayout.Height(EditorGUIUtility.singleLineHeight * 3));
             }
+
+            return desProp;
         }
 
 
-        protected virtual void DrawHeader(float startSpacing = 0f, float endSpacing = 0f)
+        protected virtual void DrawHeader(string header, float startSpacing = 0f, float endSpacing = 0f)
         {
             if (Mathf.Approximately(startSpacing, 0f) == false)
             {
@@ -67,7 +70,7 @@ namespace BehaviourSystemEditor.BT
 
             using (new GUIColorScope(new Color32(255, 255, 255, 255), GUIColorScope.EGUIColorScope.Background))
             {
-                EditorGUILayout.LabelField(this.target.name, _headerLabelStyle);
+                EditorGUILayout.LabelField(header, _headerLabelStyle);
             }
 
             if (Mathf.Approximately(endSpacing, 0f) == false)
@@ -76,10 +79,11 @@ namespace BehaviourSystemEditor.BT
             }
         }
 
+
         protected virtual void DrawPropertiesRange(SerializedProperty start, SerializedProperty stop = null, bool includeChildren = true, bool startInclusive = true)
         {
             bool started = false;
-            
+
             do
             {
                 if (stop != null && SerializedProperty.EqualContents(start, stop))
@@ -90,12 +94,31 @@ namespace BehaviourSystemEditor.BT
                 if (started || startInclusive)
                 {
                     EditorGUILayout.PropertyField(start, includeChildren);
-                    started = true;
                 }
+                
+                started = true;
             }
             while (start.NextVisible(false));
+        }
 
-            serializedObject.ApplyModifiedProperties();
+
+        protected bool HasRemainingPropertiesAfter(SerializedProperty startProperty)
+        {
+            if (startProperty == null)
+            {
+                return false;
+            }
+
+            SerializedProperty iterator = startProperty.Copy();
+
+            int propertyCount = 0;
+
+            while (iterator.NextVisible(false))
+            {
+                propertyCount++;
+            }
+
+            return propertyCount > 0;
         }
     }
 }

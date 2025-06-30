@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Unity.APIComparison.Framework.Collectors;
+using UnityEngine.Pool;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -18,14 +20,17 @@ namespace BehaviourSystem.BT
 
         public struct FieldAccessor
         {
-            public FieldAccessor(Getter getter, Setter setter)
+            public FieldAccessor(Getter getter, Setter setter, Type fieldType)
             {
                 this.getter = getter;
                 this.setter = setter;
+                this.fieldType = fieldType;
             }
 
             public Getter getter { get; set; }
             public Setter setter { get; set; }
+            
+            public Type fieldType { get; set; }
         }
 
         private readonly static Dictionary<Type, FieldInfo[]> _FieldCacher = new Dictionary<Type, FieldInfo[]>();
@@ -46,22 +51,44 @@ namespace BehaviourSystem.BT
         }
 #endif
 
-
-        public static FieldInfo[] GetCachedFieldInfo(Type type, params Type[] includeTypes)
+        public static FieldInfo[] GetCachedFieldInfo(Type type, in FieldReflectionDesc desc)
         {
             if (_FieldCacher.TryGetValue(type, out FieldInfo[] fieldInfos))
             {
                 return fieldInfos;
             }
 
-            fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                             .Where(f => includeTypes.Any(t => t.IsAssignableFrom(f.FieldType)))
-                             .ToArray();
-
+            List<FieldInfo> validFields = ListPool<FieldInfo>.Get();
+            FieldInfo[] allFields = type.GetFields(desc.flagSettings);
+            
+            foreach (FieldInfo field in allFields)
+            {
+                if (ReflectionHelper.IsFieldTypeIncluded(field, desc.includeTypes))
+                {
+                    validFields.Add(field);
+                }
+            }
+            
+            fieldInfos = validFields.ToArray();
+            ListPool<FieldInfo>.Release(validFields);
             _FieldCacher[type] = fieldInfos;
             return fieldInfos;
         }
 
+        
+        
+        private static bool IsFieldTypeIncluded(FieldInfo field, Type[] includeTypes)
+        {
+            foreach (Type includeType in includeTypes)
+            {
+                if (includeType.IsAssignableFrom(field.FieldType))
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
 
 
         public static FieldAccessor GetAccessor(FieldInfo fieldInfo)
@@ -71,7 +98,7 @@ namespace BehaviourSystem.BT
                 return accessor;
             }
 
-            accessor = new FieldAccessor(CreateGetter(fieldInfo), CreateSetter(fieldInfo));
+            accessor = new FieldAccessor(CreateGetter(fieldInfo), CreateSetter(fieldInfo), fieldInfo.FieldType);
             _DelegateCacher.Value[fieldInfo] = accessor;
             return accessor;
         }
@@ -79,7 +106,7 @@ namespace BehaviourSystem.BT
 
         private static Getter CreateGetter(FieldInfo fieldInfo)
         {
-            DynamicMethod dynamicMethod = new DynamicMethod($"Get_{fieldInfo.Name}", _SetterParamTypes[1], _GetterParamTypes, fieldInfo.DeclaringType.Module);
+            DynamicMethod dynamicMethod = new DynamicMethod($"Get_{fieldInfo.Name}", typeof(object), _GetterParamTypes, fieldInfo.DeclaringType.Module);
 
             ILGenerator il = dynamicMethod.GetILGenerator();
 

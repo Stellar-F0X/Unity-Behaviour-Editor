@@ -1,27 +1,16 @@
+using System;
 using BehaviourSystem.BT.State;
 using UnityEditor;
+using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
     public class FiniteStateMachine : Graph
     {
         public StateNodeBase currentState;
-
-
-        public override Graph CloneGraph(Blackboard clonedBlackboard)
-        {
-            FiniteStateMachine clonedSet = CreateInstance<FiniteStateMachine>();
-
-            for (int i = 0; i < nodes.Count; ++i)
-            {
-                clonedSet.nodes[i] = Instantiate(this.nodes[i]);
-                NodePropertyFieldBinder.BindNodeProperties(clonedSet.nodes[i], clonedBlackboard);
-            }
-            
-            clonedSet.currentState = clonedSet.nodes[0] as StateNodeBase; //EnterState
-            return clonedSet;
-        }
-
+        public StateNodeBase anyState;
+        //TODO: ExitStateNode 구현해야 됨.
+        
 
         public override EStatus UpdateGraph()
         {
@@ -33,28 +22,38 @@ namespace BehaviourSystem.BT
             if (currentState.callState == ENodeCallState.BeforeEnter)
             {
                 currentState.EnterNode();
+                anyState.EnterNode();
             }
 
-            if (currentState.CheckTransition(out UGUID nextStateUGUID))
+            UGUID nextStateGuid;
+
+            //현재 상태에서 전이가 발생하면 || 기준 왼쪽 함수에서 얻어온 guid를 토대로 전이할 것이고 anyState에서 발생하면 그 반대.
+            if (currentState.CheckTransition(out nextStateGuid) || anyState.CheckTransition(out nextStateGuid))
             {
                 currentState?.ExitNode();
 
-                if (base.TryGetNodeByGuid(nextStateUGUID, out NodeBase node))
+                if (base.TryGetNodeByGuid(nextStateGuid, out NodeBase node))
                 {
-                    StateNodeBase stateNode = node as StateNodeBase;
-                    currentState = stateNode;
+                    currentState = (StateNodeBase)node;
                     currentState.EnterNode();
                 }
             }
-            
-            currentState!.UpdateNode();
+
+            currentState.UpdateNode();
             return EStatus.Running;
         }
 
 
         public override void ResetGraph()
         {
-            
+            if (nodes[0] is EnterState enterState)
+            {
+                currentState = enterState;
+            }
+            else
+            {
+                Debug.LogError("그래프 생성할 때, 문제가 발생함.");
+            }
         }
 
 
@@ -64,11 +63,15 @@ namespace BehaviourSystem.BT
             {
                 currentState.ExitNode();
             }
+
+            if (anyState.callState == ENodeCallState.Updating)
+            {
+                anyState.ExitNode();
+            }
         }
 
 
 #if UNITY_EDITOR
-
         public void ConnectStates(StateNodeBase from, StateNodeBase to)
         {
             //Check already contained
@@ -79,32 +82,40 @@ namespace BehaviourSystem.BT
                     return;
                 }
             }
-            
+
             Undo.RecordObject(this, "Finite State Machine (Connect)");
-            
+
             from.transitions.Add(new Transition(to.guid));
-            
+
             EditorUtility.SetDirty(this);
         }
-        
+
 
         public void DisconnectStates(StateNodeBase from, StateNodeBase to)
         {
-            Undo.RecordObject(this, "Finite State Machine (Disconnect)");
+            int targetIndex = -1;
 
-            for (int i = from.transitions.Count - 1; i >= 0; --i)
+            for (int i = 0; i < from.transitions.Count; ++i)
             {
                 if (from.transitions[i].nextStateNodeGuid == to.guid)
                 {
-                    from.transitions.RemoveAt(i);
+                    targetIndex = i;
                     break;
                 }
             }
 
-            EditorUtility.SetDirty(this);
+            if (targetIndex != -1)
+            {
+                Undo.RecordObject(this, "Finite State Machine (Disconnect)");
+                
+                from.transitions.RemoveAt(targetIndex);
+                
+                EditorUtility.SetDirty(this);
+            }
         }
-        
-        
+
+
+        [Obsolete("아직 사용하지 않음")]
         public void AddState(StateNodeBase state)
         {
             Undo.RecordObject(this, "Finite State Machine (AddState)");
@@ -115,6 +126,7 @@ namespace BehaviourSystem.BT
         }
 
 
+        [Obsolete("아직 사용하지 않음")]
         public void RemoveState(StateNodeBase state)
         {
             Undo.RecordObject(this, "Finite State Machine (RemoveState)");

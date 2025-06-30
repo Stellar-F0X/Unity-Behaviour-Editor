@@ -18,7 +18,7 @@ namespace BehaviourSystemEditor.BT
 
         private GraphAsset _editorOnlyTree;
 
-        private BehaviourSystemRunner _systemRunner;
+        private BehaviorSystemRunner _systemRunner;
 
         private MiniMapView _miniMapView;
 
@@ -320,7 +320,7 @@ namespace BehaviourSystemEditor.BT
                 return true;
             }
 
-            if (selectedObject is GameObject gobj && gobj.TryGetComponent(out BehaviourSystemRunner runner))
+            if (selectedObject is GameObject gobj && gobj.TryGetComponent(out BehaviorSystemRunner runner))
             {
                 tree = runner.runtimeGraph;
                 _systemRunner = runner;

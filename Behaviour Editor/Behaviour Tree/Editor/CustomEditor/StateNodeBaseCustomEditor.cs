@@ -18,22 +18,25 @@ namespace BehaviourSystemEditor.BT
 
         public override void OnInspectorGUI()
         {
-            base.DrawBasedSerializedField();
-            this.DrawHeader(10f, 2f);
-
+            this.DrawBasedSerializedField();
             SerializedProperty startProp = serializedObject.FindProperty("position");
-            SerializedProperty stopProp = serializedObject.FindProperty("transitions");
 
-            base.DrawPropertiesRange(startProp, stopProp, startInclusive: false);
-            this.DrawTransitionList();
-
-            // transitions 리스트 그리기
-            serializedObject.Update();
-            _transitionsList.DoLayoutList();
-
-            if (stopProp.NextVisible(false))
+            if (this.HasRemainingPropertiesAfter(startProp))
             {
-                base.DrawPropertiesRange(stopProp);
+                this.DrawHeader(this.target.name, 10f, 4f);
+                SerializedProperty stopProp = serializedObject.FindProperty("transitions");
+
+                base.DrawPropertiesRange(startProp, stopProp, startInclusive: false);
+                this.DrawTransitionList();
+
+                // transitions 리스트 그리기
+                serializedObject.Update();
+                _transitionsList.DoLayoutList();
+
+                if (stopProp.NextVisible(false))
+                {
+                    base.DrawPropertiesRange(stopProp);
+                }
             }
 
             serializedObject.ApplyModifiedProperties();

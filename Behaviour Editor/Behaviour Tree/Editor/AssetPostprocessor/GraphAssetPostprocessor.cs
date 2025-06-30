@@ -54,7 +54,7 @@ namespace BehaviourSystemEditor.BT
                 return false;
             }
 
-            GraphFactory.CreateGraphGroup(graphAsset);
+            GraphGroup.CreateGraphGroup(graphAsset);
             EditorUtility.SetDirty(graphAsset);
             
             Debug.Assert(graphAsset.graphGroup is not null, $"{nameof(GraphAsset)}: GraphGroup is null");

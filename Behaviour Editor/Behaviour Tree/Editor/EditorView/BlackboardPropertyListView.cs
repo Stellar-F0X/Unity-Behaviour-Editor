@@ -50,7 +50,7 @@ namespace BehaviourSystemEditor.BT
             {
                 foreach (NodeBase node in BehaviorEditor.Instance.graph.graph.nodes)
                 {
-                    NodePropertyFieldBinder.ResetNodeProperties(node);
+                    //NodePropertyFieldBinder.ResetNodeProperties(node);
                 }
             }
 
