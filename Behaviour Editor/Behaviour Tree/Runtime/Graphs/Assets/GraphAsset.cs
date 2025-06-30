@@ -95,42 +95,44 @@ namespace BehaviourSystem.BT
             AssetDatabase.AddObjectToAsset(subGraphAsset, this);
         }
 
-
+        
         public void RemoveSubGraphAsset()
         {
-            for (int i = 0; i < subGraphAssets.Count; ++i)
+            for (int i = this.subGraphAssets.Count - 1; i >= 0; --i)
             {
-                GraphAsset asset = subGraphAssets[i];
-                asset.RemoveSubGraphAsset();
-                asset.Dispose();
+                this.subGraphAssets[i].RemoveSubGraphAsset();
             }
 
+            if (this.parentGraphAsset != null)
+            {
+                this.parentGraphAsset.subGraphAssets.Remove(this);
+            }
+            
             this.Dispose();
-            AssetDatabase.RemoveObjectFromAsset(this);
-            Object.DestroyImmediate(this, true);
-            AssetDatabase.SaveAssets();
         }
 
 
         public void Dispose()
         {
-            if (graph != null && graph.nodes != null)
+            if (this.graph != null && this.graph.nodes != null)
             {
-                graph.nodes.ForEach(GraphFactory.RemoveObjectFromAssetAndDestroyImmediate);
-                GraphFactory.RemoveObjectFromAssetAndDestroyImmediate(graph);
+                this.graph.nodes.ForEach(GraphFactory.RemoveObjectFromAssetAndDestroyImmediate);
+                GraphFactory.RemoveObjectFromAssetAndDestroyImmediate(this.graph);
                 this.graph = null;
             }
 
-            if (graphGroup != null && graphGroup.dataList != null)
+            if (this.graphGroup != null && this.graphGroup.dataList != null)
             {
-                graphGroup.dataList.ForEach(GraphFactory.RemoveObjectFromAssetAndDestroyImmediate);
-                GraphFactory.RemoveObjectFromAssetAndDestroyImmediate(graphGroup);
+                this.graphGroup.dataList.ForEach(GraphFactory.RemoveObjectFromAssetAndDestroyImmediate);
+                GraphFactory.RemoveObjectFromAssetAndDestroyImmediate(this.graphGroup);
                 this.graphGroup = null;
             }
-
+            
             this.subGraphAssets = null;
             this.parentGraphAsset = null;
             this.rootGraphAsset = null;
+            
+            GraphFactory.RemoveObjectFromAssetAndDestroyImmediate(this);
         }
 #endif
 
@@ -142,7 +144,7 @@ namespace BehaviourSystem.BT
                 return false;
             }
 
-            if (this.guid == other.guid)
+            if (this.guid != other.guid)
             {
                 return false;
             }

@@ -366,6 +366,8 @@ namespace BehaviourSystemEditor.BT
         
         private void OpenGraph(GraphAsset graphAsset)
         {
+            _graph = graphAsset;
+            
             bool isValidGraphRunner = _systemRunner is not null && _systemRunner.runtimeGraph == graphAsset;
 
             bool openedEditorWindow = AssetDatabase.CanOpenAssetInEditor(graphAsset.GetInstanceID());

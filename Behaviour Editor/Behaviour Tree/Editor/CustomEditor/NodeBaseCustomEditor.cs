@@ -17,7 +17,7 @@ namespace BehaviourSystemEditor.BT
 
             this.DrawHeader(10f, 2f);
 
-            this.DrawPropertiesRange(serializedObject.FindProperty("_parent"));
+            this.DrawPropertiesRange(serializedObject.FindProperty("_parent"), startInclusive: false);
         }
 
 

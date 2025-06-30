@@ -125,6 +125,8 @@ namespace BehaviourSystemEditor.BT
             if (newSubGraphNodeView.targetNode is ISubGraphNode graphNode)
             {
                 GraphAsset parentGraphAsset = BehaviorEditor.Instance.graph;
+                
+                Debug.Assert(parentGraphAsset != null, $"{nameof(CreationWindowBase)}: ParentGraphAsset is null");
 
                 switch (graphNode.subGraphType)
                 {
