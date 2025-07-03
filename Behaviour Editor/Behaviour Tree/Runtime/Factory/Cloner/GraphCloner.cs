@@ -49,76 +49,6 @@ namespace BehaviourSystem.BT
         }
 
 
-        public static void BindNodeProperties(ReflectionHelper.FieldAccessor accessor, NodeBase node, Blackboard blackboard, GraphAsset[] clonedGraphAssets)
-        {
-            switch (accessor.getter(node))
-            {
-                case IBlackboardProperty property:
-                {
-                    IBlackboardProperty foundProperty = blackboard.FindProperty(property.hashCode);
-                    Debug.Assert(foundProperty != null, "Blackboard property not found.");
-                    accessor.setter(node, foundProperty);
-                    return;
-                }
-
-                case GraphAsset graphAsset:
-                {
-                    GraphAsset foundAsset = clonedGraphAssets.FirstOrDefault(asset => asset.guid == graphAsset.guid);
-                    Debug.Assert(foundAsset != null, "GraphAsset not found.");
-                    accessor.setter(node, foundAsset);
-                    return;
-                }
-
-                case IList<BlackboardBasedCondition> conditions:
-                {
-                    foreach (var condition in conditions)
-                    {
-                        if (string.IsNullOrEmpty(condition.property?.key))
-                        {
-                            IBlackboardProperty foundProperty = blackboard.FindProperty(condition.property.hashCode);
-                            Debug.Assert(foundProperty != null, "BlackboardBasedCondition not found.");
-                            condition.property = foundProperty;
-                        }
-
-                        if (string.IsNullOrEmpty(condition.comparableValue?.key))
-                        {
-                            IBlackboardProperty foundProperty = blackboard.FindProperty(condition.comparableValue.hashCode);
-                            Debug.Assert(foundProperty != null, "Comparable blackboardBasedCondition not found.");
-                            condition.comparableValue = foundProperty;
-                        }
-                    }
-
-                    return;
-                }
-
-                case IList<Transition> transitions:
-                {
-                    foreach (var transition in transitions)
-                    {
-                        foreach (var condition in transition.conditions)
-                        {
-                            if (string.IsNullOrEmpty(condition.property?.key))
-                            {
-                                IBlackboardProperty foundProperty = blackboard.FindProperty(condition.property.hashCode);
-                                Debug.Assert(foundProperty != null, "BlackboardBasedCondition not found.");
-                                condition.property = foundProperty;
-                            }
-
-                            if (string.IsNullOrEmpty(condition.comparableValue?.key))
-                            {
-                                IBlackboardProperty foundProperty = blackboard.FindProperty(condition.comparableValue.hashCode);
-                                Debug.Assert(foundProperty != null, "Comparable blackboardBasedCondition not found.");
-                                condition.comparableValue = foundProperty;
-                            }
-                        }
-                    }
-
-                    return;
-                }
-            }
-        }
-
-
         /// <summary> 그래프의 모든 자식 노드를 초기화한다. </summary>
         /// <param name="graph"></param>
         public abstract void ClearAllNodesOfGraph(GraphAsset graph);
@@ -129,8 +59,8 @@ namespace BehaviourSystem.BT
         /// </summary>
         /// <param name="systemRunner"></param>
         /// <param name="targetGraph"></param>
-        /// <param name="blackboard"></param>
+        /// <param name="blackboardAsset"></param>
         /// <returns></returns>
-        public abstract Graph CloneGraph(BehaviorSystemRunner systemRunner, Graph targetGraph, Blackboard blackboard);
+        public abstract Graph CloneGraph(BehaviorSystemRunner systemRunner, Graph targetGraph, BlackboardAsset blackboardAsset);
     }
 }

@@ -15,7 +15,7 @@ namespace BehaviourSystem.BT
             
         }
         
-        public override Graph CloneGraph(BehaviorSystemRunner systemRunner, Graph targetGraph, Blackboard blackboard)
+        public override Graph CloneGraph(BehaviorSystemRunner systemRunner, Graph targetGraph, BlackboardAsset blackboardAsset)
         {
             FiniteStateMachine originalFSM = targetGraph as FiniteStateMachine;
             FiniteStateMachine clonedFSM = ScriptableObject.CreateInstance<FiniteStateMachine>();

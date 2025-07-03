@@ -9,8 +9,8 @@ using UnityEngine.Pool;
 
 namespace BehaviourSystemEditor.BT
 {
-    [CustomPropertyDrawer(typeof(BlackboardProperty<>))]
-    public class BlackboardPropertyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(BlackboardVariable<>))]
+    public class BlackboardVariableDrawer : PropertyDrawer
     {
         private const BindingFlags _BINDING_FLAG = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -23,9 +23,9 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            Blackboard blackboard = BehaviorEditor.Instance.graph.blackboard;
+            BlackboardAsset blackboardAsset = BehaviorEditor.Instance.graph.blackboardAsset;
 
-            bool exception = blackboard is null || blackboard.properties is null || blackboard.properties.Count == 0;
+            bool exception = blackboardAsset is null || blackboardAsset.variables is null || blackboardAsset.variables.Count == 0;
 
             float width = EditorGUIUtility.labelWidth;
             float height = EditorGUIUtility.singleLineHeight;
@@ -33,47 +33,42 @@ namespace BehaviourSystemEditor.BT
             Rect labelRect = new Rect(position.x, position.y, width, height);
             Rect fieldRect = new Rect(position.x + width + 2, position.y, position.width - width - 2, height);
 
-            List<IBlackboardProperty> properties = ListPool<IBlackboardProperty>.Get();
+            List<BlackboardVariable> variables = ListPool<BlackboardVariable>.Get();
 
-            if (exception == false && this.GetProperties(blackboard, property, properties))
+            if (exception == false && this.GetProperties(blackboardAsset, property, variables))
             {
-                this.DrawPropertiesPopup(position, labelRect, fieldRect, property, label, properties);
+                this.DrawPopup(position, labelRect, fieldRect, property, label, variables);
             }
             else
             {
                 this.DrawNoPropertiesWarning(position, labelRect, fieldRect, property, label);
             }
 
-            ListPool<IBlackboardProperty>.Release(properties);
+            ListPool<BlackboardVariable>.Release(variables);
         }
 
 
-        private bool GetProperties(Blackboard blackboard, SerializedProperty property, List<IBlackboardProperty> properties)
+        private bool GetProperties(BlackboardAsset blackboardAsset, SerializedProperty property, List<BlackboardVariable> properties)
         {
             if (property.serializedObject.targetObject is null)
             {
                 return false;
             }
 
-            Type targetType = this.GetPropertyType(property);
+            Type targetType = fieldInfo.FieldType;
 
-            if (targetType is null)
+            for (int i = 0; i < blackboardAsset.variables.Count; i++)
             {
-                return false;
-            }
-
-            for (int i = 0; i < blackboard.properties.Count; i++)
-            {
-                if (string.IsNullOrEmpty(blackboard.properties[i].key))
+                if (string.IsNullOrEmpty(blackboardAsset.variables[i].name))
                 {
                     continue;
                 }
 
-                Type propertyType = blackboard.properties[i].type;
+                Type propertyType = blackboardAsset.variables[i].GetType();
 
                 if (targetType.IsAssignableFrom(propertyType))
                 {
-                    properties.Add(blackboard.properties[i]);
+                    properties.Add(blackboardAsset.variables[i]);
                 }
             }
 
@@ -81,37 +76,12 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        private Type GetPropertyType(SerializedProperty property)
-        {
-            Type resultType = null;
-
-            if (property.boxedValue is IBlackboardProperty castedProperty && castedProperty.type is not null)
-            {
-                resultType = castedProperty.type;
-            }
-            else if (property.serializedObject.targetObject is not null)
-            {
-                Type targetType = property.serializedObject.targetObject.GetType();
-                resultType = targetType.GetField(property.name, _BINDING_FLAG)?.FieldType;
-            }
-
-            // 제네릭 타입 파라미터가 자기 자신인지 확인
-            if (resultType is not null && resultType.IsGenericType && resultType.GetGenericArguments()[0] == resultType)
-            {
-                return null;
-            }
-            else
-            {
-                return resultType;
-            }
-        }
-
-
-        private void DrawPropertiesPopup(Rect position, Rect labelRect, Rect fieldRect, SerializedProperty property, GUIContent label, List<IBlackboardProperty> properties)
+        //Blackboard Variable로 구성된 팝업을 그린다. 
+        private void DrawPopup(Rect position, Rect labelRect, Rect fieldRect, SerializedProperty property, GUIContent label, List<BlackboardVariable> variables)
         {
             List<string> keyNamesList = ListPool<string>.Get();
             keyNamesList.Add("None");
-            keyNamesList.AddRange(properties.Select(key => key.key));
+            keyNamesList.AddRange(variables.Select(key => key.name));
             string[] keyNames = keyNamesList.ToArray();
             ListPool<string>.Release(keyNamesList);
 
@@ -119,7 +89,7 @@ namespace BehaviourSystemEditor.BT
 
             if (property.boxedValue is not null)
             {
-                SerializedProperty keyProp = property.FindPropertyRelative("_key");
+                SerializedProperty keyProp = property.FindPropertyRelative("_name");
 
                 if (string.IsNullOrEmpty(keyProp.stringValue) == false)
                 {
@@ -139,7 +109,7 @@ namespace BehaviourSystemEditor.BT
                 {
                     EditorGUI.PrefixLabel(labelRect, label);
                     int newSelectedIndex = EditorGUI.Popup(fieldRect, selectedIndex, keyNames);
-                    property.boxedValue = newSelectedIndex == 0 ? null : properties[newSelectedIndex - 1]; //값을 더할 땐, 다시 뺌.
+                    property.boxedValue = newSelectedIndex == 0 ? null : variables[newSelectedIndex - 1]; //값을 더할 땐, 다시 뺌.
                 }
             }
         }

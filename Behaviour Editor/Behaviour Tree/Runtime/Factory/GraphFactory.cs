@@ -40,7 +40,7 @@ namespace BehaviourSystem.BT
         //가져온 모든 노드를 Dictionary<GraphAsset, Nodes[]>로 분배.
         public static GraphAsset CloneGraph(BehaviorSystemRunner runner, GraphAsset targetGraph)
         {
-            Blackboard clonedBlackboard = targetGraph.blackboard?.Clone();
+            BlackboardAsset clonedBlackboardAsset = targetGraph.blackboardAsset?.Clone();
             GraphAsset[] graphAssets = GraphCloner.CollectCurrentAndSubGraphAssets(targetGraph);
             GraphAsset[] clonedGraphAssets = ArrayPool<GraphAsset>.Shared.Rent(graphAssets.Length);
 
@@ -53,26 +53,14 @@ namespace BehaviourSystem.BT
 #if UNITY_EDITOR
                 clonedGraphAssets[index].graphGroup = originalGraphAsset.graphGroup.Clone();
 #endif
-                clonedGraphAssets[index].graph = _GraphCloner[(int)originalGraphAsset.graphType].CloneGraph(runner, originalGraphAsset.graph, clonedBlackboard);
+                clonedGraphAssets[index].graph = _GraphCloner[(int)originalGraphAsset.graphType].CloneGraph(runner, originalGraphAsset.graph, clonedBlackboardAsset);
             }
-
-            FieldReflectionDesc desc = new FieldReflectionDesc(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, new Type[]
-            {
-                typeof(GraphAsset),
-                typeof(IBlackboardProperty),
-                typeof(BlackboardBasedCondition),
-                typeof(ICollection<BlackboardBasedCondition>)
-            });
 
             foreach (GraphAsset clonedGraph in clonedGraphAssets)
             {
                 foreach (NodeBase node in clonedGraph.graph.nodes)
                 {
-                    foreach (FieldInfo field in ReflectionHelper.GetCachedFieldInfo(node.GetType(), desc))
-                    {
-                        ReflectionHelper.FieldAccessor accessor = ReflectionHelper.GetAccessor(field);
-                        GraphCloner.BindNodeProperties(accessor, node, clonedBlackboard, clonedGraphAssets);
-                    }
+                    
                     
                     node.runner = runner;
                     node.PostCreation();
@@ -123,6 +111,17 @@ namespace BehaviourSystem.BT
 #region GUID Methods
 
 #if UNITY_EDITOR
+        public static int StringToHash(in string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                Debug.LogError("Blackboard key cannot be null or empty.");
+                return -1;
+            }
+
+            return Animator.StringToHash(key);
+        }
+        
         /// <summary>  </summary>
         /// <param name="graphAsset"></param>
         /// <returns> Changed </returns>

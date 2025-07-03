@@ -25,30 +25,23 @@ namespace BehaviourSystemEditor.BT
         {
             if (BehaviorEditor.Instance is not null)
             {
-                Blackboard blackboardData = BehaviorEditor.Instance.graph.blackboard;
+                BlackboardAsset blackboardAssetData = BehaviorEditor.Instance.graph.blackboardAsset;
                 _rect = new Rect(position.x, position.y, position.width - 10, EditorGUIUtility.singleLineHeight);
 
                 float width = _rect.width / 3;
 
                 Rect dropdownRect = new Rect(_rect.x, _rect.y + 2, width, _rect.height);
-                SerializedProperty blackboardProp = property.FindPropertyRelative("property");
-                
-                if (this.TryDrawBlackboardProperty(blackboardData, blackboardProp, dropdownRect))
-                {
-                    IBlackboardProperty prop = blackboardProp.boxedValue as IBlackboardProperty;
-                    bool isTriggerCondition = (prop!.comparableConditions & EConditionType.Trigger) == EConditionType.Trigger;
-                    
-                    SerializedProperty conditionType = property.FindPropertyRelative("conditionType");
+                SerializedProperty blackboardVariable = property.FindPropertyRelative("blackboardVariable");
 
-                    if (isTriggerCondition)
+                if (this.TryDrawBlackboardProperty(blackboardAssetData, blackboardVariable, dropdownRect))
+                {
+                    if (blackboardVariable.boxedValue is BlackboardVariable variable)
                     {
-                        this.DrawCompareCondition(conditionType, prop, new Rect(_rect.x + width + 5, _rect.y + 2, width * 2, _rect.height));
-                    }
-                    else
-                    {
-                        this.DrawCompareCondition(conditionType, prop, new Rect(_rect.x + width + 5, _rect.y + 2, width, _rect.height));
+                        SerializedProperty conditionType = property.FindPropertyRelative("comparableType");
+                        this.DrawCompareCondition(conditionType, variable, new Rect(_rect.x + width + 5, _rect.y + 2, width, _rect.height));
                         SerializedProperty targetComparableProp = property.FindPropertyRelative("comparableValue");
-                        this.AllocateCompareValue(targetComparableProp, blackboardProp);
+                        SerializedProperty internalVariableProp = blackboardVariable.FindPropertyRelative("_variable");
+                        this.AllocateCompareValue(targetComparableProp, internalVariableProp);
 
                         SerializedProperty targetPropValue = targetComparableProp.FindPropertyRelative("_value");
                         Rect valueRect = new Rect(_rect.x + width * 2 + 10, _rect.y + 2, width, _rect.height);
@@ -61,19 +54,19 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        
-        private bool TryDrawBlackboardProperty(Blackboard data, SerializedProperty blackboardProp, Rect dropdownRect)
+
+        private bool TryDrawBlackboardProperty(BlackboardAsset data, SerializedProperty blackboardProp, Rect dropdownRect)
         {
-            if (data is null || data.properties is null || data.properties.Count == 0)
+            if (data is null || data.variables is null || data.variables.Count == 0)
             {
                 GUIContent warningIcon = EditorGUIUtility.IconContent("console.warnicon");
-                EditorGUI.LabelField(_rect, new GUIContent("No blackboard properties found.", warningIcon.image));
+                EditorGUI.LabelField(_rect, new GUIContent("No blackboard variables found.", warningIcon.image));
                 return false;
             }
 
-            IBlackboardProperty[] properties = this.GetUsableBlackboardProperties(data);
+            BlackboardVariable[] variables = this.GetUsableBlackboardProperties(data);
 
-            if (properties.Length == 0)
+            if (variables.Length == 0)
             {
                 GUIContent warningIcon = EditorGUIUtility.IconContent("console.warnicon");
                 EditorGUI.LabelField(_rect, new GUIContent("Cannot find a blackboard property with the given key ID.", warningIcon.image));
@@ -81,21 +74,22 @@ namespace BehaviourSystemEditor.BT
             }
 
             //None 옵션을 포함한 dropdown 옵션 생성
-            string[] dropdownOptions = new string[properties.Length + 1];
-            
+            string[] dropdownOptions = new string[variables.Length + 1];
+
             dropdownOptions[0] = "None";
-            
-            for (int i = 0; i < properties.Length; i++)
+
+            for (int i = 0; i < variables.Length; i++)
             {
-                dropdownOptions[i + 1] = properties[i].key;
+                dropdownOptions[i + 1] = variables[i].name;
             }
 
             int selected = 0; //기본값은 None
 
-            if (blackboardProp.boxedValue is IBlackboardProperty prop)
+            if (blackboardProp.boxedValue is BlackboardVariable
+                prop)
             {
-                int propIndex = Array.IndexOf(properties, prop);
-                
+                int propIndex = Array.IndexOf(variables, prop);
+
                 if (propIndex >= 0)
                 {
                     selected = propIndex + 1; //None이 0번 인덱스이므로 +1
@@ -105,7 +99,7 @@ namespace BehaviourSystemEditor.BT
             EditorGUI.BeginDisabledGroup(!BehaviorEditor.canEditGraph);
             selected = Mathf.Clamp(selected, 0, dropdownOptions.Length - 1);
             selected = EditorGUI.Popup(dropdownRect, selected, dropdownOptions);
-            
+
             //None이 선택된 경우 null로 설정, 그렇지 않으면 해당 property 설정
             if (selected == 0)
             {
@@ -115,21 +109,21 @@ namespace BehaviourSystemEditor.BT
             }
             else
             {
-                blackboardProp.boxedValue = properties[selected - 1]; // None이 0번이므로 -1
+                blackboardProp.boxedValue = variables[selected - 1]; // None이 0번이므로 -1
             }
-            
+
             EditorGUI.EndDisabledGroup();
             return true;
         }
 
 
-        private void AllocateCompareValue(SerializedProperty targetProperty, SerializedProperty blackboardProp)
+        private void AllocateCompareValue(SerializedProperty targetProperty, SerializedProperty internalVariableProp)
         {
-            SerializedProperty sourceValueTypeName = blackboardProp.FindPropertyRelative("_typeName");
+            SerializedProperty sourceValueTypeName = internalVariableProp.FindPropertyRelative("_typeName");
 
             if (targetProperty.boxedValue is null) //비교할 대상이 null이면 새로 생성.
             {
-                targetProperty.boxedValue = IBlackboardProperty.Create(Type.GetType(sourceValueTypeName.stringValue));
+                targetProperty.boxedValue = Variable.Create(Type.GetType(sourceValueTypeName.stringValue));
             }
             else //비교할 대상의 타입이 일치하지 않을 경우로, 다를 경우 새로 할당한다. 
             {
@@ -137,19 +131,19 @@ namespace BehaviourSystemEditor.BT
 
                 if (string.Compare(targetValueTypeName.stringValue, sourceValueTypeName.stringValue, StringComparison.Ordinal) != 0)
                 {
-                    targetProperty.boxedValue = IBlackboardProperty.Create(Type.GetType(sourceValueTypeName.stringValue));
+                    targetProperty.boxedValue = Variable.Create(Type.GetType(sourceValueTypeName.stringValue));
                 }
             }
         }
 
 
-        private void DrawCompareCondition(SerializedProperty conditionType, IBlackboardProperty sourceType, Rect compareRect)
+        private void DrawCompareCondition(SerializedProperty conditionType, BlackboardVariable sourceType, Rect compareRect)
         {
             List<string> conditionTypes = ListPool<string>.Get();
             List<int> conditionIndex = ListPool<int>.Get();
 
-            this.GetCompatibleConditionTypes(sourceType.comparableConditions, conditionTypes, conditionIndex);
-            
+            this.GetCompatibleConditionTypes(sourceType.comparison, conditionTypes, conditionIndex);
+
             EditorGUI.BeginDisabledGroup(!BehaviorEditor.canEditGraph);
             int prev = Mathf.Max(conditionIndex.IndexOf(conditionType.enumValueFlag), 0);
             int index = EditorGUI.Popup(compareRect, prev, conditionTypes.ToArray(), _popupStyle);
@@ -161,11 +155,11 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        private void GetCompatibleConditionTypes(EConditionType conditionValue, List<string> conditionTypes, List<int> conditionIndex)
+        private void GetCompatibleConditionTypes(EComparisonType conditionValue, List<string> conditionTypes, List<int> conditionIndex)
         {
-            for (int i = (int)EConditionType.Trigger; i <= (int)conditionValue; i <<= 1)
+            for (int i = (int)EComparisonType.Equal; i <= (int)conditionValue; i <<= 1)
             {
-                EConditionType condition = (EConditionType)i;
+                EComparisonType condition = (EComparisonType)i;
 
                 if ((condition & conditionValue) == condition)
                 {
@@ -173,44 +167,37 @@ namespace BehaviourSystemEditor.BT
 
                     switch (condition)
                     {
-                        case EConditionType.Trigger: conditionTypes.Add("!!"); break;
-
-                        case EConditionType.Equal: conditionTypes.Add("="); break;
-
-                        case EConditionType.NotEqual: conditionTypes.Add("≠"); break;
-
-                        case EConditionType.GreaterThan: conditionTypes.Add(">"); break;
-
-                        case EConditionType.GreaterThanOrEqual: conditionTypes.Add("≥"); break;
-
-                        case EConditionType.LessThan: conditionTypes.Add("<"); break;
-
-                        case EConditionType.LessThanOrEqual: conditionTypes.Add("≤"); break;
+                        case EComparisonType.Equal: conditionTypes.Add("=");              break;
+                        case EComparisonType.NotEqual: conditionTypes.Add("≠");           break;
+                        case EComparisonType.GreaterThan: conditionTypes.Add(">");        break;
+                        case EComparisonType.GreaterThanOrEqual: conditionTypes.Add("≥"); break;
+                        case EComparisonType.LessThan: conditionTypes.Add("<");           break;
+                        case EComparisonType.LessThanOrEqual: conditionTypes.Add("≤");    break;
                     }
                 }
             }
         }
 
 
-        private IBlackboardProperty[] GetUsableBlackboardProperties(Blackboard data)
+        private BlackboardVariable[] GetUsableBlackboardProperties(BlackboardAsset data)
         {
-            List<IBlackboardProperty> cachedPropertyList = ListPool<IBlackboardProperty>.Get();
+            List<BlackboardVariable> cachedVariableList = ListPool<BlackboardVariable>.Get();
 
-            foreach (var prop in data.properties)
+            foreach (var prop in data.variables)
             {
-                if (prop.comparableConditions == EConditionType.None)
+                if (prop.comparison == EComparisonType.None)
                 {
                     continue;
                 }
 
-                if (string.IsNullOrEmpty(prop.key) == false)
+                if (string.IsNullOrEmpty(prop.name) == false)
                 {
-                    cachedPropertyList.Add(prop);
+                    cachedVariableList.Add(prop);
                 }
             }
 
-            IBlackboardProperty[] resultArray = cachedPropertyList.ToArray();
-            ListPool<IBlackboardProperty>.Release(cachedPropertyList);
+            BlackboardVariable[] resultArray = cachedVariableList.ToArray();
+            ListPool<BlackboardVariable>.Release(cachedVariableList);
             return resultArray;
         }
     }

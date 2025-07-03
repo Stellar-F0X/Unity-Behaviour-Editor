@@ -31,9 +31,9 @@ namespace BehaviourSystemEditor.BT
         public StyleSheet behaviourNodeViewStyle;
         public VisualTreeAsset stateNodeViewXml;
         public StyleSheet stateNodeViewStyle;
-        [HideInInspector] public VisualTreeAsset blackboardPropertyViewXml;
-        [HideInInspector] public StyleSheet blackboardPropertyViewStyle;
-        [HideInInspector] public VisualTreeAsset editorSettingsXml;
-        [HideInInspector] public StyleSheet editorSettingsStyle;
+        public VisualTreeAsset blackboardPropertyViewXml;
+        public StyleSheet blackboardPropertyViewStyle;
+        public VisualTreeAsset editorSettingsXml;
+        public StyleSheet editorSettingsStyle;
     }
 }

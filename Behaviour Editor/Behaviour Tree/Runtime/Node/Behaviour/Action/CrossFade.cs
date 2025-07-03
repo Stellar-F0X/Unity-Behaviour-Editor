@@ -5,7 +5,7 @@ namespace BehaviourSystem.BT
     public class CrossFade : ActionNode
     {
         [SerializeReference]
-        public BlackboardProperty<Animator> animator;
+        public BlackboardVariable<Animator> animator;
 
         public string animationName;
         

@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using Unity.APIComparison.Framework.Collectors;
 using UnityEngine.Pool;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
+using UObject = UnityEngine.Object;
 
 namespace BehaviourSystem.BT
 {
@@ -29,7 +29,7 @@ namespace BehaviourSystem.BT
 
             public Getter getter { get; set; }
             public Setter setter { get; set; }
-            
+
             public Type fieldType { get; set; }
         }
 
@@ -51,7 +51,7 @@ namespace BehaviourSystem.BT
         }
 #endif
 
-        public static FieldInfo[] GetCachedFieldInfo(Type type, in FieldReflectionDesc desc)
+        public static FieldInfo[] GetCachedFieldInfo(Type type, params Type[] includeTypes)
         {
             if (_FieldCacher.TryGetValue(type, out FieldInfo[] fieldInfos))
             {
@@ -59,24 +59,24 @@ namespace BehaviourSystem.BT
             }
 
             List<FieldInfo> validFields = ListPool<FieldInfo>.Get();
-            FieldInfo[] allFields = type.GetFields(desc.flagSettings);
-            
+            FieldInfo[] allFields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
             foreach (FieldInfo field in allFields)
             {
-                if (ReflectionHelper.IsFieldTypeIncluded(field, desc.includeTypes))
+                if (ReflectionHelper.IsFieldTypeIncluded(field, includeTypes))
                 {
                     validFields.Add(field);
                 }
             }
-            
+
             fieldInfos = validFields.ToArray();
             ListPool<FieldInfo>.Release(validFields);
             _FieldCacher[type] = fieldInfos;
             return fieldInfos;
         }
 
-        
-        
+
+
         private static bool IsFieldTypeIncluded(FieldInfo field, Type[] includeTypes)
         {
             foreach (Type includeType in includeTypes)
@@ -86,7 +86,7 @@ namespace BehaviourSystem.BT
                     return true;
                 }
             }
-            
+
             return false;
         }
 
@@ -101,6 +101,74 @@ namespace BehaviourSystem.BT
             accessor = new FieldAccessor(CreateGetter(fieldInfo), CreateSetter(fieldInfo), fieldInfo.FieldType);
             _DelegateCacher.Value[fieldInfo] = accessor;
             return accessor;
+        }
+
+
+        /// <summary>
+        /// 중첩된 구조에서 특정 타입의 필드에 대한 FieldAccessor들을 찾습니다.
+        /// </summary>
+        /// <param name="node">탐색을 시작할 루트 노드</param>
+        /// <param name="targetFieldType">찾고자 하는 필드의 타입 (예: IBlackboardProperty)</param>
+        /// <param name="maxDepth">최대 탐색 깊이</param>
+        /// <returns>찾은 FieldAccessor들의 리스트</returns>
+        public static List<FieldAccessor> FindNestedAccessors(NodeBase node, Type targetFieldType, int maxDepth = 4)
+        {
+            Stack<FieldTraversalInfo> stack = new Stack<FieldTraversalInfo>();
+            List<FieldAccessor> result = new List<FieldAccessor>();
+            HashSet<object> visited = new HashSet<object>();
+
+            const BindingFlags flagSettings = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            stack.Push(new FieldTraversalInfo(node, node.GetType(), 0));
+
+            while (stack.TryPop(out FieldTraversalInfo fieldInfo))
+            {
+                if (fieldInfo.value is null || visited.Contains(fieldInfo.value) || fieldInfo.depth > maxDepth)
+                {
+                    continue;
+                }
+
+                visited.Add(fieldInfo.value);
+
+                foreach (FieldInfo field in fieldInfo.type.GetFields(flagSettings))
+                {
+                    if (targetFieldType.IsAssignableFrom(field.FieldType))
+                    {
+                        FieldAccessor accessor = GetAccessor(field);
+                        result.Add(accessor);
+                        continue;
+                    }
+                    
+                    object fieldValue = field.GetValue(fieldInfo.value); 
+                    
+                    if (ShouldContinueTraversal(field.FieldType, fieldValue))
+                    {
+                        stack.Push(new FieldTraversalInfo(fieldValue, field.FieldType, fieldInfo.depth + 1));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary> 재귀 탐색을 계속할지 결정합니다. </summary>
+        private static bool ShouldContinueTraversal(Type fieldType, object fieldValue)
+        {
+            if (fieldValue is null)
+            {
+                return false;
+            }
+            
+            if (typeof(UObject).IsAssignableFrom(fieldType))
+            {
+                return false;
+            }
+            
+            if (fieldType == typeof(string))
+            {
+                return false;
+            }
+
+            return true;
         }
 
 

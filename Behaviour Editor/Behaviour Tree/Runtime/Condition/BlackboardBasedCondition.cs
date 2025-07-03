@@ -7,56 +7,45 @@ namespace BehaviourSystem.BT
     public sealed class BlackboardBasedCondition
     {
         [SerializeReference]
-        public IBlackboardProperty property;
+        public BlackboardVariable blackboardVariable;
 
         [SerializeReference]
-        public IBlackboardProperty comparableValue;
-
-        public EConditionType conditionType;
-
-
-        private const int _EQUAL = 0;
-
-        private const int _GREATER = 1;
-        
-        private const int _LESS = -1;
-        
+        public Variable comparableValue;
+        public EComparisonType comparableType;
         
 
         public bool Execute()
         {
-            if (property is null)
+            if (blackboardVariable is null)
             {
                 Debug.LogWarning("Blackboard property is not set for this condition.");
                 return false;
             }
             
-            if ((property.comparableConditions & conditionType) == conditionType)
+            if ((blackboardVariable.comparison & comparableType) == comparableType)
             {
-                return this.Compare((IComparable<IBlackboardProperty>)property, comparableValue);
+                return this.Compare(blackboardVariable.variable, comparableValue);
             }
 
             return false;
         }
         
 
-        private bool Compare(IComparable<IBlackboardProperty> a, IBlackboardProperty b)
+        private bool Compare(IComparable<Variable> a, Variable b)
         {
-            switch (conditionType)
+            switch (comparableType)
             {
-                case EConditionType.Trigger: return a.CompareTo(b) == _EQUAL;
-                
-                case EConditionType.Equal: return a.CompareTo(b) == _EQUAL;
+                case EComparisonType.Equal: return a.CompareTo(b) == 0;
 
-                case EConditionType.NotEqual: return a.CompareTo(b) != _EQUAL;
+                case EComparisonType.NotEqual: return a.CompareTo(b) != 0;
 
-                case EConditionType.GreaterThan: return a.CompareTo(b) == _GREATER;
+                case EComparisonType.GreaterThan: return a.CompareTo(b) == 1;
 
-                case EConditionType.GreaterThanOrEqual: return a.CompareTo(b) is _GREATER or _EQUAL;
+                case EComparisonType.GreaterThanOrEqual: return a.CompareTo(b) is 1 or 0;
 
-                case EConditionType.LessThan: return a.CompareTo(b) == _LESS;
+                case EComparisonType.LessThan: return a.CompareTo(b) == -1;
 
-                case EConditionType.LessThanOrEqual: return a.CompareTo(b) is _LESS or _EQUAL;
+                case EComparisonType.LessThanOrEqual: return a.CompareTo(b) is -1 or 0;
             }
 
             return false;

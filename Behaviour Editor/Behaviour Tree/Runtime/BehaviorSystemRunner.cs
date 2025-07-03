@@ -12,7 +12,7 @@ namespace BehaviourSystem.BT
     [DefaultExecutionOrder(-1), AddComponentMenu("Behavior System/Behavior System Runner")]
     public class BehaviorSystemRunner : MonoBehaviour
     {
-        private readonly Dictionary<string, IBlackboardProperty> _properties = new Dictionary<string, IBlackboardProperty>();
+        private readonly Dictionary<string, Variable> _properties = new Dictionary<string, Variable>();
 
         public ETickUpdateMode tickUpdateMode = ETickUpdateMode.NormalUpdate;
 
@@ -167,68 +167,68 @@ namespace BehaviourSystem.BT
         }
 
 
-        public void SetProperty<TValue>(in string key, TValue value)
-        {
-            if (this._runtimeGraph?.blackboard is null || enabled == false)
-            {
-                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
-            }
-
-            if (_properties.TryGetValue(key, out var existingProperty))
-            {
-                if (existingProperty is BlackboardProperty<TValue> prop)
-                {
-                    prop.value = value;
-                    return;
-                }
-
-                throw new InvalidOperationException($"키 '{key}'에 대한 타입이 일치하지 않습니다.");
-            }
-            else
-            {
-                IBlackboardProperty newProperty = _runtimeGraph.blackboard.FindProperty(key);
-
-                if (newProperty is BlackboardProperty<TValue> prop)
-                {
-                    prop.value = value;
-                    _properties.Add(key, prop);
-                    return;
-                }
-
-                throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
-            }
-        }
-
-
-        public TValue GetProperty<TValue>(in string key)
-        {
-            if (this._runtimeGraph?.blackboard is null || enabled == false)
-            {
-                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
-            }
-
-            if (_properties.TryGetValue(key, out var existingProperty))
-            {
-                if (existingProperty is BlackboardProperty<TValue> castedProperty)
-                {
-                    return castedProperty.value;
-                }
-
-                throw new InvalidOperationException($"키 '{key}'에 대한 타입이 일치하지 않습니다.");
-            }
-            else
-            {
-                IBlackboardProperty newProperty = _runtimeGraph.blackboard.FindProperty(key);
-
-                if (newProperty is BlackboardProperty<TValue> castedProperty)
-                {
-                    _properties.Add(key, newProperty);
-                    return castedProperty.value;
-                }
-
-                throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
-            }
-        }
+//        public void SetProperty<TValue>(in string key, TValue value)
+//        {
+//            if (this._runtimeGraph?.blackboardAsset is null || enabled == false)
+//            {
+//                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
+//            }
+//
+//            if (_properties.TryGetValue(key, out var existingProperty))
+//            {
+//                if (existingProperty is Variable<TValue> prop)
+//                {
+//                    prop.value = value;
+//                    return;
+//                }
+//
+//                throw new InvalidOperationException($"키 '{key}'에 대한 타입이 일치하지 않습니다.");
+//            }
+//            else
+//            {
+//                Variable newProperty = _runtimeGraph.blackboardAsset.FindProperty(key);
+//
+//                if (newProperty is Variable<TValue> prop)
+//                {
+//                    prop.value = value;
+//                    _properties.Add(key, prop);
+//                    return;
+//                }
+//
+//                throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
+//            }
+//        }
+//
+//
+//        public TValue GetProperty<TValue>(in string key)
+//        {
+//            if (this._runtimeGraph?.blackboardAsset is null || enabled == false)
+//            {
+//                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
+//            }
+//
+//            if (_properties.TryGetValue(key, out var existingProperty))
+//            {
+//                if (existingProperty is Variable<TValue> castedProperty)
+//                {
+//                    return castedProperty.value;
+//                }
+//
+//                throw new InvalidOperationException($"키 '{key}'에 대한 타입이 일치하지 않습니다.");
+//            }
+//            else
+//            {
+//                Variable newProperty = _runtimeGraph.blackboardAsset.FindProperty(key);
+//
+//                if (newProperty is Variable<TValue> castedProperty)
+//                {
+//                    _properties.Add(key, newProperty);
+//                    return castedProperty.value;
+//                }
+//
+//                throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
+//            }
+//        }
 
 
         public bool TryGetNodeByTag(string nodeTag, out NodeBase[] resultNodes)

@@ -25,7 +25,7 @@ namespace BehaviourSystemEditor.BT
             if (treeAsset.objectReferenceValue is GraphAsset convertedTreeAsset)
             {
                 int nodeCount = convertedTreeAsset.graph?.nodes?.Count ?? 0;
-                int propertyCount = convertedTreeAsset.blackboard?.properties?.Count ?? 0;
+                int propertyCount = convertedTreeAsset.blackboardAsset?.variables?.Count ?? 0;
 
                 EditorGUILayout.HelpBox($"Total Behaviour Nodes: {nodeCount} \nBlackboard Variables: {propertyCount}", MessageType.Info);
 

@@ -10,23 +10,23 @@ namespace BehaviourSystem.BT
     //TODO : 리팩토링할때, 실행 로직이랑 데이터랑 분리
     public abstract class GraphAsset : ScriptableObject, IEquatable<GraphAsset>
     {
-        [SerializeField, HideInInspector]
+        [SerializeReference, HideInInspector]
         private Graph _graph;
 
-        [SerializeField, HideInInspector]
+        [SerializeReference, HideInInspector]
         private GraphAsset _rootGraphAsset;
 
-        [SerializeField, HideInInspector]
+        [SerializeReference, HideInInspector]
         private GraphAsset _parentGraphAsset;
 
         [SerializeField, HideInInspector]
         private List<GraphAsset> _subGraphAssets = new List<GraphAsset>();
 
-        [SerializeField, ReadOnly]
-        private Blackboard _blackboardAsset;
+        [SerializeReference, ReadOnly]
+        private BlackboardAsset _blackboardAssetAsset;
 
 #if UNITY_EDITOR
-        [SerializeField, HideInInspector]
+        [SerializeReference, HideInInspector]
         private GraphGroup _graphGroup;
 #endif
 
@@ -49,11 +49,11 @@ namespace BehaviourSystem.BT
             internal set;
         }
 
-        public Blackboard blackboard
+        public BlackboardAsset blackboardAsset
         {
-            get { return isRootGraph ? this._blackboardAsset : this._rootGraphAsset._blackboardAsset; }
+            get { return isRootGraph ? this._blackboardAssetAsset : this._rootGraphAsset._blackboardAssetAsset; }
 
-            internal set { (isRootGraph ? this : _rootGraphAsset)._blackboardAsset = value; }
+            internal set { (isRootGraph ? this : _rootGraphAsset)._blackboardAssetAsset = value; }
         }
 
         public GraphAsset rootGraphAsset

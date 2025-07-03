@@ -35,7 +35,7 @@ namespace BehaviourSystem.BT
         }
 
 
-        public override Graph CloneGraph(BehaviorSystemRunner systemRunner, Graph targetGraph, Blackboard blackboard)
+        public override Graph CloneGraph(BehaviorSystemRunner systemRunner, Graph targetGraph, BlackboardAsset blackboardAsset)
         {
             BehaviourTree originalBt = targetGraph as BehaviourTree;
             BehaviourTree clonedBt = ScriptableObject.CreateInstance<BehaviourTree>();

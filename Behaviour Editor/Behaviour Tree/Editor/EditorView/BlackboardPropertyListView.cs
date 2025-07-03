@@ -16,7 +16,7 @@ namespace BehaviourSystemEditor.BT
 
         private ObjectField _blackboardBindingField;
         private ToolbarMenu _propertyAddMenu;
-        private Blackboard _blackboard;
+        private BlackboardAsset _blackboardAsset;
 
 
         /// <summary>블랙보드 프로퍼티 리스트 뷰를 초기화하고 UI 요소들을 설정합니다.</summary>
@@ -42,9 +42,9 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            Blackboard newBlackboardAsset = changeEvent.newValue as Blackboard;
-            BehaviorEditor.Instance.graph.blackboard = newBlackboardAsset;
-            this._blackboard = newBlackboardAsset;
+            BlackboardAsset newBlackboardAssetAsset = changeEvent.newValue as BlackboardAsset;
+            BehaviorEditor.Instance.graph.blackboardAsset = newBlackboardAssetAsset;
+            this._blackboardAsset = newBlackboardAssetAsset;
 
             if (changeEvent.newValue == null && BehaviorEditor.Instance.graph.graph.nodes is not null)
             {
@@ -76,12 +76,12 @@ namespace BehaviourSystemEditor.BT
         public void ClearBlackboardView()
         {
             this.itemsSource = null;
-            this._blackboard = null;
+            this._blackboardAsset = null;
             this._serializedObject = null;
             this._serializedListProperty = null;
             this._blackboardBindingField.SetValueWithoutNotify(null);
 
-            _propertyAddMenu.menu.ClearItems();
+            this._propertyAddMenu.menu.ClearItems();
 
             this.Clear();
             this.RefreshItems();
@@ -98,8 +98,8 @@ namespace BehaviourSystemEditor.BT
 
             this.enabledSelf = !Application.isPlaying;
 
-            this._blackboard = tree.blackboard;
-            this._blackboardBindingField.value = tree.blackboard;
+            this._blackboardAsset = tree.blackboardAsset;
+            this._blackboardBindingField.value = tree.blackboardAsset;
             this._blackboardBindingField.enabledSelf = BehaviorEditor.canEditGraph;
 
             this.RefreshBlackboardProperties();
@@ -109,7 +109,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>블랙보드 프로퍼티들을 새로고침하고 UI를 업데이트합니다.</summary>
         private void RefreshBlackboardProperties()
         {
-            if (this._blackboard is null)
+            if (this._blackboardAsset is null)
             {
                 if (this.itemsSource is not null)
                 {
@@ -120,9 +120,9 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            this._serializedObject = new SerializedObject(this._blackboard);
-            this._serializedListProperty = _serializedObject.FindProperty("_properties");
-            this.itemsSource = this._blackboard.properties;
+            this._serializedObject = new SerializedObject(this._blackboardAsset);
+            this._serializedListProperty = _serializedObject.FindProperty("_variables");
+            this.itemsSource = this._blackboardAsset.variables;
 
             this.RefreshItems();
             this.AppendPropertyAddMenuItems();
@@ -135,7 +135,7 @@ namespace BehaviourSystemEditor.BT
         {
             if (BehaviorEditor.canEditGraph)
             {
-                TypeCache.TypeCollection collection = TypeCache.GetTypesDerivedFrom<IBlackboardProperty>();
+                TypeCache.TypeCollection collection = TypeCache.GetTypesDerivedFrom<Variable>();
 
                 if (collection.Count == 0)
                 {
@@ -160,15 +160,15 @@ namespace BehaviourSystemEditor.BT
         /// <summary>새로운 블랙보드 프로퍼티를 생성합니다.</summary>
         private void MakeProperty(Type type)
         {
-            Undo.RecordObject(_blackboard, "Behaviour Tree (AddBlackboardProperty)");
+            Undo.RecordObject(_blackboardAsset, "Behaviour Tree (AddBlackboardProperty)");
 
-            IBlackboardProperty property = IBlackboardProperty.Create(type);
-            _blackboard.CheckAndGenerateUniqueKey(property, true);
+            BlackboardVariable property = BlackboardVariable.Create(type);
+            _blackboardAsset.CheckAndGenerateUniqueKey(property, true);
 
             itemsSource.Add(property);
             _serializedObject.Update();
             _serializedObject.ApplyModifiedProperties();
-            EditorUtility.SetDirty(_blackboard);
+            EditorUtility.SetDirty(_blackboardAsset);
             this.RefreshItems();
         }
 
@@ -176,12 +176,12 @@ namespace BehaviourSystemEditor.BT
         /// <summary>지정된 인덱스의 블랙보드 프로퍼티를 삭제합니다.</summary>
         private void DeleteProperty(int index)
         {
-            Undo.RecordObject(_blackboard, "Behaviour Tree (RemoveBlackboardProperty)");
+            Undo.RecordObject(_blackboardAsset, "Behaviour Tree (RemoveBlackboardProperty)");
 
             itemsSource.RemoveAt(index);
             _serializedObject.Update();
             _serializedObject.ApplyModifiedProperties();
-            EditorUtility.SetDirty(_blackboard);
+            EditorUtility.SetDirty(_blackboardAsset);
             this.RefreshItems();
         }
 
@@ -193,7 +193,7 @@ namespace BehaviourSystemEditor.BT
             {
                 _serializedObject.Update();
                 _serializedObject.ApplyModifiedProperties();
-                EditorUtility.SetDirty(_blackboard);
+                EditorUtility.SetDirty(_blackboardAsset);
             }
         }
 
@@ -266,12 +266,8 @@ namespace BehaviourSystemEditor.BT
                 }
                 else
                 {
-                    using (new EditorGUI.DisabledScope(true))
-                    {
-                        valueProp.serializedObject.Update();
-
-                        EditorGUILayout.PropertyField(valueProp, GUIContent.none, true);
-                    }
+                    valueProp.serializedObject.Update();
+                    EditorGUILayout.PropertyField(valueProp, GUIContent.none, true);
                 }
             }
         }
@@ -280,7 +276,7 @@ namespace BehaviourSystemEditor.BT
         /// <summary>프로퍼티 키 필드를 바인딩하고 변경 이벤트를 설정합니다.</summary>
         private void BindPropertyKeyField(VisualElement element, int index)
         {
-            if (itemsSource[index] is IBlackboardProperty property)
+            if (itemsSource[index] is BlackboardVariable property)
             {
                 element.tooltip = property.type.Name;
                 TextField keyField = element.Q<TextField>("name-field");
@@ -289,11 +285,11 @@ namespace BehaviourSystemEditor.BT
                 keyField.RegisterRemovableCallback<FocusOutEvent>(_ =>
                 {
                     this.OnChangePropertyKey(keyField.value, index);
-                    keyField.SetValueWithoutNotify(property.key);
+                    keyField.SetValueWithoutNotify(property.name);
                     this.RefreshItem(index);
                 });
 
-                keyField.SetValueWithoutNotify(property.key);
+                keyField.SetValueWithoutNotify(property.name);
                 keyField.enabledSelf = BehaviorEditor.canEditGraph;
             }
         }
@@ -304,14 +300,14 @@ namespace BehaviourSystemEditor.BT
         {
             bool isKeyValid = string.IsNullOrEmpty(newKey);
 
-            if (isKeyValid == false && itemsSource[index] is IBlackboardProperty property)
+            if (isKeyValid == false && itemsSource[index] is BlackboardVariable property)
             {
-                property.key = newKey;
-                _blackboard.CheckAndGenerateUniqueKey(property);
-                
+                property.name = newKey;
+                _blackboardAsset.CheckAndGenerateUniqueKey(property);
+
                 _serializedObject.Update();
                 _serializedObject.ApplyModifiedProperties();
-                EditorUtility.SetDirty(_blackboard);
+                EditorUtility.SetDirty(_blackboardAsset);
             }
         }
     }
