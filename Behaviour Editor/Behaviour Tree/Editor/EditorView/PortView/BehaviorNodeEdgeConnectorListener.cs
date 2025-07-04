@@ -12,9 +12,9 @@ namespace BehaviourSystemEditor.BT
 
             processor.TryDisconnectParentToChild(sourceNodeView);
 
-            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviorEditor.Instance.graph.graph is BehaviourTree tree)
+            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviorEditor.Instance.graph.graph is BehaviorTree tree)
             {
-                tree.AddChild((BehaviourNodeBase)sourceNodeView.targetNode, (BehaviourNodeBase)targetNodeView.targetNode);
+                tree.AddChild((BehaviorNodeBase)sourceNodeView.targetNode, (BehaviorNodeBase)targetNodeView.targetNode);
             }
         }
 
@@ -25,9 +25,9 @@ namespace BehaviourSystemEditor.BT
 
             processor.TryDisconnectChildToParent(targetNodeView);
 
-            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviorEditor.Instance.graph.graph is BehaviourTree tree)
+            if (processor.TryConnectNodesByEdge(sourceNodeView, targetNodeView, out _) && BehaviorEditor.Instance.graph.graph is BehaviorTree tree)
             {
-                tree.AddChild((BehaviourNodeBase)sourceNodeView.targetNode, (BehaviourNodeBase)targetNodeView.targetNode);
+                tree.AddChild((BehaviorNodeBase)sourceNodeView.targetNode, (BehaviorNodeBase)targetNodeView.targetNode);
             }
         }
     }

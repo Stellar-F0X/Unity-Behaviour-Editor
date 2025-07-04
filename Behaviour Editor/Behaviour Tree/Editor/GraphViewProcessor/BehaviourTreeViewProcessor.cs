@@ -40,7 +40,7 @@ namespace BehaviourSystemEditor.BT
 
                 if (iterable is null || iterable.childCount == 0)
                 {
-                    break;
+                    continue;
                 }
 
                 foreach (NodeBase child in iterable.GetChildren())
@@ -71,9 +71,9 @@ namespace BehaviourSystemEditor.BT
                     continue;
                 }
 
-                BehaviourNodeBase node = (BehaviourNodeBase)view.targetNode;
+                BehaviorNodeBase node = (BehaviorNodeBase)view.targetNode;
 
-                if (node.nodeType == BehaviourNodeBase.EBehaviourNodeType.Root)
+                if (node.nodeType == BehaviorNodeBase.EBehaviourNodeType.Root)
                 {
                     view.selected = false;
                     selection.RemoveAt(i);
@@ -126,8 +126,8 @@ namespace BehaviourSystemEditor.BT
 
             if (childNodeView.parentConnectionEdge?.output.node is NodeView view)
             {
-                BehaviourTree tree = BehaviorEditor.Instance.graph.graph as BehaviourTree;
-                tree?.RemoveChild((BehaviourNodeBase)view.targetNode, (BehaviourNodeBase)childNodeView.targetNode);
+                BehaviorTree tree = BehaviorEditor.Instance.graph.graph as BehaviorTree;
+                tree?.RemoveChild((BehaviorNodeBase)view.targetNode, (BehaviorNodeBase)childNodeView.targetNode);
                 view.outputPort.Disconnect(childNodeView.parentConnectionEdge);
 
                 List<GraphElement> edges = ListPool<GraphElement>.Get();
@@ -140,7 +140,7 @@ namespace BehaviourSystemEditor.BT
         
         public override void DisconnectNodesByEdge(GraphAsset graphAsset, Edge edge)
         {
-            BehaviourTree tree = graphAsset.graph as BehaviourTree;
+            BehaviorTree tree = graphAsset.graph as BehaviorTree;
 
             if (tree is null)
             {
@@ -155,14 +155,14 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            tree.RemoveChild((BehaviourNodeBase)parentView.targetNode, (BehaviourNodeBase)childView.targetNode);
+            tree.RemoveChild((BehaviorNodeBase)parentView.targetNode, (BehaviorNodeBase)childView.targetNode);
             edge.RemoveFromHierarchy();
         }
 
 
         public override void ConnectNodesByEdges(GraphAsset graphAsset, List<Edge> edges)
         {
-            BehaviourTree tree = graphAsset.graph as BehaviourTree;
+            BehaviorTree tree = graphAsset.graph as BehaviorTree;
 
             if (tree is null || edges.Count == 0)
             {
@@ -181,7 +181,7 @@ namespace BehaviourSystemEditor.BT
 
                 childView.parentConnectionEdge = edge;
 
-                tree.AddChild((BehaviourNodeBase)parentView.targetNode, (BehaviourNodeBase)childView.targetNode);
+                tree.AddChild((BehaviorNodeBase)parentView.targetNode, (BehaviorNodeBase)childView.targetNode);
             }
         }
         
@@ -200,18 +200,18 @@ namespace BehaviourSystemEditor.BT
                 return;
             }
 
-            BehaviourNodeBase node = (BehaviourNodeBase)parentNodeView.targetNode;
+            BehaviorNodeBase node = (BehaviorNodeBase)parentNodeView.targetNode;
 
             bool isSingleChildNode = false;
             
-            isSingleChildNode |= node.nodeType is BehaviourNodeBase.EBehaviourNodeType.Decorator;
-            isSingleChildNode |= node.nodeType is BehaviourNodeBase.EBehaviourNodeType.Root;
+            isSingleChildNode |= node.nodeType is BehaviorNodeBase.EBehaviourNodeType.Decorator;
+            isSingleChildNode |= node.nodeType is BehaviorNodeBase.EBehaviourNodeType.Root;
 
             //부모 노드에서 Edge 연결을 시작할 경우로, 부모 노드가 하나의 자식만 가질 수 있으며, 이미 자식으로 연결된 노드가 있다면 그 노드와의 연결을 해제한다.
             if (isSingleChildNode && parentNodeView.outputPort.connections.First()?.input.node is NodeView existingChildView)
             {
-                BehaviourTree tree = BehaviorEditor.Instance.graph.graph as BehaviourTree;
-                tree?.RemoveChild((BehaviourNodeBase)parentNodeView.targetNode, (BehaviourNodeBase)existingChildView.targetNode);
+                BehaviorTree tree = BehaviorEditor.Instance.graph.graph as BehaviorTree;
+                tree?.RemoveChild((BehaviorNodeBase)parentNodeView.targetNode, (BehaviorNodeBase)existingChildView.targetNode);
 
                 parentNodeView.outputPort.Disconnect(existingChildView.parentConnectionEdge);
 

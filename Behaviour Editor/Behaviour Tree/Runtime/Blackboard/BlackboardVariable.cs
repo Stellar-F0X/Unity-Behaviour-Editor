@@ -5,7 +5,7 @@ using UnityEngine;
 namespace BehaviourSystem.BT
 {
     [Serializable]
-    public abstract class BlackboardVariable
+    public abstract class BlackboardVariable : IEquatable<BlackboardVariable>
     {
         [SerializeReference]
         protected Variable _variable;
@@ -57,13 +57,6 @@ namespace BehaviourSystem.BT
                 return;
             }
 
-            // Prevent blackboard key changes during runtime
-            if (Application.isPlaying)
-            {
-                Debug.LogError("Cannot change blackboard key while the game is running.");
-                return;
-            }
-
             this._name = newKey;
             this._nameHash = GraphFactory.StringToHash(this.name);
         }
@@ -94,6 +87,27 @@ namespace BehaviourSystem.BT
             newVariable._variable.type = origin._variable.type;
             newVariable._variable.CloneValue(origin._variable);
             return newVariable;
+        }
+
+        
+        public bool Equals(BlackboardVariable other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (this._nameHash != other.nameHash || this.type != other.type)
+            {
+                return false;
+            }
+
+            if (this.comparison != other.comparison)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 

@@ -8,7 +8,7 @@ namespace BehaviourSystem.BT
         /// <summary> 클론 작업 정보를 담는 구조체 </summary>
         private struct TreeTraversal
         {
-            public TreeTraversal(BehaviourNodeBase origin, BehaviourNodeBase clone, int depth, int stackID)
+            public TreeTraversal(BehaviorNodeBase origin, BehaviorNodeBase clone, int depth, int stackID)
             {
                 this.origin = origin;
                 this.clone = clone;
@@ -16,8 +16,8 @@ namespace BehaviourSystem.BT
                 this.stackID = stackID;
             }
 
-            public readonly BehaviourNodeBase origin;
-            public readonly BehaviourNodeBase clone;
+            public readonly BehaviorNodeBase origin;
+            public readonly BehaviorNodeBase clone;
             public readonly int depth;
             public readonly int stackID;
         }
@@ -37,14 +37,14 @@ namespace BehaviourSystem.BT
 
         public override Graph CloneGraph(BehaviorSystemRunner systemRunner, Graph targetGraph, BlackboardAsset blackboardAsset)
         {
-            BehaviourTree originalBt = targetGraph as BehaviourTree;
-            BehaviourTree clonedBt = ScriptableObject.CreateInstance<BehaviourTree>();
+            BehaviorTree originalBt = targetGraph as BehaviorTree;
+            BehaviorTree clonedBt = ScriptableObject.CreateInstance<BehaviorTree>();
             FixedQueue<TreeTraversal> cloneQueue = new FixedQueue<TreeTraversal>(originalBt.nodes.Count);
 
             clonedBt.entry = Object.Instantiate(originalBt.entry) as RootNode;
 
-            BehaviourNodeBase originalEntry = (BehaviourNodeBase)originalBt.entry;
-            BehaviourNodeBase clonedEntry = (BehaviourNodeBase)clonedBt.entry;
+            BehaviorNodeBase originalEntry = (BehaviorNodeBase)originalBt.entry;
+            BehaviorNodeBase clonedEntry = (BehaviorNodeBase)clonedBt.entry;
 
             cloneQueue.Enqueue(new TreeTraversal(originalEntry, clonedEntry, 0, 0));
 
@@ -57,7 +57,7 @@ namespace BehaviourSystem.BT
             }
 
             clonedBt.interrupter = new TreeInterruptor(clonedBt, callStackSize);
-            return targetGraph;
+            return clonedBt;
         }
 
 
@@ -67,7 +67,7 @@ namespace BehaviourSystem.BT
         /// <param name="queue"></param>
         /// <param name="newSet"></param>
         /// <param name="callStack"></param>
-        private void ProcessClone(TreeTraversal info, FixedQueue<TreeTraversal> queue, BehaviourTree newSet, ref int callStack)
+        private void ProcessClone(TreeTraversal info, FixedQueue<TreeTraversal> queue, BehaviorTree newSet, ref int callStack)
         {
             info.clone.depth = info.depth;
             info.clone.callStackID = info.stackID;
@@ -78,19 +78,19 @@ namespace BehaviourSystem.BT
 
             switch (info.origin.nodeType)
             {
-                case BehaviourNodeBase.EBehaviourNodeType.Root:
+                case BehaviorNodeBase.EBehaviourNodeType.Root:
                 {
                     this.CloneNode((RootNode)info.origin, (RootNode)info.clone, depthInTree, info.stackID, queue);
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Decorator:
+                case BehaviorNodeBase.EBehaviourNodeType.Decorator:
                 {
                     this.CloneNode((DecoratorNode)info.origin, (DecoratorNode)info.clone, depthInTree, info.stackID, queue);
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Composite:
+                case BehaviorNodeBase.EBehaviourNodeType.Composite:
                 {
                     this.CloneNode((CompositeNode)info.origin, (CompositeNode)info.clone, depthInTree, info.stackID, ref callStack, queue);
                     break;
@@ -104,7 +104,7 @@ namespace BehaviourSystem.BT
         {
             if (origin.child is not null)
             {
-                BehaviourNodeBase childClone = Object.Instantiate(origin.child);
+                BehaviorNodeBase childClone = Object.Instantiate(origin.child);
                 childClone.parent = clone;
                 clone.child = childClone;
                 cloneQueue.Enqueue(new TreeTraversal(origin.child, childClone, nextDepth, stackID));
@@ -117,7 +117,7 @@ namespace BehaviourSystem.BT
         {
             if (origin.child is not null)
             {
-                BehaviourNodeBase childClone = Object.Instantiate(origin.child);
+                BehaviorNodeBase childClone = Object.Instantiate(origin.child);
                 childClone.parent = clone;
                 clone.child = childClone;
                 cloneQueue.Enqueue(new TreeTraversal(origin.child, childClone, nextDepth, stackID));
@@ -140,7 +140,7 @@ namespace BehaviourSystem.BT
                 for (int i = 0; i < origin.children.Count; ++i)
                 {
                     int newStackID = isParallelNode ? (++callStackSize) : stackID;
-                    BehaviourNodeBase childClone = Object.Instantiate(origin.children[i]);
+                    BehaviorNodeBase childClone = Object.Instantiate(origin.children[i]);
                     childClone.parent = clone;
                     clone.children[i] = childClone;
                     cloneQueue.Enqueue(new TreeTraversal(origin.children[i], childClone, nextDepth, newStackID));

@@ -40,29 +40,36 @@ namespace BehaviourSystem.BT
         //가져온 모든 노드를 Dictionary<GraphAsset, Nodes[]>로 분배.
         public static GraphAsset CloneGraph(BehaviorSystemRunner runner, GraphAsset targetGraph)
         {
-            BlackboardAsset clonedBlackboardAsset = targetGraph.blackboardAsset?.Clone();
-            GraphAsset[] graphAssets = GraphCloner.CollectCurrentAndSubGraphAssets(targetGraph);
-            GraphAsset[] clonedGraphAssets = ArrayPool<GraphAsset>.Shared.Rent(graphAssets.Length);
+            BlackboardAsset clonedBlackboardAsset = targetGraph.blackboardAsset.Clone();
+            Dictionary<UGUID, GraphAsset> graphAssets = GraphCloner.CollectCurrentAndSubGraphAssets(targetGraph);
+            GraphAsset[] clonedGraphAssets = ArrayPool<GraphAsset>.Shared.Rent(graphAssets.Values.Count);
 
-            for (int index = 0; index < graphAssets.Length; ++index)
+            for (int index = 0; index < graphAssets.Values.Count; ++index)
             {
-                GraphAsset originalGraphAsset = graphAssets[index];
+                GraphAsset originalGraphAsset = graphAssets.Values.ElementAt(index);
+                int graphType = (int)originalGraphAsset.graphType;
 
                 clonedGraphAssets[index] = Object.Instantiate(originalGraphAsset);
                 clonedGraphAssets[index].isRootGraph = index == 0;
 #if UNITY_EDITOR
                 clonedGraphAssets[index].graphGroup = originalGraphAsset.graphGroup.Clone();
 #endif
-                clonedGraphAssets[index].graph = _GraphCloner[(int)originalGraphAsset.graphType].CloneGraph(runner, originalGraphAsset.graph, clonedBlackboardAsset);
-            }
-
-            foreach (GraphAsset clonedGraph in clonedGraphAssets)
-            {
-                foreach (NodeBase node in clonedGraph.graph.nodes)
+                clonedGraphAssets[index].graph = _GraphCloner[graphType].CloneGraph(runner, originalGraphAsset.graph, clonedBlackboardAsset);
+                
+                foreach (NodeBase node in clonedGraphAssets[index].graph.nodes)
                 {
-                    
-                    
                     node.runner = runner;
+                    
+                    if (node is BehaviorNodeBase behaviorNode)
+                    {
+                        behaviorNode.tree = clonedGraphAssets[index].graph as BehaviorTree;
+                    }
+
+                    if (node is ISubGraphNode subGraphNode)
+                    {
+                        subGraphNode.subGraphAsset = graphAssets[subGraphNode.subGraphAsset.guid];
+                    }
+                    
                     node.PostCreation();
                 }
             }
@@ -121,7 +128,7 @@ namespace BehaviourSystem.BT
 
             return Animator.StringToHash(key);
         }
-        
+
         /// <summary>  </summary>
         /// <param name="graphAsset"></param>
         /// <returns> Changed </returns>

@@ -12,14 +12,14 @@ namespace BehaviourSystemEditor.BT
 
         protected override void Initialize()
         {
-            _elementGroup.AddToClassList($"behaviour-node-{((BehaviourNodeBase)targetNode).nodeType}");
+            _elementGroup.AddToClassList($"behaviour-node-{((BehaviorNodeBase)targetNode).nodeType}");
             base.Initialize();
         }
 
 
         public void SortChildren()
         {
-            if (((BehaviourNodeBase)targetNode).nodeType != BehaviourNodeBase.EBehaviourNodeType.Composite)
+            if (((BehaviorNodeBase)targetNode).nodeType != BehaviorNodeBase.EBehaviourNodeType.Composite)
             {
                 return;
             }
@@ -39,34 +39,34 @@ namespace BehaviourSystemEditor.BT
 
         protected override void CreatePorts()
         {
-            switch (((BehaviourNodeBase)targetNode).nodeType)
+            switch (((BehaviorNodeBase)targetNode).nodeType)
             {
-                case BehaviourNodeBase.EBehaviourNodeType.Root:
+                case BehaviorNodeBase.EBehaviourNodeType.Root:
                 {
                     outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Action:
+                case BehaviorNodeBase.EBehaviourNodeType.Action:
                 {
                     inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.SubGraph:
+                case BehaviorNodeBase.EBehaviourNodeType.SubGraph:
                 {
                     inputPort = this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Composite:
+                case BehaviorNodeBase.EBehaviourNodeType.Composite:
                 {
                     inputPort =  this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Decorator:
+                case BehaviorNodeBase.EBehaviourNodeType.Decorator:
                 {
                     inputPort =  this.InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
                     outputPort = this.InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
@@ -81,11 +81,11 @@ namespace BehaviourSystemEditor.BT
 
         protected override void SetBorderColorByStatus()
         {
-            switch (((BehaviourNodeBase)targetNode).status)
+            switch (((BehaviorNodeBase)targetNode).status)
             {
-                case EStatus.Failure: base.SetBorderColor(style, BehaviorEditor.settings.nodeFailureColor); break;
+                case EStatus.Failure: base.SetBorderColor(_nodeBorder.style, BehaviorEditor.settings.nodeFailureColor); break;
 
-                case EStatus.Success: base.SetBorderColor(style, BehaviorEditor.settings.nodeSuccessColor); break;
+                case EStatus.Success: base.SetBorderColor(_nodeBorder.style, BehaviorEditor.settings.nodeSuccessColor); break;
             }
         }
     }

@@ -35,7 +35,7 @@ namespace BehaviourSystemEditor.BT
 
             List<BlackboardVariable> variables = ListPool<BlackboardVariable>.Get();
 
-            if (exception == false && this.GetProperties(blackboardAsset, property, variables))
+            if (exception == false && this.GetAssignableVariable(blackboardAsset, property, variables))
             {
                 this.DrawPopup(position, labelRect, fieldRect, property, label, variables);
             }
@@ -48,7 +48,7 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        private bool GetProperties(BlackboardAsset blackboardAsset, SerializedProperty property, List<BlackboardVariable> properties)
+        private bool GetAssignableVariable(BlackboardAsset blackboardAsset, SerializedProperty property, List<BlackboardVariable> variables)
         {
             if (property.serializedObject.targetObject is null)
             {
@@ -68,11 +68,11 @@ namespace BehaviourSystemEditor.BT
 
                 if (targetType.IsAssignableFrom(propertyType))
                 {
-                    properties.Add(blackboardAsset.variables[i]);
+                    variables.Add(blackboardAsset.variables[i]);
                 }
             }
 
-            return properties.Count > 0;
+            return variables.Count > 0;
         }
 
 

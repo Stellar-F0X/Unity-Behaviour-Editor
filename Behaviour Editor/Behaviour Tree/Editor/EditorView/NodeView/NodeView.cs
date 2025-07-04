@@ -157,9 +157,9 @@ namespace BehaviourSystemEditor.BT
             {
                 float progress = _highlightDuration / settings.nodeViewHighlightingDuration;
 
-                this.SetBorderColor(style, settings.nodeStatusLinearColor.Evaluate(progress));
+                this.SetBorderColor(_nodeBorder.style, settings.nodeStatusLinearColor.Evaluate(progress));
 
-                this.SetEdgeColor(this.parentConnectionEdge.edgeControl, settings.edgeStatusLinearColor.Evaluate(progress));
+                //this.SetEdgeColor(this.parentConnectionEdge.edgeControl, settings.edgeStatusLinearColor.Evaluate(progress));
             }
         }
 

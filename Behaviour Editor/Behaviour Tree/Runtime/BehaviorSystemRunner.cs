@@ -12,8 +12,6 @@ namespace BehaviourSystem.BT
     [DefaultExecutionOrder(-1), AddComponentMenu("Behavior System/Behavior System Runner")]
     public class BehaviorSystemRunner : MonoBehaviour
     {
-        private readonly Dictionary<string, Variable> _properties = new Dictionary<string, Variable>();
-
         public ETickUpdateMode tickUpdateMode = ETickUpdateMode.NormalUpdate;
 
         public bool useFixedUpdate = true;
@@ -48,11 +46,6 @@ namespace BehaviourSystem.BT
             }
 
             this._runtimeGraph = GraphFactory.CloneGraph(this, _runtimeGraph);
-            
-            //TODO: 콜스택 로직을 Graph로 옮길거면 이것도 수정해야 됨. 
-            
-            //this._callStackHandler = new BehaviourCallStack(this._runtimeGraph.graph);
-            //this._rootNode = _runtimeGraph.graph.entry;
         }
 
 
@@ -75,7 +68,7 @@ namespace BehaviourSystem.BT
 #if UNITY_EDITOR
                 Profiler.BeginSample("BehaviourTreeRunner.RuntimeUpdate");
 #endif
-                //_rootNode.UpdateNode();
+                _runtimeGraph.graph.UpdateGraph();
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif
@@ -95,7 +88,7 @@ namespace BehaviourSystem.BT
 #if UNITY_EDITOR
                 Profiler.BeginSample("BehaviourTreeRunner.RuntimeFixedUpdate");
 #endif
-                //_rootNode.UpdateNode();
+                _runtimeGraph.graph.UpdateGraph();
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif
@@ -117,7 +110,7 @@ namespace BehaviourSystem.BT
 #if UNITY_EDITOR
                 Profiler.BeginSample("BehaviourTreeRunner.RuntimeLateUpdate");
 #endif
-                //_rootNode.UpdateNode();
+                _runtimeGraph.graph.UpdateGraph();
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif
@@ -155,7 +148,7 @@ namespace BehaviourSystem.BT
 #if UNITY_EDITOR
                 Profiler.BeginSample("BehaviourTreeRunner.RuntimeExternalUpdate");
 #endif
-                //_rootNode.UpdateNode();
+                _runtimeGraph.graph.UpdateGraph();
 #if UNITY_EDITOR
                 Profiler.EndSample();
 #endif
@@ -167,68 +160,41 @@ namespace BehaviourSystem.BT
         }
 
 
-//        public void SetProperty<TValue>(in string key, TValue value)
-//        {
-//            if (this._runtimeGraph?.blackboardAsset is null || enabled == false)
-//            {
-//                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
-//            }
-//
-//            if (_properties.TryGetValue(key, out var existingProperty))
-//            {
-//                if (existingProperty is Variable<TValue> prop)
-//                {
-//                    prop.value = value;
-//                    return;
-//                }
-//
-//                throw new InvalidOperationException($"키 '{key}'에 대한 타입이 일치하지 않습니다.");
-//            }
-//            else
-//            {
-//                Variable newProperty = _runtimeGraph.blackboardAsset.FindProperty(key);
-//
-//                if (newProperty is Variable<TValue> prop)
-//                {
-//                    prop.value = value;
-//                    _properties.Add(key, prop);
-//                    return;
-//                }
-//
-//                throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
-//            }
-//        }
-//
-//
-//        public TValue GetProperty<TValue>(in string key)
-//        {
-//            if (this._runtimeGraph?.blackboardAsset is null || enabled == false)
-//            {
-//                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
-//            }
-//
-//            if (_properties.TryGetValue(key, out var existingProperty))
-//            {
-//                if (existingProperty is Variable<TValue> castedProperty)
-//                {
-//                    return castedProperty.value;
-//                }
-//
-//                throw new InvalidOperationException($"키 '{key}'에 대한 타입이 일치하지 않습니다.");
-//            }
-//            else
-//            {
-//                Variable newProperty = _runtimeGraph.blackboardAsset.FindProperty(key);
-//
-//                if (newProperty is Variable<TValue> castedProperty)
-//                {
-//                    _properties.Add(key, newProperty);
-//                    return castedProperty.value;
-//                }
-//
-//                throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
-//            }
-//        }
+        public void SetProperty<TValue>(in string key, TValue value)
+        {
+            if (this._runtimeGraph?.blackboardAsset is null || enabled == false)
+            {
+                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
+            }
+
+            BlackboardVariable foundVariable = _runtimeGraph.blackboardAsset.FindVariable(key);
+
+            if (foundVariable.variable is Variable<TValue> prop)
+            {
+                prop.value = value;
+                return;
+            }
+
+            throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
+        }
+
+
+        public TValue GetProperty<TValue>(in string key)
+        {
+            if (this._runtimeGraph?.blackboardAsset is null || enabled == false)
+            {
+                throw new InvalidOperationException("BehaviourTree 또는 Blackboard가 활성화되어 있지 않습니다.");
+            }
+            
+            BlackboardVariable foundVariable = _runtimeGraph.blackboardAsset.FindVariable(key);
+
+            if (foundVariable.variable is Variable<TValue> castedProperty)
+            {
+                return castedProperty.value;
+            }
+
+            throw new KeyNotFoundException($"키 '{key}'에 해당하는 프로퍼티를 찾을 수 없습니다.");
+        }
 
 
         public bool TryGetNodeByTag(string nodeTag, out NodeBase[] resultNodes)

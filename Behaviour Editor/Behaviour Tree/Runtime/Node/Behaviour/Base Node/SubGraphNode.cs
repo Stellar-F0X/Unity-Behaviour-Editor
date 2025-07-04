@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public abstract class SubGraphNode : BehaviourNodeBase, ISubGraphNode
+    public abstract class SubGraphNode : BehaviorNodeBase, ISubGraphNode
     {
         [HideInInspector]
         public GraphAsset subGraph;

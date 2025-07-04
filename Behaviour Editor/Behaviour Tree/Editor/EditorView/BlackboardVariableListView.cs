@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using BehaviourSystem.BT;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -9,7 +10,7 @@ using Object = UnityEngine.Object;
 namespace BehaviourSystemEditor.BT
 {
     [UxmlElement]
-    public partial class BlackboardPropertyListView : ListView
+    public partial class BlackboardVariableListView : ListView
     {
         private SerializedProperty _serializedListProperty;
         private SerializedObject _serializedObject;
@@ -122,7 +123,7 @@ namespace BehaviourSystemEditor.BT
 
             this._serializedObject = new SerializedObject(this._blackboardAsset);
             this._serializedListProperty = _serializedObject.FindProperty("_variables");
-            this.itemsSource = this._blackboardAsset.variables;
+            this.itemsSource = this._blackboardAsset.variables as IList;
 
             this.RefreshItems();
             this.AppendPropertyAddMenuItems();
@@ -161,11 +162,9 @@ namespace BehaviourSystemEditor.BT
         private void MakeProperty(Type type)
         {
             Undo.RecordObject(_blackboardAsset, "Behaviour Tree (AddBlackboardProperty)");
-
-            BlackboardVariable property = BlackboardVariable.Create(type);
-            _blackboardAsset.CheckAndGenerateUniqueKey(property, true);
-
-            itemsSource.Add(property);
+            
+            _blackboardAsset.AddVariable(BlackboardVariable.Create(type));
+            
             _serializedObject.Update();
             _serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(_blackboardAsset);
@@ -178,7 +177,8 @@ namespace BehaviourSystemEditor.BT
         {
             Undo.RecordObject(_blackboardAsset, "Behaviour Tree (RemoveBlackboardProperty)");
 
-            itemsSource.RemoveAt(index);
+            _blackboardAsset.RemoveVariable(itemsSource[index] as BlackboardVariable);
+            
             _serializedObject.Update();
             _serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(_blackboardAsset);
@@ -296,14 +296,13 @@ namespace BehaviourSystemEditor.BT
 
 
         /// <summary>프로퍼티 키가 변경될 때 호출되는 콜백 메서드입니다.</summary>
-        private void OnChangePropertyKey(string newKey, int index)
+        private void OnChangePropertyKey(string newName, int index)
         {
-            bool isKeyValid = string.IsNullOrEmpty(newKey);
+            bool isKeyValid = string.IsNullOrEmpty(newName);
 
             if (isKeyValid == false && itemsSource[index] is BlackboardVariable property)
             {
-                property.name = newKey;
-                _blackboardAsset.CheckAndGenerateUniqueKey(property);
+                _blackboardAsset.TryChangeVariableName(property, newName);
 
                 _serializedObject.Update();
                 _serializedObject.ApplyModifiedProperties();

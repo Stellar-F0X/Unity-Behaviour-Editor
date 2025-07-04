@@ -64,16 +64,16 @@ namespace BehaviourSystemEditor.BT
         }
 
 
-        public static List<TOutput> ConvertAll<TInput, TOutput>([NotNull] this IEnumerable<TInput> array, [NotNull] Func<TInput, TOutput> converter)
+        public static bool EditorErrorAssert(Rect rect, bool condition, string message)
         {
-            List<TOutput> outputList = new List<TOutput>(array.Count());
-
-            foreach (var element in array)
+            if (condition)
             {
-                outputList.Add(converter.Invoke(element));
+                GUIContent warningIcon = EditorGUIUtility.IconContent("console.warnicon");
+                EditorGUI.LabelField(rect, new GUIContent(message, warningIcon.image));
+                return false;
             }
 
-            return outputList;
+            return true;
         }
 
 

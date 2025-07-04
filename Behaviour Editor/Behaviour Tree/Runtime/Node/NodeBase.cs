@@ -258,7 +258,7 @@ namespace BehaviourSystem.BT
 
             return this._guid == other._guid;
         }
-        
+
         
         public virtual void EnterNode() { }
         

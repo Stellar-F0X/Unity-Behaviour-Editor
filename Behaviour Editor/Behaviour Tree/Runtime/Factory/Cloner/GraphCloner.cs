@@ -16,9 +16,9 @@ namespace BehaviourSystem.BT
         /// <summary> 인자로 받은 그래프를 제외한 모든 자식 그래프를 DFS 방식으로 찾아 리스트 반환한다. </summary>
         /// <returns> 인자로 받은 그래프를 제외한 모든 자식 그래프 </returns>
         /// /// <param name="graphAsset"></param>
-        public static GraphAsset[] CollectCurrentAndSubGraphAssets(GraphAsset graphAsset)
+        public static Dictionary<UGUID, GraphAsset> CollectCurrentAndSubGraphAssets(GraphAsset graphAsset)
         {
-            List<GraphAsset> collectedAllCachedGraphs = ListPool<GraphAsset>.Get();
+            Dictionary<UGUID, GraphAsset> collectedAllCachedGraphs = new Dictionary<UGUID, GraphAsset>();
             List<GraphAsset> graphTraversalStack = ListPool<GraphAsset>.Get();
             graphTraversalStack.Add(graphAsset);
 
@@ -28,7 +28,7 @@ namespace BehaviourSystem.BT
                 GraphAsset asset = graphTraversalStack[lastIndex];
                 graphTraversalStack.RemoveAt(lastIndex);
 
-                collectedAllCachedGraphs.Add(asset);
+                collectedAllCachedGraphs.Add(asset.guid, asset);
 
                 if (asset.subGraphAssets is null || asset.subGraphAssets.Count == 0)
                 {
@@ -41,11 +41,9 @@ namespace BehaviourSystem.BT
                     graphTraversalStack.Add(subAsset);
                 }
             }
-
-            GraphAsset[] result = collectedAllCachedGraphs.ToArray();
-            ListPool<GraphAsset>.Release(collectedAllCachedGraphs);
+            
             ListPool<GraphAsset>.Release(graphTraversalStack);
-            return result;
+            return collectedAllCachedGraphs;
         }
 
 

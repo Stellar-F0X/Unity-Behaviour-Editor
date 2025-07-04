@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -11,9 +12,9 @@ namespace BehaviourSystem.BT
         [SerializeReference, HideInInspector]
         private List<BlackboardVariable> _variables = new List<BlackboardVariable>();
 
-        private Dictionary<int, BlackboardVariable> _propertyCache = new Dictionary<int, BlackboardVariable>();
+        private readonly Dictionary<int, BlackboardVariable> _variableCache = new Dictionary<int, BlackboardVariable>();
 
-        
+
         public List<BlackboardVariable> variables
         {
             get { return _variables; }
@@ -23,7 +24,7 @@ namespace BehaviourSystem.BT
         public BlackboardAsset Clone()
         {
             BlackboardAsset newBlackboardAsset = ScriptableObject.CreateInstance<BlackboardAsset>();
-            newBlackboardAsset._variables = new List<BlackboardVariable>(this.variables.Count);
+            newBlackboardAsset._variables = new List<BlackboardVariable>(this._variables.Count);
 
             for (int i = 0; i < this.variables.Count; ++i)
             {
@@ -33,8 +34,8 @@ namespace BehaviourSystem.BT
             return newBlackboardAsset;
         }
 
-        
-        public BlackboardVariable[] FindProperties(in string key)
+
+        public BlackboardVariable FindVariable(in string key)
         {
             int hashCode = GraphFactory.StringToHash(key);
 
@@ -43,99 +44,116 @@ namespace BehaviourSystem.BT
                 return null;
             }
 
-            List<BlackboardVariable> foundProperties = ListPool<BlackboardVariable>.Get();
-
-            foreach (BlackboardVariable prop in variables)
+            if (_variableCache.TryGetValue(hashCode, out BlackboardVariable result))
             {
-                if (prop.nameHash == hashCode)
-                {
-                    foundProperties.Add(prop);
-                }
+                return result;
             }
-
-            BlackboardVariable[] result = foundProperties.ToArray();
-            ListPool<BlackboardVariable>.Release(foundProperties);
-            return result;
-        }
-
-
-        public BlackboardVariable FindProperty(in string key)
-        {
-            int hashCode = GraphFactory.StringToHash(key);
-
-            if (hashCode == -1)
+            else
             {
                 return null;
             }
-
-            foreach (BlackboardVariable prop in variables)
-            {
-                if (prop.nameHash == hashCode)
-                {
-                    return prop;
-                }
-            }
-
-            return null;
         }
 
 
-        public BlackboardVariable FindProperty(in int key)
+
+        public void AddVariable(BlackboardVariable variable)
         {
-            foreach (BlackboardVariable prop in variables)
+            BlackboardVariable foundVariable = this.FindVariable(variable.name);
+
+            if (foundVariable != null)
             {
-                if (prop.nameHash == key)
-                {
-                    return prop;
-                }
+                variable.name = this.GenerateUniqueVariableName(variable.name);
             }
 
-            return null;
+            _variableCache.Add(variable.nameHash, variable);
         }
 
-        
-        /// 중복된 키 이름을 방지하여 고유한 키를 생성합니다.
-        /// 같은 이름이 있으면 (0), (1), (2) 등의 숫자를 붙입니다.
-        public bool CheckAndGenerateUniqueKey(BlackboardVariable property, bool created = false)
+
+        public void RemoveVariable(BlackboardVariable variable)
         {
-            BlackboardVariable[] foundProps = this.FindProperties(property.name);
-            
-            if (foundProps == null || (created ? foundProps.Length == 0 : foundProps.Length == 1))
+            BlackboardVariable foundVariable = this.FindVariable(variable.name);
+
+            if (foundVariable == null)
+            {
+                Debug.LogError("해당 블랙보드 변수를 찾을 수 없습니다.");
+            }
+            else
+            {
+                _variableCache.Remove(variable.nameHash);
+            }
+        }
+
+
+        public bool TryChangeVariableName(BlackboardVariable variable, in string newName)
+        {
+            BlackboardVariable foundVariable = this.FindVariable(newName);
+
+            if (foundVariable == variable)
             {
                 return false;
             }
-
-            int newIndex = 0;
-            string baseKey = property.name;
-            Match match = Regex.Match(property.name, @"\((\d+)\)$");
             
-            if (match.Success)
+            if (foundVariable == null)
             {
-                baseKey = property.name.Substring(0, match.Index);
-                baseKey = baseKey.TrimEnd();
+                variable.name = newName;
+                return true;
             }
             
-            while (this.FindProperty($"{baseKey} ({newIndex})") != null)
+            _variableCache.Remove(variable.nameHash);
+            variable.name = this.GenerateUniqueVariableName(newName);
+            _variableCache.Add(variable.nameHash, variable);
+            return true;
+        }
+        
+
+        private string GenerateUniqueVariableName(string variableName)
+        {
+            int newIndex = 0;
+            string baseKey = variableName;
+            Match match = Regex.Match(variableName, @"\((\d+)\)$");
+
+            if (match.Success)
+            {
+                baseKey = variableName.Substring(0, match.Index);
+                baseKey = baseKey.TrimEnd();
+            }
+
+            while (this.FindVariable($"{baseKey} ({newIndex})") != null)
             {
                 newIndex++;
             }
 
-            property.name = $"{baseKey} ({newIndex})";
-            return true;
+            return $"{baseKey} ({newIndex})";
         }
 
-        
-        //TODO : 이거 구현
-        //Dic to List
+
         public void OnBeforeSerialize()
         {
-            
+            if (_variableCache is null || _variableCache.Count == 0)
+            {
+                return;
+            }
+
+            _variables.Clear();
+
+            foreach (BlackboardVariable variable in _variableCache.Values)
+            {
+                _variables.Add(variable);
+            }
         }
-        
-        //List to Dic 
+
+
         public void OnAfterDeserialize()
         {
-            
+            if (_variables is null || _variableCache is null)
+            {
+                return;
+            }
+
+            foreach (BlackboardVariable variable in _variables)
+            {
+                _variableCache[variable.nameHash] = variable;
+            }
         }
     }
 }

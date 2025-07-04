@@ -28,7 +28,7 @@ namespace BehaviourSystemEditor.BT
 
         private NodeSearchFieldView _nodeSearchField;
 
-        private BlackboardPropertyListView _blackboardView;
+        private BlackboardVariableListView _blackboardView;
 
         private GraphBreadcrumbs _graphBreadcrumbs;
 
@@ -162,7 +162,7 @@ namespace BehaviourSystemEditor.BT
             _miniMapView = rootVisualElement.Q<MiniMapView>();
             _inspectorView = rootVisualElement.Q<InspectorView>();
             _nodeSearchField = rootVisualElement.Q<NodeSearchFieldView>();
-            _blackboardView = rootVisualElement.Q<BlackboardPropertyListView>();
+            _blackboardView = rootVisualElement.Q<BlackboardVariableListView>();
             _graphBreadcrumbs = rootVisualElement.Q<GraphBreadcrumbs>();
 
             var elementAddButton = rootVisualElement.Q<ToolbarMenu>("element-add-button");

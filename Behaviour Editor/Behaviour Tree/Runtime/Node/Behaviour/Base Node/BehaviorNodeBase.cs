@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public abstract class BehaviourNodeBase : NodeBase
+    public abstract class BehaviorNodeBase : NodeBase
     {
         public enum EBehaviourNodeType : byte
         {
@@ -15,8 +15,7 @@ namespace BehaviourSystem.BT
         
         [SerializeField]
         private NodeBase _parent;
-
-        private BehaviourTree _tree;
+        private BehaviorTree _tree;
         
         
         public abstract EBehaviourNodeType nodeType
@@ -37,7 +36,7 @@ namespace BehaviourSystem.BT
             internal set { _parent = value; }
         }
         
-        public BehaviourTree tree
+        public BehaviorTree tree
         {
             get { return _tree; }
 

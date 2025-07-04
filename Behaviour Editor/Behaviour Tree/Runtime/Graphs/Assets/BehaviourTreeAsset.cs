@@ -12,9 +12,9 @@ namespace BehaviourSystem.BT
         
         
 #if UNITY_EDITOR
-        public static BehaviourTree CreateBehaviorTreeGraph(GraphAsset graphAsset)
+        public static BehaviorTree CreateBehaviorTreeGraph(GraphAsset graphAsset)
         {
-            BehaviourTree graph = CreateInstance<BehaviourTree>();
+            BehaviorTree graph = CreateInstance<BehaviorTree>();
             graph.hideFlags = HideFlags.HideInHierarchy;
             UnityEditor.AssetDatabase.AddObjectToAsset(graph, graphAsset);
 

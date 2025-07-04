@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace BehaviourSystem.BT
 {
-    public sealed class RootNode : BehaviourNodeBase, IBehaviourIterable
+    public sealed class RootNode : BehaviorNodeBase, IBehaviourIterable
     {
         [SerializeField, HideInInspector]
-        private List<BehaviourNodeBase> _child = new List<BehaviourNodeBase>(1);
+        private List<BehaviorNodeBase> _child = new List<BehaviorNodeBase>(1);
 
         
-        public BehaviourNodeBase child
+        public BehaviorNodeBase child
         {
             get
             {

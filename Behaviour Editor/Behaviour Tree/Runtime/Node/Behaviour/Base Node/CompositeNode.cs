@@ -5,10 +5,10 @@ using UnityEngine;
 namespace BehaviourSystem.BT
 {
     [Serializable]
-    public abstract class CompositeNode : BehaviourNodeBase, IBehaviourIterable
+    public abstract class CompositeNode : BehaviorNodeBase, IBehaviourIterable
     {
         [HideInInspector]
-        public List<BehaviourNodeBase> children = new List<BehaviourNodeBase>();
+        public List<BehaviorNodeBase> children = new List<BehaviorNodeBase>();
 
         protected int _currentChildIndex = 0;
 

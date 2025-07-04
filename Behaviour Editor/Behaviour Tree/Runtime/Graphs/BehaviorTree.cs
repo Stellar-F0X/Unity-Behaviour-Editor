@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace BehaviourSystem.BT
 {
-    public class BehaviourTree : Graph
+    public class BehaviorTree : Graph
     {
         public TreeInterruptor interrupter
         {
@@ -19,7 +19,7 @@ namespace BehaviourSystem.BT
 
         public override EStatus UpdateGraph()
         {
-            if (entry is BehaviourNodeBase behaviourNode)
+            if (entry is BehaviorNodeBase behaviourNode)
             {
                 return behaviourNode.UpdateNode();
             }
@@ -43,27 +43,27 @@ namespace BehaviourSystem.BT
 
 
 #if UNITY_EDITOR
-        public void AddChild(BehaviourNodeBase parent, BehaviourNodeBase child)
+        public void AddChild(BehaviorNodeBase parent, BehaviorNodeBase child)
         {
             Undo.RecordObject(parent, "Behaviour Tree (AddChild)");
 
             switch (parent.nodeType)
             {
-                case BehaviourNodeBase.EBehaviourNodeType.Root:
+                case BehaviorNodeBase.EBehaviourNodeType.Root:
                 {
                     ((RootNode)parent).child = child;
                     child.parent = parent;
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Decorator:
+                case BehaviorNodeBase.EBehaviourNodeType.Decorator:
                 {
                     ((DecoratorNode)parent).child = child;
                     child.parent = parent;
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Composite:
+                case BehaviorNodeBase.EBehaviourNodeType.Composite:
                 {
                     ((CompositeNode)parent).children.Add(child);
                     child.parent = parent;
@@ -76,27 +76,27 @@ namespace BehaviourSystem.BT
         }
 
 
-        public void RemoveChild(BehaviourNodeBase parent, BehaviourNodeBase child)
+        public void RemoveChild(BehaviorNodeBase parent, BehaviorNodeBase child)
         {
             Undo.RecordObject(parent, "Behaviour Tree (RemoveChild)");
 
             switch (parent.nodeType)
             {
-                case BehaviourNodeBase.EBehaviourNodeType.Root:
+                case BehaviorNodeBase.EBehaviourNodeType.Root:
                 {
                     ((RootNode)parent).child = null;
                     child.parent = null;
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Decorator:
+                case BehaviorNodeBase.EBehaviourNodeType.Decorator:
                 {
                     ((DecoratorNode)parent).child = null;
                     child.parent = null;
                     break;
                 }
 
-                case BehaviourNodeBase.EBehaviourNodeType.Composite:
+                case BehaviorNodeBase.EBehaviourNodeType.Composite:
                 {
                     ((CompositeNode)parent).children.Remove(child);
                     child.parent = null;

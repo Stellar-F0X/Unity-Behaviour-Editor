@@ -201,9 +201,9 @@ namespace BehaviourSystem.BT
         /// <summary> 노드 종료 처리 (병렬 노드의 경우 자식들도 중단) </summary>
         private void ProcessNodeExit(NodeBase node)
         {
-            if (node is BehaviourNodeBase behaviourNode)
+            if (node is BehaviorNodeBase behaviourNode)
             {
-                bool isCompositeNode = behaviourNode.nodeType == BehaviourNodeBase.EBehaviourNodeType.Composite;
+                bool isCompositeNode = behaviourNode.nodeType == BehaviorNodeBase.EBehaviourNodeType.Composite;
                 
                 if (isCompositeNode && behaviourNode is ParallelNode parallelNode)
                 {
